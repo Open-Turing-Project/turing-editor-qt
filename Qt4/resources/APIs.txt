@@ -174,6 +174,7 @@ View.SetTransparentColour(colourNumber : int)
 View.UpdateArea(x1, y1, x2, y2 : int)
 View.WhatDotColor(x, y : int)
 View.WhatDotColour(x, y : int)
+View.Update
 Window.Close(windowID : int)
 Window.GetPosition(windowID : int, var x, y : int)
 Window.Hide(windowID : int)

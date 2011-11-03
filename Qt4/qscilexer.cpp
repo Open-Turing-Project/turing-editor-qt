@@ -45,11 +45,7 @@ QsciLexer::QsciLexer(QObject *parent)
     : QObject(parent),
       autoIndStyle(-1), apiSet(0), attached_editor(0)
 {
-#if defined(Q_OS_WIN)
-    defFont = QFont("Verdana",12);
-#else
-    defFont = QFont("Bitstream Vera Sans",12);
-#endif
+    defFont = QFont("Courier New",14);
 
     // Set the default fore and background colours.
     QPalette pal = QApplication::palette();

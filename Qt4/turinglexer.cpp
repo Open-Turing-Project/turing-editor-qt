@@ -120,25 +120,24 @@ QColor TuringLexer::defaultColor(int style) const
     case LineComment:
         return QColor(0x00,0x7f,0x00);
 
-    case Number:
-        return QColor(0x00,0x7f,0x7f);
-
     case Keyword:
     case BasicFunctions:
     case StringTableMathsFunctions:
     case CoroutinesIOSystemFacilities:
-        return QColor(0x00,0x00,0x7f);
+        return QColor(0x00,0x00,0x00);
 
     case String:
     case Character:
     case LiteralString:
-        return QColor(0x7f,0x00,0x7f);
+        return QColor(0x7f,0x00,0x00);
 
     case Preprocessor:
-        return QColor(0x7f,0x7f,0x00);
+        return QColor(0x00,0x00,0x00);
 
-    case Operator:
     case Identifier:
+				return QColor(0x00,0x00,0xff);
+		case Number:
+    case Operator:
         break;
     }
 
@@ -163,14 +162,9 @@ QFont TuringLexer::defaultFont(int style) const
 
     switch (style)
     {
-    case Comment:
-    case LineComment:
-    case LiteralString:
-#if defined(Q_OS_WIN)
-        f = QFont("Comic Sans MS",12);
-#else
-        f = QFont("Bitstream Vera Serif",12);
-#endif
+    case Keyword:
+        f = QFont("Courier New",14);
+				f.setBold(true);
         break;
 
     default:
@@ -303,23 +297,9 @@ QColor TuringLexer::defaultPaper(int style) const
 {
     switch (style)
     {
-    case Comment:
-        return QColor(0xd0,0xf0,0xf0);
-
-    case LiteralString:
-        return QColor(0xe0,0xff,0xff);
 
     case UnclosedString:
-        return QColor(0xe0,0xc0,0xe0);
-
-    case BasicFunctions:
-        return QColor(0xd0,0xff,0xd0);
-
-    case StringTableMathsFunctions:
-        return QColor(0xd0,0xd0,0xff);
-
-    case CoroutinesIOSystemFacilities:
-        return QColor(0xff,0xd0,0xd0);
+        return QColor(0xe0,0xc0,0xc0);
     }
 
     return QsciLexer::defaultPaper(style);
