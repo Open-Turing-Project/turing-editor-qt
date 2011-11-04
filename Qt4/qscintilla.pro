@@ -160,7 +160,8 @@ HEADERS = \
 	../src/UniConversion.h \
 	../src/ViewStyle.h \
         ../src/XPM.h \
-    turinglexer.h
+    turinglexer.h \
+    findreplacetoolbar.h
 
 SOURCES = \
         main.cpp \
@@ -329,7 +330,8 @@ SOURCES = \
 	../src/UniConversion.cpp \
 	../src/ViewStyle.cpp \
 	../src/XPM.cpp \
-    turinglexer.cpp
+    turinglexer.cpp \
+    findreplacetoolbar.cpp
 
 TRANSLATIONS = \
 	qscintilla_cs.ts \

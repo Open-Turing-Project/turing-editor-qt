@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created: Mon Oct 31 19:07:25 2011
+** Created: Fri Nov 4 17:06:25 2011
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.0)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_MainWindow[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -33,17 +33,21 @@ static const uint qt_meta_data_MainWindow[] = {
  // slots: signature, parameters, type, tag, flags
       12,   11,   11,   11, 0x08,
       22,   11,   11,   11, 0x08,
-      34,   11,   29,   11, 0x08,
-      41,   11,   29,   11, 0x08,
-      50,   11,   11,   11, 0x08,
-      58,   11,   11,   11, 0x08,
+      35,   11,   11,   11, 0x08,
+      47,   11,   42,   11, 0x08,
+      54,   11,   42,   11, 0x08,
+      63,   11,   11,   11, 0x08,
+      71,   11,   11,   11, 0x08,
+     113,  104,   93,   11, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_MainWindow[] = {
-    "MainWindow\0\0newFile()\0open()\0bool\0"
-    "save()\0saveAs()\0about()\0documentWasModified()\0"
+    "MainWindow\0\0newFile()\0findDialog()\0"
+    "open()\0bool\0save()\0saveAs()\0about()\0"
+    "documentWasModified()\0QList<int>\0"
+    "findText\0findAll(QString)\0"
 };
 
 const QMetaObject MainWindow::staticMetaObject = {
@@ -76,16 +80,19 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: newFile(); break;
-        case 1: open(); break;
-        case 2: { bool _r = save();
+        case 1: findDialog(); break;
+        case 2: open(); break;
+        case 3: { bool _r = save();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 3: { bool _r = saveAs();
+        case 4: { bool _r = saveAs();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 4: about(); break;
-        case 5: documentWasModified(); break;
+        case 5: about(); break;
+        case 6: documentWasModified(); break;
+        case 7: { QList<int> _r = findAll((*reinterpret_cast< QString(*)>(_a[1])));
+            if (_a[0]) *reinterpret_cast< QList<int>*>(_a[0]) = _r; }  break;
         default: ;
         }
-        _id -= 6;
+        _id -= 8;
     }
     return _id;
 }

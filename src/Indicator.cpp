@@ -9,6 +9,7 @@
 
 #include "Scintilla.h"
 #include "Indicator.h"
+#include <QtDebug>
 
 #ifdef SCI_NAMESPACE
 using namespace Scintilla;

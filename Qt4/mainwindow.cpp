@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include <QtGui>
+#include <QtDebug>
 
 #include <Qsci/qsciscintilla.h>
 
@@ -76,6 +77,39 @@ void MainWindow::newFile()
     }
 }
 
+void MainWindow::findDialog()
+{
+    QString findText("duck");
+
+    QList<int> found = findAll(findText);
+    QList<int>::const_iterator i;
+
+
+    for (i = found.begin(); i != found.end(); ++i){
+        textEdit->SendScintilla(QsciScintillaBase::SCI_SETINDICATORCURRENT,QsciScintillaBase::INDIC_ROUNDBOX);
+        qDebug() << "Ind: " << textEdit->SendScintilla(QsciScintillaBase::SCI_GETINDICATORCURRENT);
+        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORFILLRANGE,(*i),findText.length());
+        qDebug() << "Found at: " << (*i);
+    }
+}
+
+QList<int> MainWindow::findAll(QString findText)
+{
+    QList<int> found;
+    QString docText = textEdit->text();
+    int end = docText.lastIndexOf(findText);
+    int cur = -1; // so when it does the first +1 it starts at the beginning
+
+    if(end != -1){ // end is -1 if the text is not found
+        while(cur != end) {
+            cur = docText.indexOf(findText,cur+1);
+            found << cur; // add the found thing to the list of found items
+        }
+    }
+
+    return found;
+}
+
 void MainWindow::open()
 {
     if (maybeSave()) {
@@ -118,6 +152,11 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
+    findAct = new QAction(tr("&Find"), this);
+    findAct->setShortcut(tr("Ctrl+F"));
+    findAct->setStatusTip(tr("Find text in file."));
+    connect(findAct, SIGNAL(triggered()), this, SLOT(findDialog()));
+
     newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
     newAct->setShortcut(tr("Ctrl+N"));
     newAct->setStatusTip(tr("Create a new file"));
@@ -190,6 +229,7 @@ void MainWindow::createMenus()
     editMenu->addAction(cutAct);
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
+    editMenu->addAction(findAct);
 
     menuBar()->addSeparator();
 
@@ -208,7 +248,7 @@ void MainWindow::createToolBars()
     editToolBar = addToolBar(tr("Edit"));
     editToolBar->addAction(cutAct);
     editToolBar->addAction(copyAct);
-    editToolBar->addAction(pasteAct);
+    editToolBar->addAction(pasteAct);		
 }
 
 void MainWindow::createStatusBar()

@@ -40,11 +40,13 @@ protected:
 
 private slots:
     void newFile();
+    void findDialog();
     void open();
     bool save();
     bool saveAs();
     void about();
     void documentWasModified();
+    QList<int> findAll(QString findText);
 
 private:
     void createActions();
@@ -67,6 +69,8 @@ private:
     QMenu *helpMenu;
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
+
+    QAction *findAct;
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
