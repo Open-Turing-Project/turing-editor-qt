@@ -27,6 +27,7 @@
 #include "mainwindow.h"
 #include "Qsci/qscilexer.h"
 #include "turinglexer.h"
+#include "findreplacedialog.h"
 
 MainWindow::MainWindow()
 {
@@ -42,6 +43,11 @@ MainWindow::MainWindow()
     textEdit->setAutoCompletionCaseSensitivity(false);
     textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);
     textEdit->setAutoCompletionThreshold(5);
+
+    findDialog = new FindReplaceDialog();
+    connect(findDialog,SIGNAL(findAll(QString)),this,SLOT(findAll(QString)));
+    connect(findDialog,SIGNAL(find(QString,bool)),this,SLOT(find(QString,bool)));
+    connect(findDialog,SIGNAL(findNext()),this,SLOT(findNext()));
 
     setCentralWidget(textEdit);
 
@@ -77,37 +83,30 @@ void MainWindow::newFile()
     }
 }
 
-void MainWindow::findDialog()
-{
-    QString findText("duck");
-
-    QList<int> found = findAll(findText);
-    QList<int>::const_iterator i;
-
-
-    for (i = found.begin(); i != found.end(); ++i){
-        textEdit->SendScintilla(QsciScintillaBase::SCI_SETINDICATORCURRENT,QsciScintillaBase::INDIC_ROUNDBOX);
-        qDebug() << "Ind: " << textEdit->SendScintilla(QsciScintillaBase::SCI_GETINDICATORCURRENT);
-        textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORFILLRANGE,(*i),findText.length());
-        qDebug() << "Found at: " << (*i);
-    }
+void MainWindow::find(QString findText,bool caseSensitive) {
+    textEdit->findFirst(findText,false,caseSensitive,false,true);
+}
+void MainWindow::findNext() {
+    textEdit->findNext();
 }
 
-QList<int> MainWindow::findAll(QString findText)
+void MainWindow::findAll(QString findText)
 {
     QList<int> found;
     QString docText = textEdit->text();
     int end = docText.lastIndexOf(findText);
     int cur = -1; // so when it does the first +1 it starts at the beginning
 
+    textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORCLEARRANGE,0,textEdit->length());
+
     if(end != -1){ // end is -1 if the text is not found
         while(cur != end) {
             cur = docText.indexOf(findText,cur+1);
-            found << cur; // add the found thing to the list of found items
+
+            //textEdit->SendScintilla(QsciScintillaBase::SCI_SETINDICATORCURRENT,QsciScintillaBase::INDIC_ROUNDBOX);
+            textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORFILLRANGE,cur,findText.length());
         }
     }
-
-    return found;
 }
 
 void MainWindow::open()
@@ -155,7 +154,7 @@ void MainWindow::createActions()
     findAct = new QAction(tr("&Find"), this);
     findAct->setShortcut(tr("Ctrl+F"));
     findAct->setStatusTip(tr("Find text in file."));
-    connect(findAct, SIGNAL(triggered()), this, SLOT(findDialog()));
+    connect(findAct, SIGNAL(triggered()), findDialog, SLOT(show()));
 
     newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
     newAct->setShortcut(tr("Ctrl+N"));
@@ -248,7 +247,7 @@ void MainWindow::createToolBars()
     editToolBar = addToolBar(tr("Edit"));
     editToolBar->addAction(cutAct);
     editToolBar->addAction(copyAct);
-    editToolBar->addAction(pasteAct);		
+    editToolBar->addAction(pasteAct);
 }
 
 void MainWindow::createStatusBar()

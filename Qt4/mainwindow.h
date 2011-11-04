@@ -28,6 +28,8 @@ class QAction;
 class QMenu;
 class QsciScintilla;
 
+class FindReplaceDialog;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -38,15 +40,18 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 
+public slots:
+    void findAll(QString findText);
+    void find(QString findText, bool CaseSensitive);
+    void findNext();
+
 private slots:
     void newFile();
-    void findDialog();
     void open();
     bool save();
     bool saveAs();
     void about();
     void documentWasModified();
-    QList<int> findAll(QString findText);
 
 private:
     void createActions();
@@ -63,6 +68,8 @@ private:
 
     QsciScintilla *textEdit;
     QString curFile;
+
+    FindReplaceDialog *findDialog;
 
     QMenu *fileMenu;
     QMenu *editMenu;

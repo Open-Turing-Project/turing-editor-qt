@@ -161,7 +161,8 @@ HEADERS = \
 	../src/ViewStyle.h \
         ../src/XPM.h \
     turinglexer.h \
-    findreplacetoolbar.h
+    findreplacetoolbar.h \
+    findreplacedialog.h
 
 SOURCES = \
         main.cpp \
@@ -331,7 +332,8 @@ SOURCES = \
 	../src/ViewStyle.cpp \
 	../src/XPM.cpp \
     turinglexer.cpp \
-    findreplacetoolbar.cpp
+    findreplacetoolbar.cpp \
+    findreplacedialog.cpp
 
 TRANSLATIONS = \
 	qscintilla_cs.ts \
@@ -340,3 +342,6 @@ TRANSLATIONS = \
 	qscintilla_fr.ts \
 	qscintilla_pt_br.ts \
 	qscintilla_ru.ts
+
+FORMS += \
+    findreplacedialog.ui
