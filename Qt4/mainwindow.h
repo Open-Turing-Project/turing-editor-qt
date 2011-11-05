@@ -29,6 +29,7 @@ class QMenu;
 class QsciScintilla;
 
 class FindReplaceDialog;
+class TuringLexer;
 
 class MainWindow : public QMainWindow
 {
@@ -42,8 +43,10 @@ protected:
 
 public slots:
     void findAll(QString findText);
-    void find(QString findText, bool CaseSensitive);
+    void find(QString findText, bool CaseSensitive,bool regex,bool wholeWord);
     void findNext();
+    void replace(QString repText);
+    void replaceAll(QString findText,QString repText,bool regex,bool greedyRegex);
 
 private slots:
     void newFile();
@@ -52,6 +55,9 @@ private slots:
     bool saveAs();
     void about();
     void documentWasModified();
+
+    void lightTheme();
+    void darkTheme();
 
 private:
     void createActions();
@@ -67,6 +73,7 @@ private:
     QString strippedName(const QString &fullFileName);
 
     QsciScintilla *textEdit;
+    TuringLexer *lex;
     QString curFile;
 
     FindReplaceDialog *findDialog;
@@ -74,9 +81,12 @@ private:
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *helpMenu;
+    QMenu *viewMenu;
     QToolBar *fileToolBar;
-    QToolBar *editToolBar;
+    QToolBar *editToolBar;   
 
+    QAction *darkThemeAct;
+    QAction *lightThemeAct;
     QAction *findAct;
     QAction *newAct;
     QAction *openAct;

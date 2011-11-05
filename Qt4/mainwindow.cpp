@@ -33,7 +33,7 @@ MainWindow::MainWindow()
 {
     textEdit = new QsciScintilla;
 
-    TuringLexer* lex = new TuringLexer(this);
+    lex = new TuringLexer(this);
     textEdit->setLexer(lex);
 
     textEdit->setFolding(QsciScintilla::CircledFoldStyle);
@@ -46,8 +46,10 @@ MainWindow::MainWindow()
 
     findDialog = new FindReplaceDialog();
     connect(findDialog,SIGNAL(findAll(QString)),this,SLOT(findAll(QString)));
-    connect(findDialog,SIGNAL(find(QString,bool)),this,SLOT(find(QString,bool)));
+    connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),this,SLOT(find(QString,bool,bool,bool)));
     connect(findDialog,SIGNAL(findNext()),this,SLOT(findNext()));
+    connect(findDialog,SIGNAL(replace(QString)),this,SLOT(replace(QString)));
+    connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),this,SLOT(replaceAll(QString,QString,bool,bool)));
 
     setCentralWidget(textEdit);
 
@@ -75,6 +77,23 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::darkTheme() {
+    qDebug() << "Switching to dark theme";
+    lex->setTheme("Dark");
+    //textEdit->setLexer(lex);
+    //textEdit->setWhitespaceBackgroundColor(lex->defaultPaper(0));
+    textEdit->setCaretForegroundColor(QColor(167,167,167));
+    textEdit->setSelectionBackgroundColor(QColor(221,240,255,30));
+}
+
+void MainWindow::lightTheme() {
+    qDebug() << "Switching to light theme";
+    lex->setTheme("Default");
+    //textEdit->setLexer(lex);
+    textEdit->setCaretForegroundColor(QColor(0,0,0));
+    textEdit->resetSelectionBackgroundColor();
+}
+
 void MainWindow::newFile()
 {
     if (maybeSave()) {
@@ -83,11 +102,28 @@ void MainWindow::newFile()
     }
 }
 
-void MainWindow::find(QString findText,bool caseSensitive) {
-    textEdit->findFirst(findText,false,caseSensitive,false,true);
+void MainWindow::replace(QString repText) {
+    textEdit->replace(repText);
+}
+
+void MainWindow::find(QString findText,bool caseSensitive,bool regex,bool wholeWord) {
+    textEdit->findFirst(findText,regex,caseSensitive,wholeWord,true);
 }
 void MainWindow::findNext() {
     textEdit->findNext();
+}
+
+void MainWindow::replaceAll(QString findText,QString repText,bool regex,bool greedyRegex)
+{
+    QString docText = textEdit->text();
+    if(regex){
+        QRegExp findRE(findText);
+        findRE.setMinimal(!greedyRegex);
+        docText.replace(findRE, repText);
+    } else {
+        docText.replace(findText,repText);
+    }
+    textEdit->setText(docText);
 }
 
 void MainWindow::findAll(QString findText)
@@ -151,10 +187,18 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
+    lightThemeAct = new QAction(tr("&Light theme"), this);
+    lightThemeAct->setStatusTip(tr("Change to a light theme."));
+    connect(lightThemeAct, SIGNAL(triggered()), this, SLOT(lightTheme()));
+
+    darkThemeAct = new QAction(tr("&Dark theme"), this);
+    darkThemeAct->setStatusTip(tr("Change to a dark theme."));
+    connect(darkThemeAct, SIGNAL(triggered()), this, SLOT(darkTheme()));
+
     findAct = new QAction(tr("&Find"), this);
     findAct->setShortcut(tr("Ctrl+F"));
     findAct->setStatusTip(tr("Find text in file."));
-    connect(findAct, SIGNAL(triggered()), findDialog, SLOT(show()));
+    connect(findAct, SIGNAL(triggered()), findDialog, SLOT(activate()));
 
     newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
     newAct->setShortcut(tr("Ctrl+N"));
@@ -229,6 +273,10 @@ void MainWindow::createMenus()
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
     editMenu->addAction(findAct);
+
+    viewMenu = menuBar()->addMenu(tr("&View"));
+    viewMenu->addAction(lightThemeAct);
+    viewMenu->addAction(darkThemeAct);
 
     menuBar()->addSeparator();
 

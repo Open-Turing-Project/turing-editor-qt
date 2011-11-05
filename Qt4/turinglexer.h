@@ -40,6 +40,8 @@ extern "C++" {
 #include <Qsci/qsciglobal.h>
 #include <Qsci/qscilexer.h>
 
+class QColor;
+
 
 //! \brief The QsciLexerLua class encapsulates the Scintilla Lua
 //! lexer.
@@ -173,6 +175,7 @@ public:
     //! \sa setFoldCompact()
     bool foldCompact() const;
 
+
 public slots:
     //! If \a fold is true then trailing blank lines are included in a fold
     //! block. The default is true.
@@ -181,6 +184,8 @@ public slots:
     virtual void setFoldCompact(bool fold);
 
     void apiPreparationFinished();
+
+    void setTheme(QString t);
 
 protected:
     //! The lexer's properties are read from the settings \a qs.  \a prefix
@@ -195,10 +200,15 @@ protected:
     //!
     bool writeProperties(QSettings &qs,const QString &prefix) const;
 
+    QColor darkDefaultColor(int style) const;
+    QColor lightDefaultColor(int style) const;
+
 private:
     void setCompactProp();
 
     bool fold_compact;
+
+    QString theme;
 
     TuringLexer(const TuringLexer &);
     TuringLexer &operator=(const TuringLexer &);

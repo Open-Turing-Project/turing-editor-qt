@@ -34,6 +34,7 @@
 #include <qfont.h>
 #include <qsettings.h>
 #include "Qsci/qsciapis.h"
+#include <QDebug>
 
 
 // The ctor.
@@ -41,8 +42,6 @@ TuringLexer::TuringLexer(QObject *parent)
     : QsciLexer(parent),
       fold_compact(true)
 {
-    printf("Starting TuringLexer\n");
-
     QsciAPIs* turingFuncs = new QsciAPIs(this);
     connect(turingFuncs,SIGNAL(apiPreparationFinished()),this,SLOT(apiPreparationFinished()));
     //connect(turingFuncs,SIGNAL(apiPreparationStarted()),this,SLOT(apiPreparationFinished()));
@@ -54,6 +53,8 @@ TuringLexer::TuringLexer(QObject *parent)
         printf("can not load APIs!\n");
     }
     setAPIs(turingFuncs);
+
+    theme = "Default";
 }
 
 // The dtor.
@@ -76,6 +77,21 @@ const char *TuringLexer::language() const
 const char *TuringLexer::lexer() const
 {
     return "turing";
+}
+
+void TuringLexer::setTheme(QString t) {
+    theme = t;
+    setDefaultPaper(defaultPaper(0));
+    //colors updated
+    for(int i = 20;i>=0;i--){
+        emit colorChanged(defaultColor(i),i);
+    }
+    for(int i = 19;i>=0;i--){
+        emit paperChanged(defaultPaper(i),i);
+    }
+    for(int i = 19;i>=0;i--){
+        emit fontChanged(defaultFont(i),i);
+    }
 }
 
 
@@ -109,7 +125,7 @@ int TuringLexer::braceStyle() const
 
 
 // Returns the foreground colour of the text for a style.
-QColor TuringLexer::defaultColor(int style) const
+QColor TuringLexer::lightDefaultColor(int style) const
 {
     switch (style)
     {
@@ -135,13 +151,60 @@ QColor TuringLexer::defaultColor(int style) const
         return QColor(0x00,0x00,0x00);
 
     case Identifier:
-				return QColor(0x00,0x00,0xff);
-		case Number:
+        return QColor(0x00,0x00,0xff);
+    case Number:
     case Operator:
         break;
     }
 
     return QsciLexer::defaultColor(style);
+}
+
+// Returns the foreground colour of the text for a style.
+QColor TuringLexer::darkDefaultColor(int style) const
+{
+    switch (style)
+    {
+    case Default:
+        return QColor(0xff,0xff,0xff);
+
+    case Comment:
+    case LineComment:
+        return QColor(95,90,96);
+
+    case Operator:
+    case Keyword:
+    case BasicFunctions:
+    case StringTableMathsFunctions:
+    case CoroutinesIOSystemFacilities:
+        return QColor(205,168,105);
+
+    case String:
+    case Character:
+    case LiteralString:
+        return QColor(143,157,106);
+
+    case Preprocessor:
+        return QColor(0x00,0x00,0x00);
+
+
+    case Identifier:
+        return QColor(0xff,0xff,0xff);
+    case Number:
+        return QColor(207,106,76);
+    }
+
+    return QsciLexer::defaultColor(style);
+}
+
+// Returns the foreground colour of the text for a style.
+QColor TuringLexer::defaultColor(int style) const
+{
+    if(theme == "Dark"){
+        return darkDefaultColor(style);
+    } else {
+        return lightDefaultColor(style);
+    }
 }
 
 
@@ -159,16 +222,29 @@ bool TuringLexer::defaultEolFill(int style) const
 QFont TuringLexer::defaultFont(int style) const
 {
     QFont f;
+    if(theme == "Dark"){
+        switch (style)
+        {
+        case Comment:
+        case LineComment:
+            f = QFont("Monaco",14);
+            f.setItalic(true);
+            break;
 
-    switch (style)
-    {
-    case Keyword:
-        f = QFont("Courier New",14);
-				f.setBold(true);
-        break;
+        default:
+            f = QFont("Monaco",14);
+        }
+    } else {
+        switch (style)
+        {
+        case Keyword:
+            f = QFont("Courier New",14);
+            f.setBold(true);
+            break;
 
-    default:
-        f = QsciLexer::defaultFont(style);
+        default:
+            f = QsciLexer::defaultFont(style);
+        }
     }
 
     return f;
@@ -295,14 +371,21 @@ QString TuringLexer::description(int style) const
 // Returns the background colour of the text for a style.
 QColor TuringLexer::defaultPaper(int style) const
 {
-    switch (style)
-    {
-
-    case UnclosedString:
-        return QColor(0xe0,0xc0,0xc0);
+    if(theme == "Dark"){
+        switch (style)
+        {
+        case UnclosedString:
+            return QColor(0x1f,0x14,0x14);
+        }
+        return QColor(0x14,0x14,0x14);
+    } else {
+        switch (style)
+        {
+        case UnclosedString:
+            return QColor(0xe0,0xc0,0xc0);
+        }
+        return QColor(0xff,0xff,0xff);
     }
-
-    return QsciLexer::defaultPaper(style);
 }
 
 

@@ -1643,7 +1643,7 @@ bool QsciScintilla::findFirst(const QString &expr, bool re, bool cs, bool wo,
     findState.flags =
         (cs ? SCFIND_MATCHCASE : 0) |
         (wo ? SCFIND_WHOLEWORD : 0) |
-        (re ? SCFIND_REGEXP : 0);
+        (re ? (SCFIND_REGEXP | SCFIND_POSIX) : 0);
 
     if (line < 0 || index < 0)
         findState.startpos = SendScintilla(SCI_GETCURRENTPOS);
@@ -2163,7 +2163,7 @@ void QsciScintilla::setText(const QString &text)
     bool ro = ensureRW();
 
     SendScintilla(SCI_SETTEXT, ScintillaStringData(convertTextQ2S(text)));
-    SendScintilla(SCI_EMPTYUNDOBUFFER);
+    //SendScintilla(SCI_EMPTYUNDOBUFFER); TMOD
 
     setReadOnly(ro);
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created: Fri Nov 4 19:49:04 2011
+** Created: Sat Nov 5 10:49:04 2011
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.0)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_MainWindow[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,23 +32,32 @@ static const uint qt_meta_data_MainWindow[] = {
 
  // slots: signature, parameters, type, tag, flags
       21,   12,   11,   11, 0x0a,
-      61,   38,   11,   11, 0x0a,
-      80,   11,   11,   11, 0x0a,
-      91,   11,   11,   11, 0x08,
-     101,   11,   11,   11, 0x08,
-     113,   11,  108,   11, 0x08,
-     120,   11,  108,   11, 0x08,
-     129,   11,   11,   11, 0x08,
-     137,   11,   11,   11, 0x08,
+      77,   38,   11,   11, 0x0a,
+     106,   11,   11,   11, 0x0a,
+     125,  117,   11,   11, 0x0a,
+     177,  142,   11,   11, 0x0a,
+     215,   11,   11,   11, 0x08,
+     225,   11,   11,   11, 0x08,
+     237,   11,  232,   11, 0x08,
+     244,   11,  232,   11, 0x08,
+     253,   11,   11,   11, 0x08,
+     261,   11,   11,   11, 0x08,
+     283,   11,   11,   11, 0x08,
+     296,   11,   11,   11, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_MainWindow[] = {
     "MainWindow\0\0findText\0findAll(QString)\0"
-    "findText,CaseSensitive\0find(QString,bool)\0"
-    "findNext()\0newFile()\0open()\0bool\0"
-    "save()\0saveAs()\0about()\0documentWasModified()\0"
+    "findText,CaseSensitive,regex,wholeWord\0"
+    "find(QString,bool,bool,bool)\0findNext()\0"
+    "repText\0replace(QString)\0"
+    "findText,repText,regex,greedyRegex\0"
+    "replaceAll(QString,QString,bool,bool)\0"
+    "newFile()\0open()\0bool\0save()\0saveAs()\0"
+    "about()\0documentWasModified()\0"
+    "lightTheme()\0darkTheme()\0"
 };
 
 const QMetaObject MainWindow::staticMetaObject = {
@@ -81,19 +90,23 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: findAll((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 1: find((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2]))); break;
+        case 1: find((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
         case 2: findNext(); break;
-        case 3: newFile(); break;
-        case 4: open(); break;
-        case 5: { bool _r = save();
+        case 3: replace((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 4: replaceAll((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< bool(*)>(_a[4]))); break;
+        case 5: newFile(); break;
+        case 6: open(); break;
+        case 7: { bool _r = save();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 6: { bool _r = saveAs();
+        case 8: { bool _r = saveAs();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 7: about(); break;
-        case 8: documentWasModified(); break;
+        case 9: about(); break;
+        case 10: documentWasModified(); break;
+        case 11: lightTheme(); break;
+        case 12: darkTheme(); break;
         default: ;
         }
-        _id -= 9;
+        _id -= 13;
     }
     return _id;
 }
