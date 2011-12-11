@@ -29,17 +29,6 @@
 using namespace Scintilla;
 #endif
 
-// Test for [=[ ... ]=] delimiters, returns 0 if it's only a [ or ],
-// return 1 for [[ or ]], returns >=2 for [=[ or ]=] and so on.
-// The maximum number of '=' characters allowed is 254.
-static int LongDelimCheck(StyleContext &sc) {
-	int sep = 1;
-	while (sc.GetRelative(sep) == '=' && sep < 0xFF)
-		sep++;
-	if (sc.GetRelative(sep) == sc.ch)
-		return sep;
-	return 0;
-}
 
 static void ColouriseTuringDoc(
 	unsigned int startPos,
@@ -206,15 +195,6 @@ static void ColouriseTuringDoc(
 				sc.SetState(SCE_LUA_STRING);
 			} else if (sc.ch == '\'') {
 				sc.SetState(SCE_LUA_CHARACTER);
-			} else if (sc.ch == '[') {
-				sepCount = LongDelimCheck(sc);
-				if (sepCount == 0) {
-					sc.SetState(SCE_LUA_OPERATOR);
-				} else {
-					nestLevel = 1;
-					sc.SetState(SCE_LUA_LITERALSTRING);
-					sc.Forward(sepCount);
-				}
 			} else if (sc.Match('%')) {
 				sc.SetState(SCE_LUA_COMMENTLINE);
 				sc.Forward();
@@ -222,8 +202,6 @@ static void ColouriseTuringDoc(
 					sc.Forward(2);
 					nestLevel = 1;
 					sc.ChangeState(SCE_LUA_COMMENT);
-			} else if (sc.atLineStart && sc.Match('$')) {
-				sc.SetState(SCE_LUA_PREPROCESSOR);	// Obsolete since Lua 4.0, but still in old code
 			} else if (setLuaOperator.Contains(sc.ch)) {
 				sc.SetState(SCE_LUA_OPERATOR);
 			}
@@ -254,7 +232,7 @@ static void ColouriseTuringDoc(
 
 	sc.Complete();
 }
-
+//! Code folding for turing documents.
 static void FoldTuringDoc(unsigned int startPos, int length, int /* initStyle */, WordList *[],
                        Accessor &styler) {
 	unsigned int lengthDoc = startPos + length;
@@ -275,7 +253,8 @@ static void FoldTuringDoc(unsigned int startPos, int length, int /* initStyle */
 		bool atEOL = (ch == '\r' && chNext != '\n') || (ch == '\n');
 		if (style == SCE_LUA_WORD) {
 				
-				for (unsigned int j = 0; j < 8; j++) {
+				// the 50 is arbitrary. Hope your keywords aren't longer than 50 characters
+				for (unsigned int j = 0; j < 50; j++) {
 					if (!iswordchar(styler[i + j])) {
 						break;
 					}
@@ -287,7 +266,8 @@ static void FoldTuringDoc(unsigned int startPos, int length, int /* initStyle */
 				(strcmp(s, "if") == 0) || (strcmp(s, "proc") == 0) || (strcmp(s, "fcn") == 0) ||
 				(strcmp(s, "procedure") == 0) || (strcmp(s, "function") == 0) ||
 				(strcmp(s, "class") == 0) || (strcmp(s, "module") == 0) || (strcmp(s, "case") == 0) ||
-				(strcmp(s, "for") == 0) || (strcmp(s, "loop") == 0) || (strcmp(s, "record") == 0)
+				(strcmp(s, "for") == 0) || (strcmp(s, "loop") == 0) || (strcmp(s, "record") == 0) ||
+				(strcmp(s, "pervasive") == 0) || (strcmp(s, "body") == 0)
 				) 
 				{
 					// this is so things like "end if" and bob := "if this is true"
@@ -301,7 +281,6 @@ static void FoldTuringDoc(unsigned int startPos, int length, int /* initStyle */
 								break;
 							}
 							if (!(curCh < 0x21)) { // all whitespace is below 0x21
-								//printf("fail cuz char -%i-%c- for string '%s' at index %i with startpos %i\n",curCh,curCh,s,j,startPos);
 								isOnNewLine = false;
 								break;
 							}

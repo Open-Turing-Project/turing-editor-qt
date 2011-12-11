@@ -94,6 +94,10 @@ void TuringLexer::setTheme(QString t) {
     }
 }
 
+QString TuringLexer::getTheme() {
+    return theme;
+}
+
 
 // Return the set of character sequences that can separate auto-completion
 // words.
@@ -165,6 +169,7 @@ QColor TuringLexer::darkDefaultColor(int style) const
 {
     switch (style)
     {
+    case Operator:
     case Default:
         return QColor(0xff,0xff,0xff);
 
@@ -172,7 +177,6 @@ QColor TuringLexer::darkDefaultColor(int style) const
     case LineComment:
         return QColor(95,90,96);
 
-    case Operator:
     case Keyword:
     case BasicFunctions:
     case StringTableMathsFunctions:

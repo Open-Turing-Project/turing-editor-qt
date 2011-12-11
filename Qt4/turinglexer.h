@@ -187,6 +187,8 @@ public slots:
 
     void setTheme(QString t);
 
+    QString getTheme();
+
 protected:
     //! The lexer's properties are read from the settings \a qs.  \a prefix
     //! (which has a trailing '/') should be used as a prefix to the key of

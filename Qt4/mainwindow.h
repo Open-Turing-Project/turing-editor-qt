@@ -27,6 +27,7 @@
 class QAction;
 class QMenu;
 class QsciScintilla;
+class QsciStyle;
 
 class FindReplaceDialog;
 class TuringLexer;
@@ -47,6 +48,9 @@ public slots:
     void findNext();
     void replace(QString repText);
     void replaceAll(QString findText,QString repText,bool regex,bool greedyRegex);
+    void showError(int line,QString errMsg,int from = -1, int to = -1);
+    void clearErrors();
+    void clearEverything();
 
 private slots:
     void newFile();
@@ -76,6 +80,9 @@ private:
     TuringLexer *lex;
     QString curFile;
 
+    QsciStyle *darkErrMsgStyle;
+    QsciStyle *lightErrMsgStyle;
+
     FindReplaceDialog *findDialog;
 
     QMenu *fileMenu;
@@ -98,6 +105,8 @@ private:
     QAction *pasteAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
+    QAction *runAction;
+    QAction *clearAct;
 };
 
 #endif

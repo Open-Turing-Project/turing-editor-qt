@@ -1,1 +1,3 @@
-**/*.o
+*.o
+.DS_Store
+Qt4/moc_*
