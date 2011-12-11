@@ -1,3 +1,4 @@
 *.o
 .DS_Store
-Qt4/moc_*
+debug/.*
+release/.*
