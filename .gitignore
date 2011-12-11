@@ -2,3 +2,4 @@
 .DS_Store
 debug/.*
 release/.*
+*.user

@@ -23,45 +23,25 @@
 #include <QtDebug>
 #include <QPalette>
 
-#include <Qsci/qsciscintilla.h>
 #include <Qsci/qscistyle.h>
 
 #include "mainwindow.h"
+
+#include "turingeditorwidget.h"
 #include "Qsci/qscilexer.h"
 #include "turinglexer.h"
 #include "findreplacedialog.h"
 
 MainWindow::MainWindow()
 {
-    textEdit = new QsciScintilla;
-
-    lex = new TuringLexer(this);
-    textEdit->setLexer(lex);
-
-    textEdit->setFolding(QsciScintilla::CircledFoldStyle);
-    textEdit->setAutoIndent(true);
-    textEdit->setTabWidth(4);
-    
-    textEdit->setCallTipsStyle(QsciScintilla::CallTipsNoContext);
-    textEdit->setAutoCompletionCaseSensitivity(false);
-    textEdit->setAutoCompletionSource(QsciScintilla::AcsAll);
-    textEdit->setAutoCompletionThreshold(5);
-
-    textEdit->markerDefine(QsciScintilla::RightArrow,1);
-    textEdit->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
-    textEdit->indicatorDefine(QsciScintilla::SquiggleIndicator,2);
-    textEdit->indicatorDefine(QsciScintilla::BoxIndicator,3);
-    textEdit->setIndicatorForegroundColor(QColor(50,250,50),3);
-
-    darkErrMsgStyle = new QsciStyle(-1,"dark error style",QColor(255,220,220),QColor(184,50,50),QFont());
-    lightErrMsgStyle = new QsciStyle(-1,"light error style",Qt::black,QColor(230,150,150),QFont());
+    textEdit = new TuringEditorWidget(this);
 
     findDialog = new FindReplaceDialog();
-    connect(findDialog,SIGNAL(findAll(QString)),this,SLOT(findAll(QString)));
-    connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),this,SLOT(find(QString,bool,bool,bool)));
-    connect(findDialog,SIGNAL(findNext()),this,SLOT(findNext()));
-    connect(findDialog,SIGNAL(replace(QString)),this,SLOT(replace(QString)));
-    connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),this,SLOT(replaceAll(QString,QString,bool,bool)));
+    connect(findDialog,SIGNAL(findAll(QString)),textEdit,SLOT(findAll(QString)));
+    connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),textEdit,SLOT(find(QString,bool,bool,bool)));
+    connect(findDialog,SIGNAL(findNext()),textEdit,SLOT(findNextOccurence()));
+    connect(findDialog,SIGNAL(replace(QString)),textEdit,SLOT(replace(QString)));
+    connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),textEdit,SLOT(replaceAll(QString,QString,bool,bool)));
 
     setCentralWidget(textEdit);
 
@@ -88,55 +68,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     }
 }
-//! Switch to the dark coding theme. Based on the common "Twilight" theme
-void MainWindow::darkTheme() {
-    qDebug() << "Switching to dark theme";
-    lex->setTheme("Dark");
-    //textEdit->setLexer(lex);
-    //textEdit->setWhitespaceBackgroundColor(lex->defaultPaper(0));
-    textEdit->setCaretForegroundColor(QColor(167,167,167));
-    textEdit->setSelectionBackgroundColor(QColor(221,240,255,45));
-    clearErrors();
-}
-//! Switch to the dark coding theme. Based on the theme used in the original Turing editor.
-void MainWindow::lightTheme() {
-    qDebug() << "Switching to light theme";
-    lex->setTheme("Default");
-    //textEdit->setLexer(lex);
-    textEdit->setCaretForegroundColor(QColor(0,0,0));
-    textEdit->setSelectionBackgroundColor(palette().color(QPalette::Highlight));
-    //textEdit->setSelectionBackgroundColor(QColor(60,150,200,40));
-    clearErrors();
-}
-//! Uses a scintilla annotation to display an error box below a certain line.
-//! if from and to are provided a squiggly underline is used. 
-//! From and to are character indexes into the line.
-//! If to is greater than the line length it will wrap.
-void MainWindow::showError(int line,QString errMsg,int from, int to)
-{
-    textEdit->markerAdd(line,1);
-    QsciStyle *errStyle = lex->getTheme() == "Dark" ? darkErrMsgStyle : lightErrMsgStyle;
-    textEdit->annotate(line,"^ " + errMsg,*errStyle);
-
-    if(from >= 0 && to >= 0) {
-        textEdit->fillIndicatorRange(line,from,line,to,2);
-    }
-}
-//! removes all error annotations from display.
-void MainWindow::clearErrors() {
-    textEdit->clearAnnotations();
-    int lines = textEdit->lines();
-    textEdit->clearIndicatorRange(0,0,lines,textEdit->text(lines).length(),2);
-    textEdit->markerDeleteAll(1);
-}
-
-//! clears all annotations, markers and indicators
-void MainWindow::clearEverything() {
-    textEdit->clearAnnotations();
-    int lines = textEdit->lines();
-    textEdit->clearIndicatorRange(0,0,lines,textEdit->text(lines).length(),-1);
-    textEdit->markerDeleteAll(-1);
-}
 
 void MainWindow::newFile()
 {
@@ -146,51 +77,7 @@ void MainWindow::newFile()
     }
 }
 
-void MainWindow::replace(QString repText) {
-    textEdit->replace(repText);
-}
-//! Selects the first appearance of a string and sets it up for the find next command.
-void MainWindow::find(QString findText,bool caseSensitive,bool regex,bool wholeWord) {
-    textEdit->findFirst(findText,regex,caseSensitive,wholeWord,true);
-}
-//! Only call after find. Selects the next occurence
-void MainWindow::findNext() {
-    textEdit->findNext();
-}
-//! Replaces all occurences of a string in the current document.
-//! the regex and greedyRegex switches are to allow regex matching.
-void MainWindow::replaceAll(QString findText,QString repText,bool regex,bool greedyRegex)
-{
-    QString docText = textEdit->text();
-    if(regex){
-        QRegExp findRE(findText);
-        findRE.setMinimal(!greedyRegex);
-        docText.replace(findRE, repText);
-    } else {
-        docText.replace(findText,repText);
-    }
-    textEdit->setText(docText);
-}
-//! Places a green box indicator around all occurences of a string.
-void MainWindow::findAll(QString findText)
-{
-    QList<int> found;
-    QString docText = textEdit->text();
-    int end = docText.lastIndexOf(findText);
-    int cur = -1; // so when it does the first +1 it starts at the beginning
 
-    textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORCLEARRANGE,0,textEdit->length());
-    textEdit->SendScintilla(QsciScintillaBase::SCI_SETINDICATORCURRENT,3);
-
-    if(end != -1){ // end is -1 if the text is not found
-        while(cur != end) {
-            cur = docText.indexOf(findText,cur+1);
-
-            //textEdit->SendScintilla(QsciScintillaBase::SCI_SETINDICATORCURRENT,QsciScintillaBase::INDIC_ROUNDBOX);
-            textEdit->SendScintilla(QsciScintillaBase::SCI_INDICATORFILLRANGE,cur,findText.length());
-        }
-    }
-}
 
 void MainWindow::open()
 {
@@ -236,11 +123,11 @@ void MainWindow::createActions()
 {
     lightThemeAct = new QAction(tr("&Light theme"), this);
     lightThemeAct->setStatusTip(tr("Change to a light theme."));
-    connect(lightThemeAct, SIGNAL(triggered()), this, SLOT(lightTheme()));
+    connect(lightThemeAct, SIGNAL(triggered()), textEdit, SLOT(lightTheme()));
 
     darkThemeAct = new QAction(tr("&Dark theme"), this);
     darkThemeAct->setStatusTip(tr("Change to a dark theme."));
-    connect(darkThemeAct, SIGNAL(triggered()), this, SLOT(darkTheme()));
+    connect(darkThemeAct, SIGNAL(triggered()), textEdit, SLOT(darkTheme()));
 
     findAct = new QAction(tr("&Find"), this);
     findAct->setShortcut(tr("Ctrl+F"));
@@ -249,7 +136,7 @@ void MainWindow::createActions()
 
     clearAct = new QAction(tr("&Clear Errors + Info"), this);
     clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
-    connect(clearAct, SIGNAL(triggered()), this, SLOT(clearEverything()));
+    connect(clearAct, SIGNAL(triggered()), textEdit, SLOT(clearEverything()));
 
     newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
     newAct->setShortcut(tr("Ctrl+N"));
@@ -366,17 +253,17 @@ void MainWindow::readSettings()
     move(pos);
     qDebug() << "Loading settings. Theme: " << theme;
     if(theme == "Dark") {
-        darkTheme();
+        textEdit->darkTheme();
     } else {
-        lightTheme();
+        textEdit->lightTheme();
     }
 }
 
 void MainWindow::writeSettings()
 {
-    qDebug() << "Saving settings. Theme: " << lex->getTheme();
+    qDebug() << "Saving settings. Theme: " << textEdit->lex->getTheme();
     QSettings settings("The Open Turing Project", "Open Turing Editor");
-    settings.setValue("theme", lex->getTheme());
+    settings.setValue("theme", textEdit->lex->getTheme());
     settings.setValue("pos", pos());
     settings.setValue("size", size());
 }
@@ -417,7 +304,7 @@ void MainWindow::loadFile(const QString &fileName)
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
 
-    showError(5,"Error: bad stuff!");
+    textEdit->showError(5,"Error: bad stuff!");
 }
 
 bool MainWindow::saveFile(const QString &fileName)

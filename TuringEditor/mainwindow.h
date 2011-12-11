@@ -26,7 +26,7 @@
 
 class QAction;
 class QMenu;
-class QsciScintilla;
+class TuringEditorWidget;
 class QsciStyle;
 
 class FindReplaceDialog;
@@ -42,16 +42,6 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 
-public slots:
-    void findAll(QString findText);
-    void find(QString findText, bool CaseSensitive,bool regex,bool wholeWord);
-    void findNext();
-    void replace(QString repText);
-    void replaceAll(QString findText,QString repText,bool regex,bool greedyRegex);
-    void showError(int line,QString errMsg,int from = -1, int to = -1);
-    void clearErrors();
-    void clearEverything();
-
 private slots:
     void newFile();
     void open();
@@ -59,9 +49,6 @@ private slots:
     bool saveAs();
     void about();
     void documentWasModified();
-
-    void lightTheme();
-    void darkTheme();
 
 private:
     void createActions();
@@ -76,12 +63,8 @@ private:
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
 
-    QsciScintilla *textEdit;
-    TuringLexer *lex;
+    TuringEditorWidget *textEdit;
     QString curFile;
-
-    QsciStyle *darkErrMsgStyle;
-    QsciStyle *lightErrMsgStyle;
 
     FindReplaceDialog *findDialog;
 

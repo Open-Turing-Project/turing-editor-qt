@@ -174,7 +174,8 @@ HEADERS = \
 	./QScintilla/src/SVector.h \
 	./QScintilla/src/UniConversion.h \
 	./QScintilla/src/ViewStyle.h \
-	./QScintilla/src/XPM.h
+	./QScintilla/src/XPM.h \
+    TuringEditor/turingeditorwidget.h
 
 SOURCES = \
 	./TuringEditor/turinglexer.cpp \
@@ -345,7 +346,8 @@ SOURCES = \
 	./QScintilla/src/Style.cpp \
 	./QScintilla/src/UniConversion.cpp \
 	./QScintilla/src/ViewStyle.cpp \
-	./QScintilla/src/XPM.cpp
+	./QScintilla/src/XPM.cpp \
+    TuringEditor/turingeditorwidget.cpp
 
 TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_cs.ts \
