@@ -3,3 +3,4 @@
 debug/.*
 release/.*
 *.user
+debug/Turing.app

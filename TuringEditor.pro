@@ -33,7 +33,8 @@
 
 #TEMPLATE = lib
 TARGET = Turing
-CONFIG += qt warn_off release thread
+Release:CONFIG += qt warn_off release thread
+CONFIG += qt debug thread
 INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src
 RESOURCES = ./TuringEditor/turing.qrc
 DEFINES = QT SCI_LEXER

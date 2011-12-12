@@ -59,6 +59,13 @@ MainWindow::MainWindow()
     setCurrentFile("");
 }
 
+void MainWindow::completeStruct() {
+    QString msg = textEdit->completeStruct();
+    if (msg != NULL && msg != "") {
+        statusBar()->showMessage(msg);
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (maybeSave()) {
@@ -121,6 +128,11 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
+    completeAct = new QAction(tr("&Complete"), this);
+    completeAct->setShortcut(Qt::CTRL + Qt::Key_Return);
+    completeAct->setStatusTip(tr("Insert an ending for a structure."));
+    connect(completeAct, SIGNAL(triggered()), this, SLOT(completeStruct()));
+
     lightThemeAct = new QAction(tr("&Light theme"), this);
     lightThemeAct->setStatusTip(tr("Change to a light theme."));
     connect(lightThemeAct, SIGNAL(triggered()), textEdit, SLOT(lightTheme()));
@@ -211,6 +223,7 @@ void MainWindow::createMenus()
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
     editMenu->addAction(findAct);
+    editMenu->addAction(completeAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(clearAct);

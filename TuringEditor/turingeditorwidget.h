@@ -28,6 +28,8 @@ public slots:
     void clearErrors();
     void clearEverything();
 
+    QString completeStruct();
+
 private:
     QsciStyle *darkErrMsgStyle;
     QsciStyle *lightErrMsgStyle;

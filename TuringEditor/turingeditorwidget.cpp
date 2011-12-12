@@ -2,6 +2,9 @@
 
 #include <QtDebug>
 #include <QPalette>
+#include <QStack>
+#include <QRegExp>
+#include <QPair>
 
 #include <Qsci/qscistyle.h>
 
@@ -123,4 +126,82 @@ void TuringEditorWidget::clearEverything() {
     clearAnnotations();
     clearIndicatorRange(0,0,lines(),text(lines()).length(),-1);
     markerDeleteAll(-1);
+}
+/*! inserts the end of the closest open struct.
+
+  I.E
+  proc Foo
+    something()
+    <completeStruct called>
+  end Foo < --- this is inserted
+
+  Returns a QString which contains an error message or a blank string
+  if nothing went wrong.
+*/
+QString TuringEditorWidget::completeStruct() {
+
+    int curLine,dummyCursorPos;
+    getCursorPosition(&curLine,&dummyCursorPos);
+    curLine += 1;
+
+    // stack for structs. string is identifier
+    QStack<QPair<int,QString> > structStack;
+
+    QRegExp endRegex("[\\t ]*end[\\t ]+([_a-zA-Z0-9]+).*");
+    QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module)[\\t\\* ]+([_a-zA-Z0-9]+).*");
+    QRegExp structRegex("[\\t ]*(if|for|loop|case|record).*");
+
+    int numLines = lines(); // optimization
+    for(int i = 0; (i < numLines && i < curLine);++i) {
+        QString line = text(i);
+        if(endRegex.exactMatch(line)) {
+            // pop assumes non-empty stack
+            if (!structStack.isEmpty()) {
+                QStringList captures = endRegex.capturedTexts();
+                QPair<int,QString> beginning = structStack.pop();
+
+                // if beginning identifier doesn't match end
+                if(beginning.second != captures[1]) {
+                    qDebug() << "Ending identifier " << captures[1] << " does not match "
+                            << beginning.second;
+                }
+            }
+        } else if(funcRegex.exactMatch(line)) {
+            QPair<int,QString> decl;
+            QStringList captures = funcRegex.capturedTexts();
+            decl.first = indentation(i);
+            decl.second = captures[3];
+            structStack.push(decl);
+        } else if(structRegex.exactMatch(line)) {
+            QPair<int,QString> decl;
+            QStringList captures = structRegex.capturedTexts();
+            decl.first = indentation(i);
+            decl.second = captures[1];
+            structStack.push(decl);
+        }
+    }
+
+
+    if (!structStack.isEmpty()) {
+        QPair<int,QString> toComplete = structStack.pop();
+
+        QString curText = text(curLine - 1);
+
+        int insertPoint = curText.length() - 1;
+        QString endText;
+        if (curText.length() != 0 && curText[curText.length() - 1] != '\n') {
+            endText += "\n";
+            insertPoint++; // fixes bug when there is text on the line after
+        }
+        endText += "end "; // \n is so insertAt() creates a new line
+        endText += toComplete.second;
+        endText += "\n";
+
+        insertAt(endText,curLine - 1,insertPoint);
+        setIndentation(curLine,toComplete.first);
+    } else {
+        return "All structures are complete.";
+    }
+
+    return "";
 }

@@ -49,6 +49,7 @@ private slots:
     bool saveAs();
     void about();
     void documentWasModified();
+    void completeStruct();
 
 private:
     void createActions();
@@ -75,13 +76,19 @@ private:
     QToolBar *fileToolBar;
     QToolBar *editToolBar;   
 
+    //! structure completion
+    QAction *completeAct;
+    //! theme switch
     QAction *darkThemeAct;
     QAction *lightThemeAct;
+    //! find and replace
     QAction *findAct;
+    //! file actions
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
     QAction *saveAsAct;
+    //! window actions
     QAction *exitAct;
     QAction *cutAct;
     QAction *copyAct;
