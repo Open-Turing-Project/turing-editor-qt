@@ -31,6 +31,7 @@ class QsciStyle;
 
 class FindReplaceDialog;
 class TuringLexer;
+class TestEditor;
 
 class MainWindow : public QMainWindow
 {
@@ -38,6 +39,8 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
+
+    friend class TestEditor;
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -76,8 +79,9 @@ private:
     QToolBar *fileToolBar;
     QToolBar *editToolBar;   
 
-    //! structure completion
-    QAction *completeAct;
+    //! completion
+    QAction *structCompleteAct;
+    QAction *autoCompleteAct;
     //! theme switch
     QAction *darkThemeAct;
     QAction *lightThemeAct;

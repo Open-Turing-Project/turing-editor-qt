@@ -35,21 +35,26 @@
 TARGET = Turing
 Release:CONFIG += qt warn_off release thread
 CONFIG += qt debug thread
-INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src
+
+INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src ./TuringEditor
 RESOURCES = ./TuringEditor/turing.qrc
 DEFINES = QT SCI_LEXER
 
-Release:DESTDIR = release
-Release:OBJECTS_DIR = release/.obj
-Release:MOC_DIR = release/.moc
-Release:RCC_DIR = release/.rcc
-Release:UI_DIR = release/.ui
+CONFIG(test_editor) {
+    DESTDIR = test/build
+    OBJECTS_DIR = test/build/obj
+    MOC_DIR = test/build/moc
+    RCC_DIR = test/build/rcc
+    UI_DIR = test/build/ui
+} else {
+    DESTDIR = debug
+    OBJECTS_DIR = debug/.obj
+    MOC_DIR = debug/.moc
+    RCC_DIR = debug/.rcc
+    UI_DIR = debug/.ui
+}
 
-DESTDIR = debug
-OBJECTS_DIR = debug/.obj
-MOC_DIR = debug/.moc
-RCC_DIR = debug/.rcc
-UI_DIR = debug/.ui
+
 
 # Handle both Qt v4 and v3.
 target.path = $$[QT_INSTALL_LIBS]
@@ -182,7 +187,6 @@ SOURCES = \
 	./TuringEditor/turinglexer.cpp \
 	./TuringEditor/findreplacetoolbar.cpp \
 	./TuringEditor/findreplacedialog.cpp \
-	./TuringEditor/main.cpp \
 	./TuringEditor/mainwindow.cpp \
 	./QScintilla/Qt4/qsciscintilla.cpp \
 	./QScintilla/Qt4/qsciscintillabase.cpp \
@@ -360,3 +364,11 @@ TRANSLATIONS = \
 
 FORMS += \
 	./TuringEditor/findreplacedialog.ui
+
+CONFIG(test_editor) {
+    CONFIG += qtestlib
+    HEADERS += test/testeditor.h
+    SOURCES += test/testeditor.cpp
+} else {
+    SOURCES += TuringEditor/main.cpp
+}

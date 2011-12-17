@@ -2,9 +2,10 @@
 
 #include <QtDebug>
 #include <QPalette>
-#include <QStack>
 #include <QRegExp>
-#include <QPair>
+
+// for min
+#include <algorithm>
 
 #include <Qsci/qscistyle.h>
 
@@ -127,23 +128,21 @@ void TuringEditorWidget::clearEverything() {
     clearIndicatorRange(0,0,lines(),text(lines()).length(),-1);
     markerDeleteAll(-1);
 }
-/*! inserts the end of the closest open struct.
 
-  I.E
-  proc Foo
-    something()
-    <completeStruct called>
-  end Foo < --- this is inserted
+/*!
+Returns a structure stack of pairs.
+The first element in each pair is the indentation level.
+Second is the structure identifier.
+Each stack element represents an unclosed structure.
 
-  Returns a QString which contains an error message or a blank string
-  if nothing went wrong.
+stopLine is the line to stop parsing at.
+
+when stopLine is 0 it will parse the entire document.
+
+when stopLine is 0 it should return an empty stack if all
+the structures in the document are closed.
 */
-QString TuringEditorWidget::completeStruct() {
-
-    int curLine,dummyCursorPos;
-    getCursorPosition(&curLine,&dummyCursorPos);
-    curLine += 1;
-
+QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine) {
     // stack for structs. string is identifier
     QStack<QPair<int,QString> > structStack;
 
@@ -151,8 +150,14 @@ QString TuringEditorWidget::completeStruct() {
     QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module)[\\t\\* ]+([_a-zA-Z0-9]+).*");
     QRegExp structRegex("[\\t ]*(if|for|loop|case|record).*");
 
-    int numLines = lines(); // optimization
-    for(int i = 0; (i < numLines && i < curLine);++i) {
+    // Stops either at the stop line or the end of the document
+    int lastLine;
+    if(stopLine > 0) {
+        lastLine = std::min(lines(),stopLine);
+    } else {
+        lastLine = lines();
+    }
+    for(int i = 0; i < lastLine;++i) {
         QString line = text(i);
         if(endRegex.exactMatch(line)) {
             // pop assumes non-empty stack
@@ -162,8 +167,8 @@ QString TuringEditorWidget::completeStruct() {
 
                 // if beginning identifier doesn't match end
                 if(beginning.second != captures[1]) {
-                    qDebug() << "Ending identifier " << captures[1] << " does not match "
-                            << beginning.second;
+                    qDebug() << "Ending identifier " << captures[1] <<
+                            " does not match " << beginning.second;
                 }
             }
         } else if(funcRegex.exactMatch(line)) {
@@ -181,24 +186,44 @@ QString TuringEditorWidget::completeStruct() {
         }
     }
 
+    return structStack;
+}
+
+/*! inserts the end of the closest open struct.
+
+  I.E
+  proc Foo
+    something()
+    <completeStruct called>
+  end Foo < --- this is inserted
+
+  Returns a QString which contains an error message or a blank string
+  if nothing went wrong.
+*/
+QString TuringEditorWidget::completeStruct() {
+
+    int nextLine,dummyCursorPos;
+    getCursorPosition(&nextLine,&dummyCursorPos);
+    nextLine++; // this makes it the line after the cursor
+
+    QStack<QPair<int,QString> > structStack;
+    structStack = makeStack(nextLine);
 
     if (!structStack.isEmpty()) {
         QPair<int,QString> toComplete = structStack.pop();
 
-        QString curText = text(curLine - 1);
+        QString curText = text(nextLine - 1); // nextLine - 1 == current line
 
-        int insertPoint = curText.length() - 1;
         QString endText;
         if (curText.length() != 0 && curText[curText.length() - 1] != '\n') {
             endText += "\n";
-            insertPoint++; // fixes bug when there is text on the line after
         }
         endText += "end "; // \n is so insertAt() creates a new line
         endText += toComplete.second;
         endText += "\n";
-
-        insertAt(endText,curLine - 1,insertPoint);
-        setIndentation(curLine,toComplete.first);
+        insertAt(endText,nextLine,0);
+        setIndentation(nextLine,toComplete.first);
+        setCursorPosition(nextLine,(text(nextLine).length()-1));
     } else {
         return "All structures are complete.";
     }

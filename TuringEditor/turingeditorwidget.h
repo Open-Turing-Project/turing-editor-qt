@@ -3,6 +3,9 @@
 
 #include <Qsci/qsciscintilla.h>
 
+#include <QStack>
+#include <QPair>
+
 class TuringLexer;
 class QsciStyle;
 
@@ -12,6 +15,8 @@ class TuringEditorWidget : public QsciScintilla
 public:
     explicit TuringEditorWidget(QWidget *parent = 0);
     TuringLexer *lex;
+
+    QStack<QPair<int,QString> > makeStack(int stopLine = 0);
 signals:
 
 public slots:
@@ -31,6 +36,7 @@ public slots:
     QString completeStruct();
 
 private:
+
     QsciStyle *darkErrMsgStyle;
     QsciStyle *lightErrMsgStyle;
 

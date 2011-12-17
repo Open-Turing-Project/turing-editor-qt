@@ -128,10 +128,15 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
-    completeAct = new QAction(tr("&Complete"), this);
-    completeAct->setShortcut(Qt::CTRL + Qt::Key_Return);
-    completeAct->setStatusTip(tr("Insert an ending for a structure."));
-    connect(completeAct, SIGNAL(triggered()), this, SLOT(completeStruct()));
+    structCompleteAct = new QAction(tr("&Complete"), this);
+    structCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Return);
+    structCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
+    connect(structCompleteAct, SIGNAL(triggered()), this, SLOT(completeStruct()));
+
+    autoCompleteAct = new QAction(tr("&Completion Menu"), this);
+    autoCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Space);
+    autoCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
+    connect(autoCompleteAct, SIGNAL(triggered()), textEdit, SLOT(autoCompleteFromAll()));
 
     lightThemeAct = new QAction(tr("&Light theme"), this);
     lightThemeAct->setStatusTip(tr("Change to a light theme."));
@@ -223,7 +228,8 @@ void MainWindow::createMenus()
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
     editMenu->addAction(findAct);
-    editMenu->addAction(completeAct);
+    editMenu->addAction(structCompleteAct);
+    editMenu->addAction(autoCompleteAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(clearAct);
