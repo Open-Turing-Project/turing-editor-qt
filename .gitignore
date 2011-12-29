@@ -1,9 +1,8 @@
 *.o
 .DS_Store
-debug/.*
-release/.*
 test/build/*
 *.pro.user*
 *.Debug
 *.Release
-debug/Turing.app
+debug
+release
