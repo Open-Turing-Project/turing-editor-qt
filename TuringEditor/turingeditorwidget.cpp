@@ -98,6 +98,7 @@ void TuringEditorWidget::lightTheme() {
     qDebug() << "Switching to light theme";
     lex->setTheme("Default");
     setCaretForegroundColor(QColor(0,0,0));
+    setSelectionForegroundColor(palette().color(QPalette::HighlightedText));
     setSelectionBackgroundColor(palette().color(QPalette::Highlight));
     clearErrors();
 }

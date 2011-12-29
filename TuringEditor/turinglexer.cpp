@@ -225,33 +225,24 @@ bool TuringLexer::defaultEolFill(int style) const
 // Returns the font of the text for a style.
 QFont TuringLexer::defaultFont(int style) const
 {
-    QFont f;
+    QFont darkFont("Consolas",10);
+    QFont lightFont("Courier New",10);
     if(theme == "Dark"){
         switch (style)
         {
         case Comment:
         case LineComment:
-            f = QFont("Monaco",14);
-            f.setItalic(true);
-            break;
-
-        default:
-            f = QFont("Monaco",14);
+            darkFont.setItalic(true);
         }
+        return darkFont;
     } else {
         switch (style)
         {
         case Keyword:
-            f = QFont("Courier New",14);
-            f.setBold(true);
-            break;
-
-        default:
-            f = QsciLexer::defaultFont(style);
+            lightFont.setBold(true);
         }
+        return lightFont;
     }
-
-    return f;
 }
 
 

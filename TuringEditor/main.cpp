@@ -20,12 +20,16 @@
 ****************************************************************************/
 
 #include <QApplication>
+#include <QFontDatabase>
 
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(turing);
+
+    QFontDatabase fontDB;
+    fontDB.addApplicationFont(":/GraphicsView/fonts");
 
     QApplication app(argc, argv);
     MainWindow mainWin;

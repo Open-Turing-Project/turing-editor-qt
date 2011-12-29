@@ -3,5 +3,7 @@
 debug/.*
 release/.*
 test/build/*
-*.user
+*.pro.user*
+*.Debug
+*.Release
 debug/Turing.app
