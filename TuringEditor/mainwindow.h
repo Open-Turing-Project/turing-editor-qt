@@ -40,6 +40,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
+    void loadFile(const QString &fileName);
+    virtual QSize sizeHint() const;
+
     friend class TestEditor;
 
 protected:
@@ -62,7 +65,7 @@ private:
     void readSettings();
     void writeSettings();
     bool maybeSave();
-    void loadFile(const QString &fileName);
+
     bool saveFile(const QString &fileName);
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
@@ -76,8 +79,7 @@ private:
     QMenu *editMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
-    QToolBar *fileToolBar;
-    QToolBar *editToolBar;   
+    QToolBar *mainToolBar;
 
     //! completion
     QAction *structCompleteAct;

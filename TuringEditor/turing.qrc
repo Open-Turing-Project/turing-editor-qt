@@ -1,11 +1,21 @@
 <RCC>
     <qresource prefix="/">
+        <file>resources/APIs.txt</file>
+        <file>images/disk.png</file>
+        <file>images/wand.png</file>
+        <file>images/control_play.png</file>
         <file>images/copy.png</file>
+        <file>images/cross.png</file>
         <file>images/cut.png</file>
+        <file>images/folder.png</file>
+        <file>images/magnifier.png</file>
         <file>images/new.png</file>
         <file>images/open.png</file>
+        <file>images/page_add.png</file>
         <file>images/paste.png</file>
         <file>images/save.png</file>
-        <file>resources/APIs.txt</file>
+        <file>images/pixel_icon.png</file>
+        <file>images/turingsplash.png</file>
+        <file>images/turing-thanh.bmp</file>
     </qresource>
 </RCC>

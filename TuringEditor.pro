@@ -27,7 +27,13 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
+# Open Turing Version
 
+CURRENT_VERSION = 1.1.0
+VERSTR = '\\"$${CURRENT_VERSION}\\"'  # place quotes around the version string
+DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the version string
+
+# QScintilla Version
 # This must be kept in sync with configure.py.
 !win32:VERSION = 6.1.0
 
@@ -38,7 +44,9 @@ CONFIG += qt debug thread
 
 INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src ./TuringEditor
 RESOURCES = ./TuringEditor/turing.qrc
-DEFINES = QT SCI_LEXER
+DEFINES += QT SCI_LEXER
+
+RC_FILE = TuringEditor/resources/turing.rc
 
 CONFIG(test_editor) {
     DESTDIR = test/build
@@ -86,7 +94,6 @@ INSTALLS += header trans qsci target
 HEADERS = \
 	./TuringEditor/mainwindow.h \
 	./TuringEditor/turinglexer.h \
-	./TuringEditor/findreplacetoolbar.h \
 	./TuringEditor/findreplacedialog.h \
 	./QScintilla/Qt4/Qsci/qsciglobal.h \
 	./QScintilla/Qt4/Qsci/qsciscintilla.h \
@@ -181,11 +188,12 @@ HEADERS = \
 	./QScintilla/src/UniConversion.h \
 	./QScintilla/src/ViewStyle.h \
 	./QScintilla/src/XPM.h \
-    TuringEditor/turingeditorwidget.h
+    TuringEditor/turingeditorwidget.h \
+    TuringEditor/aboutbox.h \
+    TuringEditor/turingrunner.h
 
 SOURCES = \
 	./TuringEditor/turinglexer.cpp \
-	./TuringEditor/findreplacetoolbar.cpp \
 	./TuringEditor/findreplacedialog.cpp \
 	./TuringEditor/mainwindow.cpp \
 	./QScintilla/Qt4/qsciscintilla.cpp \
@@ -352,7 +360,9 @@ SOURCES = \
 	./QScintilla/src/UniConversion.cpp \
 	./QScintilla/src/ViewStyle.cpp \
 	./QScintilla/src/XPM.cpp \
-    TuringEditor/turingeditorwidget.cpp
+    TuringEditor/turingeditorwidget.cpp \
+    TuringEditor/aboutbox.cpp \
+    TuringEditor/turingrunner.cpp
 
 TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_cs.ts \
@@ -363,7 +373,8 @@ TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_ru.ts
 
 FORMS += \
-	./TuringEditor/findreplacedialog.ui
+	./TuringEditor/findreplacedialog.ui \
+    TuringEditor/aboutbox.ui
 
 CONFIG(test_editor) {
     CONFIG += qtestlib
@@ -372,3 +383,10 @@ CONFIG(test_editor) {
 } else {
     SOURCES += TuringEditor/main.cpp
 }
+
+
+
+
+
+
+

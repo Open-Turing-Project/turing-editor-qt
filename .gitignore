@@ -6,3 +6,4 @@ test/build/*
 *.Release
 debug
 release
+Makefile

@@ -31,9 +31,12 @@
 #include "Qsci/qscilexer.h"
 #include "turinglexer.h"
 #include "findreplacedialog.h"
+#include "aboutbox.h"
 
 MainWindow::MainWindow()
 {
+    setWindowIcon(QIcon(":/images/pixel_icon.png"));
+
     textEdit = new TuringEditorWidget(this);
 
     findDialog = new FindReplaceDialog();
@@ -57,6 +60,10 @@ MainWindow::MainWindow()
             this, SLOT(documentWasModified()));
 
     setCurrentFile("");
+}
+
+QSize MainWindow::sizeHint() const {
+    return QSize(660,630);
 }
 
 void MainWindow::completeStruct() {
@@ -88,10 +95,17 @@ void MainWindow::newFile()
 
 void MainWindow::open()
 {
-    if (maybeSave()) {
-        QString fileName = QFileDialog::getOpenFileName(this);
-        if (!fileName.isEmpty())
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Program File"),curFile,
+                                                    tr("Turing Files (*.t *.ti *.tu *.jpg)"));
+    if (!fileName.isEmpty()){
+        // is the current file untitled.t and empty?
+        if (curFile.isEmpty() && textEdit->text().isEmpty()) {
             loadFile(fileName);
+        } else {
+            MainWindow *newWin = new MainWindow();
+            newWin->loadFile(fileName);
+            newWin->show();
+        }
     }
 }
 
@@ -115,10 +129,8 @@ bool MainWindow::saveAs()
 
 void MainWindow::about()
 {
-   QMessageBox::about(this, tr("About Open Turing"),
-            tr("The new Open Turing Editor. "
-               "Written by Tristan Hume using "
-               "the Qscintilla2 editor component."));
+    AboutBox aboutBox;
+    aboutBox.exec();
 }
 
 void MainWindow::documentWasModified()
@@ -128,7 +140,7 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
-    structCompleteAct = new QAction(tr("&Complete"), this);
+    structCompleteAct = new QAction(QIcon(":/images/wand.png"),tr("&Complete"), this);
     structCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Return);
     structCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
     connect(structCompleteAct, SIGNAL(triggered()), this, SLOT(completeStruct()));
@@ -146,26 +158,26 @@ void MainWindow::createActions()
     darkThemeAct->setStatusTip(tr("Change to a dark theme."));
     connect(darkThemeAct, SIGNAL(triggered()), textEdit, SLOT(darkTheme()));
 
-    findAct = new QAction(tr("&Find"), this);
+    findAct = new QAction(QIcon(":/images/magnifier.png"),tr("&Find"), this);
     findAct->setShortcut(tr("Ctrl+F"));
     findAct->setStatusTip(tr("Find text in file."));
     connect(findAct, SIGNAL(triggered()), findDialog, SLOT(activate()));
 
-    clearAct = new QAction(tr("&Clear Errors + Info"), this);
+    clearAct = new QAction(QIcon(":/images/cross.png"),tr("&Clear Messages"), this);
     clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
     connect(clearAct, SIGNAL(triggered()), textEdit, SLOT(clearEverything()));
 
-    newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
+    newAct = new QAction(QIcon(":/images/page_add.png"), tr("&New"), this);
     newAct->setShortcut(tr("Ctrl+N"));
     newAct->setStatusTip(tr("Create a new file"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-    openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+    openAct = new QAction(QIcon(":/images/folder.png"), tr("&Open..."), this);
     openAct->setShortcut(tr("Ctrl+O"));
     openAct->setStatusTip(tr("Open an existing file"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-    saveAct = new QAction(QIcon(":/images/save.png"), tr("&Save"), this);
+    saveAct = new QAction(QIcon(":/images/disk.png"), tr("&Save"), this);
     saveAct->setShortcut(tr("Ctrl+S"));
     saveAct->setStatusTip(tr("Save the document to disk"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
@@ -197,8 +209,8 @@ void MainWindow::createActions()
                               "selection"));
     connect(pasteAct, SIGNAL(triggered()), textEdit, SLOT(paste()));
 
-    aboutAct = new QAction(tr("&About"), this);
-    aboutAct->setStatusTip(tr("Show the application's About box"));
+    aboutAct = new QAction(tr("&About Open Turing"), this);
+    aboutAct->setStatusTip(tr("View version and other informtion about Open Turing."));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
     aboutQtAct = new QAction(tr("About &Qt"), this);
@@ -246,15 +258,20 @@ void MainWindow::createMenus()
 
 void MainWindow::createToolBars()
 {
-    fileToolBar = addToolBar(tr("File"));
-    fileToolBar->addAction(newAct);
-    fileToolBar->addAction(openAct);
-    fileToolBar->addAction(saveAct);
+    mainToolBar = addToolBar(tr("Actions"));
+    mainToolBar->setMovable(false);
+    mainToolBar->setIconSize(QSize(16,16));
+    mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-    editToolBar = addToolBar(tr("Edit"));
-    editToolBar->addAction(cutAct);
-    editToolBar->addAction(copyAct);
-    editToolBar->addAction(pasteAct);
+    mainToolBar->addAction(newAct);
+    mainToolBar->addAction(openAct);
+    mainToolBar->addAction(saveAct);
+
+    mainToolBar->addSeparator();
+
+    mainToolBar->addAction(structCompleteAct);
+    mainToolBar->addAction(findAct);
+    mainToolBar->addAction(clearAct);
 }
 
 void MainWindow::createStatusBar()
@@ -265,11 +282,7 @@ void MainWindow::createStatusBar()
 void MainWindow::readSettings()
 {
     QSettings settings("The Open Turing Project", "Open Turing Editor");
-    QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
-    QSize size = settings.value("size", QSize(400, 400)).toSize();
     QString theme = settings.value("theme", "Default").toString();
-    resize(size);
-    move(pos);
     qDebug() << "Loading settings. Theme: " << theme;
     if(theme == "Dark") {
         textEdit->darkTheme();
@@ -283,8 +296,6 @@ void MainWindow::writeSettings()
     qDebug() << "Saving settings. Theme: " << textEdit->lex->getTheme();
     QSettings settings("The Open Turing Project", "Open Turing Editor");
     settings.setValue("theme", textEdit->lex->getTheme());
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
 }
 
 bool MainWindow::maybeSave()
@@ -355,7 +366,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
     QString shownName;
     if (curFile.isEmpty())
-        shownName = "untitled.txt";
+        shownName = "Untitled.t";
     else
         shownName = strippedName(curFile);
 
