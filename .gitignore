@@ -4,6 +4,8 @@ test/build/*
 *.pro.user*
 *.Debug
 *.Release
+*.tbc
+package
 debug
 release
 Makefile

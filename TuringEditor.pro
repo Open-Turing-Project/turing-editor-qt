@@ -29,18 +29,40 @@
 
 # Open Turing Version
 
-CURRENT_VERSION = 1.1.0
+CURRENT_VERSION = 1.1.0 alpha
 VERSTR = '\\"$${CURRENT_VERSION}\\"'  # place quotes around the version string
 DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the version string
+
+# files used in the running process
+# usually the turing editor and turing prolog
+# TURING_COMPILER is passed -compile <file.t>
+# TURING_RUNNER is passed -file <file.tbc>
+release {
+    TURING_COMPILER = ../turing.exe
+    TURING_RUNNER = ../support/bin/TuringEXEProlog.exe
+} else {
+    TURING_COMPILER = OldEditor.exe
+    TURING_RUNNER = support/bin/TuringEXEProlog.exe
+}
+
+TURING_COMPILER_STR = '\\"$${TURING_COMPILER}\\"'
+DEFINES += COMPILER_PATH=\"$${TURING_COMPILER_STR}\"
+
+TURING_RUNNER_STR = '\\"$${TURING_RUNNER}\\"'
+DEFINES += RUNNER_PATH=\"$${TURING_RUNNER_STR}\"
 
 # QScintilla Version
 # This must be kept in sync with configure.py.
 !win32:VERSION = 6.1.0
 
 #TEMPLATE = lib
-TARGET = Turing
-Release:CONFIG += qt warn_off release thread
-CONFIG += qt debug thread
+TARGET = OpenTuring
+CONFIG += qt thread
+release {
+    CONFIG += warn_off
+} else {
+    CONFIG += debug
+}
 
 INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src ./TuringEditor
 RESOURCES = ./TuringEditor/turing.qrc
@@ -54,6 +76,12 @@ CONFIG(test_editor) {
     MOC_DIR = test/build/moc
     RCC_DIR = test/build/rcc
     UI_DIR = test/build/ui
+} else:release {
+    DESTDIR = release
+    OBJECTS_DIR = release/.obj
+    MOC_DIR = release/.moc
+    RCC_DIR = release/.rcc
+    UI_DIR = release/.ui
 } else {
     DESTDIR = debug
     OBJECTS_DIR = debug/.obj

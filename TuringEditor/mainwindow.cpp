@@ -22,6 +22,7 @@
 #include <QtGui>
 #include <QtDebug>
 #include <QPalette>
+#include <QCoreApplication>
 
 #include <Qsci/qscistyle.h>
 
@@ -32,6 +33,8 @@
 #include "turinglexer.h"
 #include "findreplacedialog.h"
 #include "aboutbox.h"
+
+#include "turingrunner.h"
 
 MainWindow::MainWindow()
 {
@@ -60,10 +63,60 @@ MainWindow::MainWindow()
             this, SLOT(documentWasModified()));
 
     setCurrentFile("");
+
+    currentRunner = NULL;
 }
 
 QSize MainWindow::sizeHint() const {
     return QSize(660,630);
+}
+
+void MainWindow::runProgram() {
+
+    if(currentRunner != NULL) {
+        statusBar()->showMessage(tr("Already running a program."));
+        return;
+    }
+    if(curFile.isEmpty()) {
+        statusBar()->showMessage(tr("Can't run unsaved files."));
+        return;
+    }
+
+    statusBar()->showMessage(tr("Compiling..."));
+
+    QCoreApplication::processEvents();
+
+    currentRunner = new TuringRunner(this,curFile);
+    connect(currentRunner,SIGNAL(errorFile(int,QString,QString,int,int)),this,
+            SLOT(handleErrorFile(int,QString,QString,int,int)));
+    connect(currentRunner,SIGNAL(errorGeneral(QString)),this,SLOT(handleError(QString)));
+    connect(currentRunner,SIGNAL(compileFinished(bool)),this,SLOT(compileComplete(bool)));
+
+    currentRunner->startCompile();
+}
+
+void MainWindow::compileComplete(bool success) {
+    if (success){
+        if (currentRunner != NULL) {
+            statusBar()->showMessage(tr("Compile suceeded. Running..."));
+            currentRunner->startRun();
+        }
+    } else {
+        statusBar()->showMessage(tr("Compile failed."));
+    }
+    // TODO better memory mangement. not leaked because of QObject tree. Bad though.
+    currentRunner = NULL;
+}
+
+void MainWindow::handleErrorFile(int line,QString errMsg, QString file, int from, int to) {
+    if(to != -1) {
+        textEdit->showError(line-1,errMsg,from-1,to);
+    } else {
+        textEdit->showError(line-1,errMsg);
+    }
+}
+void MainWindow::handleError(QString errMsg) {
+    QMessageBox::warning(this, tr("Open Turing Editor"),errMsg);
 }
 
 void MainWindow::completeStruct() {
@@ -104,6 +157,7 @@ void MainWindow::open()
         } else {
             MainWindow *newWin = new MainWindow();
             newWin->loadFile(fileName);
+            newWin->move(newWin->x() + 5, newWin->y() + 10);
             newWin->show();
         }
     }
@@ -140,6 +194,13 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
+
+    runAct = new QAction(QIcon(":/images/control_play.png"),tr("&Run"), this);
+    runAct->setShortcut(Qt::Key_F1);
+    runAct->setStatusTip(tr("Run this Turing program."));
+    connect(runAct, SIGNAL(triggered()), this, SLOT(runProgram()));
+
+
     structCompleteAct = new QAction(QIcon(":/images/wand.png"),tr("&Complete"), this);
     structCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Return);
     structCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
@@ -263,6 +324,8 @@ void MainWindow::createToolBars()
     mainToolBar->setIconSize(QSize(16,16));
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
+    mainToolBar->addAction(runAct);
+
     mainToolBar->addAction(newAct);
     mainToolBar->addAction(openAct);
     mainToolBar->addAction(saveAct);
@@ -333,8 +396,6 @@ void MainWindow::loadFile(const QString &fileName)
 
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
-
-    textEdit->showError(5,"Error: bad stuff!");
 }
 
 bool MainWindow::saveFile(const QString &fileName)

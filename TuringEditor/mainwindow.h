@@ -33,6 +33,8 @@ class FindReplaceDialog;
 class TuringLexer;
 class TestEditor;
 
+class TuringRunner;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -57,6 +59,12 @@ private slots:
     void documentWasModified();
     void completeStruct();
 
+    void runProgram();
+    void compileComplete(bool success);
+
+    void handleErrorFile(int line,QString errMsg, QString file, int from, int to);
+    void handleError(QString errMsg);
+
 private:
     void createActions();
     void createMenus();
@@ -72,6 +80,8 @@ private:
 
     TuringEditorWidget *textEdit;
     QString curFile;
+
+    TuringRunner *currentRunner;
 
     FindReplaceDialog *findDialog;
 
@@ -101,7 +111,7 @@ private:
     QAction *pasteAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
-    QAction *runAction;
+    QAction *runAct;
     QAction *clearAct;
 };
 
