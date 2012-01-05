@@ -23,11 +23,13 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     setFolding(QsciScintilla::PlainFoldStyle);
     setAutoIndent(true);
     setTabWidth(4);
+    setEolMode(QsciScintilla::EolWindows);
 
     setCallTipsStyle(QsciScintilla::CallTipsNoContext);
     setAutoCompletionCaseSensitivity(false);
     setAutoCompletionSource(QsciScintilla::AcsAll);
     setAutoCompletionThreshold(5);
+    setAutoCompletionUseSingle(QsciScintilla::AcusExplicit);
 
     markerDefine(QsciScintilla::RightArrow,1);
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);

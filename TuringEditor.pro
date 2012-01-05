@@ -76,18 +76,18 @@ CONFIG(test_editor) {
     MOC_DIR = test/build/moc
     RCC_DIR = test/build/rcc
     UI_DIR = test/build/ui
-} else:release {
-    DESTDIR = release
-    OBJECTS_DIR = release/.obj
-    MOC_DIR = release/.moc
-    RCC_DIR = release/.rcc
-    UI_DIR = release/.ui
-} else {
+} else:debug {
     DESTDIR = debug
     OBJECTS_DIR = debug/.obj
     MOC_DIR = debug/.moc
     RCC_DIR = debug/.rcc
     UI_DIR = debug/.ui
+} else {
+    DESTDIR = release
+    OBJECTS_DIR = release/.obj
+    MOC_DIR = release/.moc
+    RCC_DIR = release/.rcc
+    UI_DIR = release/.ui
 }
 
 

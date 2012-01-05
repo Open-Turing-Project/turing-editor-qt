@@ -175,7 +175,7 @@ static void ColouriseTuringDoc(
 					nestLevel++;
 			} else if (sc.Match('*', '/')) {
 					nestLevel--;
-					//sc.Forward();
+                                        sc.Forward();
 					if (nestLevel == 0) {
 						sc.ForwardSetState(SCE_LUA_DEFAULT);
 					}

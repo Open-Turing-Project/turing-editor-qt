@@ -72,7 +72,6 @@ QSize MainWindow::sizeHint() const {
 }
 
 void MainWindow::runProgram() {
-
     if(currentRunner != NULL) {
         statusBar()->showMessage(tr("Already running a program."));
         return;
@@ -149,7 +148,7 @@ void MainWindow::newFile()
 void MainWindow::open()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Program File"),curFile,
-                                                    tr("Turing Files (*.t *.ti *.tu *.jpg)"));
+                                                    tr("Turing Files (*.t *.ti *.tu)"));
     if (!fileName.isEmpty()){
         // is the current file untitled.t and empty?
         if (curFile.isEmpty() && textEdit->text().isEmpty()) {
@@ -174,7 +173,8 @@ bool MainWindow::save()
 
 bool MainWindow::saveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this);
+    QString fileName = QFileDialog::getSaveFileName(this,"Save Program","",
+                                                    tr("Turing Files (*.t *.ti *.tu)"));
     if (fileName.isEmpty())
         return false;
 
@@ -201,12 +201,12 @@ void MainWindow::createActions()
     connect(runAct, SIGNAL(triggered()), this, SLOT(runProgram()));
 
 
-    structCompleteAct = new QAction(QIcon(":/images/wand.png"),tr("&Complete"), this);
+    structCompleteAct = new QAction(QIcon(":/images/wand.png"),tr("Complete &Structure"), this);
     structCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Return);
     structCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
     connect(structCompleteAct, SIGNAL(triggered()), this, SLOT(completeStruct()));
 
-    autoCompleteAct = new QAction(tr("&Completion Menu"), this);
+    autoCompleteAct = new QAction(tr("Completion &Menu"), this);
     autoCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Space);
     autoCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
     connect(autoCompleteAct, SIGNAL(triggered()), textEdit, SLOT(autoCompleteFromAll()));
@@ -225,6 +225,7 @@ void MainWindow::createActions()
     connect(findAct, SIGNAL(triggered()), findDialog, SLOT(activate()));
 
     clearAct = new QAction(QIcon(":/images/cross.png"),tr("&Clear Messages"), this);
+    clearAct->setShortcut(Qt::Key_Escape);
     clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
     connect(clearAct, SIGNAL(triggered()), textEdit, SLOT(clearEverything()));
 

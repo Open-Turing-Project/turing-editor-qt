@@ -149,6 +149,7 @@ QColor TuringLexer::lightDefaultColor(int style) const
     case String:
     case Character:
     case LiteralString:
+    case UnclosedString:
         return QColor(0x7f,0x00,0x00);
 
     case Preprocessor:
@@ -186,6 +187,7 @@ QColor TuringLexer::darkDefaultColor(int style) const
     case String:
     case Character:
     case LiteralString:
+    case UnclosedString:
         return QColor(143,157,106);
 
     case Preprocessor:
@@ -370,7 +372,7 @@ QColor TuringLexer::defaultPaper(int style) const
         switch (style)
         {
         case UnclosedString:
-            return QColor(0x1f,0x14,0x14);
+            return QColor(0x4f,0x14,0x14);
         }
         return QColor(0x14,0x14,0x14);
     } else {

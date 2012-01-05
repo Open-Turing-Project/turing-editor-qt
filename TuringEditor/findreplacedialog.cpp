@@ -19,7 +19,7 @@ void FindReplaceDialog::activate() {
     show();
     activateWindow();
     raise();
-    ui->findText->grabKeyboard();
+    //ui->findText->grabKeyboard();
 }
 
 void FindReplaceDialog::findAllPushed() {

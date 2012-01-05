@@ -1,3 +1,7 @@
+/*
+Test of multi-line comments,
+yo!
+*/
 class Homer3Dengine
     export loadarf, loadraw, moveobject, drawobject, camera, obj, movecamera
     type dot :
