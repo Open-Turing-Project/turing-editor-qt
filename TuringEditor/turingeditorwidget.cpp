@@ -3,6 +3,7 @@
 #include <QtDebug>
 #include <QPalette>
 #include <QRegExp>
+#include <QSettings>
 
 // for min
 #include <algorithm>
@@ -20,15 +21,14 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     lex = new TuringLexer(this);
     setLexer(lex);
 
+    readSettings();
+
     setFolding(QsciScintilla::PlainFoldStyle);
     setAutoIndent(true);
-    setTabWidth(4);
-    setEolMode(QsciScintilla::EolWindows);
+    setIndentationsUseTabs(false);
 
     setCallTipsStyle(QsciScintilla::CallTipsNoContext);
     setAutoCompletionCaseSensitivity(false);
-    setAutoCompletionSource(QsciScintilla::AcsAll);
-    setAutoCompletionThreshold(5);
     setAutoCompletionUseSingle(QsciScintilla::AcusExplicit);
 
     markerDefine(QsciScintilla::RightArrow,1);
@@ -39,6 +39,27 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
 
     darkErrMsgStyle = new QsciStyle(-1,"dark error style",QColor(255,220,220),QColor(184,50,50),QFont());
     lightErrMsgStyle = new QsciStyle(-1,"light error style",Qt::black,QColor(230,150,150),QFont());
+}
+
+void TuringEditorWidget::readSettings() {
+    // load lexer settings
+    lex->loadSettings();
+
+    // load editor settings
+    QSettings settings;
+
+    QString theme = settings.value("theme", "Default").toString();
+    if(theme == "Dark") {
+        darkTheme();
+    } else {
+        lightTheme();
+    }
+
+    setTabWidth(settings.value("indentSize", 4).toInt());
+    setAutoCompletionThreshold(settings.value("autoCompleteThreshold", 5).toInt());
+
+    bool autoComp = settings.value("autoCompleteEnabled",true).toBool();
+    setAutoCompletionSource(autoComp ? QsciScintilla::AcsAll : QsciScintilla::AcsNone);
 }
 
 void TuringEditorWidget::replace(QString repText) {
@@ -170,8 +191,7 @@ QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine) {
 
                 // if beginning identifier doesn't match end
                 if(beginning.second != captures[1]) {
-                    qDebug() << "Ending identifier " << captures[1] <<
-                            " does not match " << beginning.second;
+                    showError(i,tr("Ending identifier %1 does not match %2").arg(captures[1],beginning.second));
                 }
             }
         } else if(funcRegex.exactMatch(line)) {

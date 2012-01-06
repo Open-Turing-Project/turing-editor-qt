@@ -239,6 +239,15 @@ cls
 View.Set ("offscreenonly")
 spike -> moveobject ("z", 300)
 color (white)
+if true then
+    put "bob"
+end if
+if false then
+	put "yo"
+end if
+if false = false then
+    put "more test"
+end if
 loop
     locate (1, 1)
     put "Object coords :    ", spike -> obj.cx, " / ", spike -> obj.cy, " / ", spike -> obj.cz, " / "

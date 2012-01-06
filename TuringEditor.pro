@@ -223,7 +223,8 @@ HEADERS = \
 	./QScintilla/src/XPM.h \
     TuringEditor/turingeditorwidget.h \
     TuringEditor/aboutbox.h \
-    TuringEditor/turingrunner.h
+    TuringEditor/turingrunner.h \
+    TuringEditor/settingsdialog.h
 
 SOURCES = \
 	./TuringEditor/turinglexer.cpp \
@@ -395,7 +396,8 @@ SOURCES = \
 	./QScintilla/src/XPM.cpp \
     TuringEditor/turingeditorwidget.cpp \
     TuringEditor/aboutbox.cpp \
-    TuringEditor/turingrunner.cpp
+    TuringEditor/turingrunner.cpp \
+    TuringEditor/settingsdialog.cpp
 
 TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_cs.ts \
@@ -407,7 +409,8 @@ TRANSLATIONS = \
 
 FORMS += \
 	./TuringEditor/findreplacedialog.ui \
-    TuringEditor/aboutbox.ui
+    TuringEditor/aboutbox.ui \
+    TuringEditor/settingsdialog.ui
 
 CONFIG(test_editor) {
     CONFIG += qtestlib
@@ -416,6 +419,9 @@ CONFIG(test_editor) {
 } else {
     SOURCES += TuringEditor/main.cpp
 }
+
+
+
 
 
 

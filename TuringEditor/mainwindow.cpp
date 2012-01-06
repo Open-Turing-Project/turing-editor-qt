@@ -33,6 +33,7 @@
 #include "turinglexer.h"
 #include "findreplacedialog.h"
 #include "aboutbox.h"
+#include "settingsdialog.h"
 
 #include "turingrunner.h"
 
@@ -57,14 +58,14 @@ MainWindow::MainWindow()
     createToolBars();
     createStatusBar();
 
-    readSettings();
-
     connect(textEdit, SIGNAL(textChanged()),
             this, SLOT(documentWasModified()));
 
     setCurrentFile("");
 
     currentRunner = NULL;
+
+    readSettings();
 }
 
 QSize MainWindow::sizeHint() const {
@@ -72,6 +73,7 @@ QSize MainWindow::sizeHint() const {
 }
 
 void MainWindow::runProgram() {
+    if (saveOnRun) save();
     if(currentRunner != NULL) {
         statusBar()->showMessage(tr("Already running a program."));
         return;
@@ -128,7 +130,6 @@ void MainWindow::completeStruct() {
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (maybeSave()) {
-        writeSettings();
         event->accept();
     } else {
         event->ignore();
@@ -192,6 +193,14 @@ void MainWindow::showHelp()
     QDesktopServices::openUrl(QString("file:///") + HELP_FILE_PATH);
 }
 
+void MainWindow::showSettings()
+{
+    SettingsDialog settings;
+    if(settings.exec()) {
+        readSettings();
+    }
+}
+
 void MainWindow::documentWasModified()
 {
     setWindowModified(textEdit->isModified());
@@ -199,6 +208,10 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
+
+    settingsAct = new QAction(tr("&Preferences"), this);
+    settingsAct->setStatusTip(tr("Change settings/preferences."));
+    connect(settingsAct, SIGNAL(triggered()), this, SLOT(showSettings()));
 
     helpAct = new QAction(QIcon(":/images/help.png"),tr("Turing &Help"), this);
     helpAct->setShortcut(Qt::Key_F10);
@@ -220,14 +233,6 @@ void MainWindow::createActions()
     autoCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Space);
     autoCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
     connect(autoCompleteAct, SIGNAL(triggered()), textEdit, SLOT(autoCompleteFromAll()));
-
-    lightThemeAct = new QAction(tr("&Light theme"), this);
-    lightThemeAct->setStatusTip(tr("Change to a light theme."));
-    connect(lightThemeAct, SIGNAL(triggered()), textEdit, SLOT(lightTheme()));
-
-    darkThemeAct = new QAction(tr("&Dark theme"), this);
-    darkThemeAct->setStatusTip(tr("Change to a dark theme."));
-    connect(darkThemeAct, SIGNAL(triggered()), textEdit, SLOT(darkTheme()));
 
     findAct = new QAction(QIcon(":/images/magnifier.png"),tr("&Find"), this);
     findAct->setShortcut(tr("Ctrl+F"));
@@ -306,6 +311,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAsAct);
     fileMenu->addAction(runAct);
     fileMenu->addSeparator();
+    fileMenu->addAction(settingsAct);
     fileMenu->addAction(exitAct);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
@@ -318,9 +324,6 @@ void MainWindow::createMenus()
 
     viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(clearAct);
-    viewMenu->addSeparator();
-    viewMenu->addAction(lightThemeAct);
-    viewMenu->addAction(darkThemeAct);
 
     menuBar()->addSeparator();
 
@@ -358,26 +361,17 @@ void MainWindow::createStatusBar()
 
 void MainWindow::readSettings()
 {
-    QSettings settings("The Open Turing Project", "Open Turing Editor");
-    QString theme = settings.value("theme", "Default").toString();
-    qDebug() << "Loading settings. Theme: " << theme;
-    if(theme == "Dark") {
-        textEdit->darkTheme();
-    } else {
-        textEdit->lightTheme();
-    }
-}
+    QSettings settings;
 
-void MainWindow::writeSettings()
-{
-    qDebug() << "Saving settings. Theme: " << textEdit->lex->getTheme();
-    QSettings settings("The Open Turing Project", "Open Turing Editor");
-    settings.setValue("theme", textEdit->lex->getTheme());
+    saveOnRun = settings.value("saveOnRun",true).toBool();
+    confirmSave = settings.value("confirmSave",true).toBool();
+
+    textEdit->readSettings();
 }
 
 bool MainWindow::maybeSave()
 {
-    if (textEdit->isModified()) {
+    if (textEdit->isModified() && confirmSave) {
         int ret = QMessageBox::warning(this, tr("Open Turing Editor"),
                      tr("The document has been modified.\n"
                         "Do you want to save your changes?"),

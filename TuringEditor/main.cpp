@@ -29,8 +29,9 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(turing);
     QApplication app(argc, argv);
 
-    QFontDatabase fontDB;
-    fontDB.addApplicationFont(":/GraphicsView/fonts");
+    QCoreApplication::setOrganizationName("The Open Turing Project");
+    QCoreApplication::setOrganizationDomain("compsci.ca");
+    QCoreApplication::setApplicationName("Open Turing Editor");
 
     MainWindow mainWin;
     mainWin.show();

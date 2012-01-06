@@ -54,12 +54,21 @@ TuringLexer::TuringLexer(QObject *parent)
     }
     setAPIs(turingFuncs);
 
+    loadSettings();
+
     theme = "Default";
 }
 
 // The dtor.
 TuringLexer::~TuringLexer()
 {
+}
+
+void TuringLexer::loadSettings()
+{
+    QSettings settings;
+    fontSize = settings.value("fontSize",10).toInt();
+    stringEOLHighlight = settings.value("stringEOLHighlight",false).toBool();
 }
 
 void TuringLexer::apiPreparationFinished() {
@@ -217,7 +226,7 @@ QColor TuringLexer::defaultColor(int style) const
 // Returns the end-of-line fill for a style.
 bool TuringLexer::defaultEolFill(int style) const
 {
-    if (style == Comment || style == UnclosedString)
+    if ((style == Comment || style == UnclosedString) && stringEOLHighlight)
         return true;
 
     return QsciLexer::defaultEolFill(style);
@@ -227,8 +236,8 @@ bool TuringLexer::defaultEolFill(int style) const
 // Returns the font of the text for a style.
 QFont TuringLexer::defaultFont(int style) const
 {
-    QFont darkFont("Consolas",10);
-    QFont lightFont("Courier New",10);
+    QFont darkFont("Consolas",fontSize);
+    QFont lightFont("Courier New",fontSize);
     if(theme == "Dark"){
         switch (style)
         {
@@ -372,14 +381,16 @@ QColor TuringLexer::defaultPaper(int style) const
         switch (style)
         {
         case UnclosedString:
-            return QColor(0x4f,0x14,0x14);
+            if (stringEOLHighlight)
+                return QColor(0x4f,0x14,0x14);
         }
         return QColor(0x14,0x14,0x14);
     } else {
         switch (style)
         {
         case UnclosedString:
-            return QColor(0xe0,0xc0,0xc0);
+            if (stringEOLHighlight)
+                return QColor(0xe0,0xc0,0xc0);
         }
         return QColor(0xff,0xff,0xff);
     }

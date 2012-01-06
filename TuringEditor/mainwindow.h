@@ -47,6 +47,9 @@ public:
 
     friend class TestEditor;
 
+public slots:
+    void readSettings();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
@@ -59,6 +62,7 @@ private slots:
     void documentWasModified();
     void completeStruct();
     void showHelp();
+    void showSettings();
 
     void runProgram();
     void compileComplete(bool success);
@@ -71,13 +75,15 @@ private:
     void createMenus();
     void createToolBars();
     void createStatusBar();
-    void readSettings();
-    void writeSettings();
     bool maybeSave();
 
     bool saveFile(const QString &fileName);
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
+
+    // prefs
+    bool saveOnRun;
+    bool confirmSave;
 
     TuringEditorWidget *textEdit;
     QString curFile;
@@ -95,9 +101,6 @@ private:
     //! completion
     QAction *structCompleteAct;
     QAction *autoCompleteAct;
-    //! theme switch
-    QAction *darkThemeAct;
-    QAction *lightThemeAct;
     //! find and replace
     QAction *findAct;
     //! file actions
@@ -115,6 +118,7 @@ private:
     QAction *runAct;
     QAction *clearAct;
     QAction *helpAct;
+    QAction *settingsAct;
 };
 
 #endif

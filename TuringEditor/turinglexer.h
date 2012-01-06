@@ -187,6 +187,8 @@ public slots:
 
     void setTheme(QString t);
 
+    void loadSettings();
+
     QString getTheme();
 
 protected:
@@ -209,6 +211,10 @@ private:
     void setCompactProp();
 
     bool fold_compact;
+
+    bool stringEOLHighlight;
+
+    int fontSize;
 
     QString theme;
 

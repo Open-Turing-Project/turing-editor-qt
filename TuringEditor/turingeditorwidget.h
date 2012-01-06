@@ -33,6 +33,8 @@ public slots:
     void clearErrors();
     void clearEverything();
 
+    void readSettings();
+
     QString completeStruct();
 
 private:
