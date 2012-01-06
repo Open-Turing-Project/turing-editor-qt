@@ -17,5 +17,6 @@
         <file>images/pixel_icon.png</file>
         <file>images/turingsplash.png</file>
         <file>images/turing-thanh.bmp</file>
+        <file>images/help.png</file>
     </qresource>
 </RCC>

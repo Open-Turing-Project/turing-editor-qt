@@ -58,6 +58,7 @@ private slots:
     void about();
     void documentWasModified();
     void completeStruct();
+    void showHelp();
 
     void runProgram();
     void compileComplete(bool success);
@@ -113,6 +114,7 @@ private:
     QAction *aboutQtAct;
     QAction *runAct;
     QAction *clearAct;
+    QAction *helpAct;
 };
 
 #endif

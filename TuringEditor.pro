@@ -45,6 +45,11 @@ release {
     TURING_RUNNER = support/bin/TuringEXEProlog.exe
 }
 
+HELP_FILE = ../support/help/TuringDoc.chm
+
+HELP_FILE_STR = '\\"$${HELP_FILE}\\"'
+DEFINES += HELP_FILE_PATH=\"$${HELP_FILE_STR}\"
+
 TURING_COMPILER_STR = '\\"$${TURING_COMPILER}\\"'
 DEFINES += COMPILER_PATH=\"$${TURING_COMPILER_STR}\"
 

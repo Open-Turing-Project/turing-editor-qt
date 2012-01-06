@@ -187,6 +187,11 @@ void MainWindow::about()
     aboutBox.exec();
 }
 
+void MainWindow::showHelp()
+{
+    QDesktopServices::openUrl(QString("file:///") + HELP_FILE_PATH);
+}
+
 void MainWindow::documentWasModified()
 {
     setWindowModified(textEdit->isModified());
@@ -194,6 +199,11 @@ void MainWindow::documentWasModified()
 
 void MainWindow::createActions()
 {
+
+    helpAct = new QAction(QIcon(":/images/help.png"),tr("Turing &Help"), this);
+    helpAct->setShortcut(Qt::Key_F10);
+    helpAct->setStatusTip(tr("Open Turing help."));
+    connect(helpAct, SIGNAL(triggered()), this, SLOT(showHelp()));
 
     runAct = new QAction(QIcon(":/images/control_play.png"),tr("&Run"), this);
     runAct->setShortcut(Qt::Key_F1);
@@ -294,6 +304,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(openAct);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
+    fileMenu->addAction(runAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
@@ -314,6 +325,7 @@ void MainWindow::createMenus()
     menuBar()->addSeparator();
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(helpAct);
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 }
@@ -336,6 +348,7 @@ void MainWindow::createToolBars()
     mainToolBar->addAction(structCompleteAct);
     mainToolBar->addAction(findAct);
     mainToolBar->addAction(clearAct);
+    mainToolBar->addAction(helpAct);
 }
 
 void MainWindow::createStatusBar()
