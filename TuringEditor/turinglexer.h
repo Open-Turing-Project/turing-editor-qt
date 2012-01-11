@@ -217,6 +217,7 @@ private:
     int fontSize;
 
     QString theme;
+    QString fontFamily;
 
     TuringLexer(const TuringLexer &);
     TuringLexer &operator=(const TuringLexer &);

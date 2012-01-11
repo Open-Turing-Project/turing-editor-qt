@@ -23,6 +23,8 @@
 #include <QtDebug>
 #include <QPalette>
 #include <QCoreApplication>
+#include <QStringList>
+#include <QLabel>
 
 #include <Qsci/qscistyle.h>
 
@@ -41,16 +43,24 @@ MainWindow::MainWindow()
 {
     setWindowIcon(QIcon(":/images/pixel_icon.png"));
 
-    textEdit = new TuringEditorWidget(this);
+    docMan = new DocumentManager(this);
 
+    // BUG find next after switching tabs
     findDialog = new FindReplaceDialog();
-    connect(findDialog,SIGNAL(findAll(QString)),textEdit,SLOT(findAll(QString)));
-    connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),textEdit,SLOT(find(QString,bool,bool,bool)));
-    connect(findDialog,SIGNAL(findNext()),textEdit,SLOT(findNextOccurence()));
-    connect(findDialog,SIGNAL(replace(QString)),textEdit,SLOT(replace(QString)));
-    connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),textEdit,SLOT(replaceAll(QString,QString,bool,bool)));
+    docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
+    docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
+    docMan->multiplex->connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),SLOT(find(QString,bool,bool,bool)));
+    docMan->multiplex->connect(findDialog,SIGNAL(findNext()),SLOT(findNextOccurence()));
+    docMan->multiplex->connect(findDialog,SIGNAL(replace(QString)),SLOT(replace(QString)));
+    docMan->multiplex->connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),
+                               SLOT(replaceAll(QString,QString,bool,bool)));
 
-    setCentralWidget(textEdit);
+    lineLabel = new QLabel(this);
+    docMan->multiplex->connect(SIGNAL(cursorPositionChanged(int,int)),this,SLOT(cursorMoved(int,int)));
+    lineLabel->setFixedWidth(170);
+    statusBar()->addPermanentWidget(lineLabel);
+
+    setCentralWidget(docMan);
 
     createActions();
     createMenus();
@@ -58,37 +68,63 @@ MainWindow::MainWindow()
     createToolBars();
     createStatusBar();
 
-    connect(textEdit, SIGNAL(textChanged()),
-            this, SLOT(documentWasModified()));
+    updateRecentFileActions();
 
-    setCurrentFile("");
+    setWindowTitle(tr("Open Turing Editor"));
 
     currentRunner = NULL;
+    runDoc = NULL;
 
     readSettings();
 }
 
 QSize MainWindow::sizeHint() const {
-    return QSize(660,630);
+    return QSize(660,540);
+}
+
+void MainWindow::cursorMoved(int line, int index) {
+    QString lineText("Line ");
+    lineText += QString::number(line);
+    lineText += " of ";
+    lineText += QString::number(docMan->currentDoc()->lines());
+    lineText +=  " col ";
+    lineText += QString::number(index);
+    lineText += " "; // for spacing
+
+    lineLabel->setText(lineText);
 }
 
 void MainWindow::runProgram() {
-    if (saveOnRun) save();
+
+    runDoc = docMan->currentDoc();
+    QString runFile = runDoc->fileName;
+
+    if (saveOnRun && !(runDoc->fileName.isEmpty())) // if saveonrun and not untitled
+        runDoc->save();
+
     if(currentRunner != NULL) {
-        statusBar()->showMessage(tr("Already running a program."));
-        return;
+        if(currentRunner->isCompiled()) {
+            currentRunner->stopRun();
+        } else {
+            statusBar()->showMessage(tr("Already compiling a program."));
+            return;
+        }
     }
-    if(curFile.isEmpty()) {
-        statusBar()->showMessage(tr("Can't run unsaved files."));
-        return;
+    if(runDoc->fileName.isEmpty()) { // if untitled, use a temp file
+        QString tmpFile = QDir::temp().absoluteFilePath(DocumentManager::TempName);
+        runDoc->saveFile(tmpFile,true); // true = temp file
+        runFile = tmpFile;
     }
 
     statusBar()->showMessage(tr("Compiling..."));
 
     QCoreApplication::processEvents();
 
-    currentRunner = new TuringRunner(this,curFile);
-    connect(currentRunner,SIGNAL(errorFile(int,QString,QString,int,int)),this,
+    docMan->clearAllErrors();
+
+    // LEAK TODO old runner is left hanging in QObject tree
+    currentRunner = new TuringRunner(this,runFile);
+    connect(currentRunner,SIGNAL(errorFile(int,QString,QString,int,int)),docMan,
             SLOT(handleErrorFile(int,QString,QString,int,int)));
     connect(currentRunner,SIGNAL(errorGeneral(QString)),this,SLOT(handleError(QString)));
     connect(currentRunner,SIGNAL(compileFinished(bool)),this,SLOT(compileComplete(bool)));
@@ -105,23 +141,14 @@ void MainWindow::compileComplete(bool success) {
     } else {
         statusBar()->showMessage(tr("Compile failed."));
     }
-    // TODO better memory mangement. not leaked because of QObject tree. Bad though.
-    currentRunner = NULL;
 }
 
-void MainWindow::handleErrorFile(int line,QString errMsg, QString file, int from, int to) {
-    if(to != -1) {
-        textEdit->showError(line-1,errMsg,from-1,to);
-    } else {
-        textEdit->showError(line-1,errMsg);
-    }
-}
 void MainWindow::handleError(QString errMsg) {
     QMessageBox::warning(this, tr("Open Turing Editor"),errMsg);
 }
 
 void MainWindow::completeStruct() {
-    QString msg = textEdit->completeStruct();
+    QString msg = docMan->currentDoc()->completeStruct();
     if (msg != NULL && msg != "") {
         statusBar()->showMessage(msg);
     }
@@ -129,57 +156,91 @@ void MainWindow::completeStruct() {
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (maybeSave()) {
+    if (docMan->promptCloseAll()) {
         event->accept();
     } else {
         event->ignore();
     }
 }
 
-void MainWindow::newFile()
+void MainWindow::openRecentFile()
 {
-    if (maybeSave()) {
-        textEdit->clear();
-        setCurrentFile("");
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action) {
+        QString fileName = action->data().toString();
+        addRecentFile(fileName);
+        docMan->openFile(fileName);
     }
 }
 
-
-
 void MainWindow::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Program File"),curFile,
-                                                    tr("Turing Files (*.t *.ti *.tu)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Program File"),
+                                                    docMan->currentDoc()->fileName,
+                                                    tr("Turing Files (*.t *.ti *.tu *.tur)"));
     if (!fileName.isEmpty()){
-        // is the current file untitled.t and empty?
-        if (curFile.isEmpty() && textEdit->text().isEmpty()) {
-            loadFile(fileName);
-        } else {
-            MainWindow *newWin = new MainWindow();
-            newWin->loadFile(fileName);
-            newWin->move(newWin->x() + 5, newWin->y() + 10);
-            newWin->show();
+        addRecentFile(fileName);
+
+        docMan->openFile(fileName);
+    }
+}
+
+void MainWindow::addRecentFile(const QString &fileName) {
+    QSettings settings;
+    QStringList files = settings.value("recentFileList").toStringList();
+    files.removeAll(fileName);
+    files.prepend(fileName);
+    while (files.size() > MaxRecentFiles)
+     files.removeLast();
+
+    settings.setValue("recentFileList", files);
+
+    updateRecentFileActions();
+}
+
+void MainWindow::updateRecentFileActions()
+ {
+     QSettings settings;
+     QStringList files = settings.value("recentFileList").toStringList();
+
+     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
+
+     for (int i = 0; i < numRecentFiles; ++i) {
+         QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+         recentFileActs[i]->setText(text);
+         recentFileActs[i]->setData(files[i]);
+         recentFileActs[i]->setVisible(true);
+     }
+     for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
+         recentFileActs[j]->setVisible(false);
+}
+
+void MainWindow::populateMarkMenu() {
+    // TODO LEAK previous actions not leaked because of QObject tree,
+    // but they do sit using up memory
+    markMenu->clear();
+
+    QList<TuringEditorWidget::POILine *> marks;
+    marks = docMan->currentDoc()->findPOIs();
+
+    int numMarks = 0;
+    foreach(TuringEditorWidget::POILine *mark, marks) {
+        if(mark->type != "end" && mark->id != "") {
+            QAction *act = new QAction(mark->id,this);
+            act->setData(mark->line);
+            connect(act,SIGNAL(triggered()),this, SLOT(goToMark()));
+            markMenu->addAction(act);
         }
     }
 }
 
-bool MainWindow::save()
+void MainWindow::goToMark()
 {
-    if (curFile.isEmpty()) {
-        return saveAs();
-    } else {
-        return saveFile(curFile);
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action) {
+        int line = action->data().toInt();
+        docMan->currentDoc()->ensureLineVisible(line);
     }
-}
-
-bool MainWindow::saveAs()
-{
-    QString fileName = QFileDialog::getSaveFileName(this,"Save Program","",
-                                                    tr("Turing Files (*.t *.ti *.tu)"));
-    if (fileName.isEmpty())
-        return false;
-
-    return saveFile(fileName);
 }
 
 void MainWindow::about()
@@ -190,7 +251,7 @@ void MainWindow::about()
 
 void MainWindow::showHelp()
 {
-    QDesktopServices::openUrl(QString("file:///") + HELP_FILE_PATH);
+    QDesktopServices::openUrl(QString("file:///") + QCoreApplication::applicationDirPath () + "/" + HELP_FILE_PATH);
 }
 
 void MainWindow::showSettings()
@@ -199,11 +260,6 @@ void MainWindow::showSettings()
     if(settings.exec()) {
         readSettings();
     }
-}
-
-void MainWindow::documentWasModified()
-{
-    setWindowModified(textEdit->isModified());
 }
 
 void MainWindow::createActions()
@@ -229,62 +285,26 @@ void MainWindow::createActions()
     structCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
     connect(structCompleteAct, SIGNAL(triggered()), this, SLOT(completeStruct()));
 
-    autoCompleteAct = new QAction(tr("Completion &Menu"), this);
-    autoCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Space);
-    autoCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
-    connect(autoCompleteAct, SIGNAL(triggered()), textEdit, SLOT(autoCompleteFromAll()));
 
     findAct = new QAction(QIcon(":/images/magnifier.png"),tr("&Find"), this);
     findAct->setShortcut(tr("Ctrl+F"));
     findAct->setStatusTip(tr("Find text in file."));
     connect(findAct, SIGNAL(triggered()), findDialog, SLOT(activate()));
 
-    clearAct = new QAction(QIcon(":/images/cross.png"),tr("&Clear Messages"), this);
-    clearAct->setShortcut(Qt::Key_Escape);
-    clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
-    connect(clearAct, SIGNAL(triggered()), textEdit, SLOT(clearEverything()));
-
     newAct = new QAction(QIcon(":/images/page_add.png"), tr("&New"), this);
     newAct->setShortcut(tr("Ctrl+N"));
     newAct->setStatusTip(tr("Create a new file"));
-    connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(newAct, SIGNAL(triggered()), docMan, SLOT(newFile()));
 
     openAct = new QAction(QIcon(":/images/folder.png"), tr("&Open..."), this);
     openAct->setShortcut(tr("Ctrl+O"));
     openAct->setStatusTip(tr("Open an existing file"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-    saveAct = new QAction(QIcon(":/images/disk.png"), tr("&Save"), this);
-    saveAct->setShortcut(tr("Ctrl+S"));
-    saveAct->setStatusTip(tr("Save the document to disk"));
-    connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
-
-    saveAsAct = new QAction(tr("Save &As..."), this);
-    saveAsAct->setStatusTip(tr("Save the document under a new name"));
-    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
-
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
-    cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
-    cutAct->setShortcut(tr("Ctrl+X"));
-    cutAct->setStatusTip(tr("Cut the current selection's contents to the "
-                            "clipboard"));
-    connect(cutAct, SIGNAL(triggered()), textEdit, SLOT(cut()));
-
-    copyAct = new QAction(QIcon(":/images/copy.png"), tr("&Copy"), this);
-    copyAct->setShortcut(tr("Ctrl+C"));
-    copyAct->setStatusTip(tr("Copy the current selection's contents to the "
-                             "clipboard"));
-    connect(copyAct, SIGNAL(triggered()), textEdit, SLOT(copy()));
-
-    pasteAct = new QAction(QIcon(":/images/paste.png"), tr("&Paste"), this);
-    pasteAct->setShortcut(tr("Ctrl+V"));
-    pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
-                              "selection"));
-    connect(pasteAct, SIGNAL(triggered()), textEdit, SLOT(paste()));
 
     aboutAct = new QAction(tr("&About Open Turing"), this);
     aboutAct->setStatusTip(tr("View version and other informtion about Open Turing."));
@@ -294,23 +314,73 @@ void MainWindow::createActions()
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
     connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    cutAct->setEnabled(false);
-    copyAct->setEnabled(false);
-    connect(textEdit, SIGNAL(copyAvailable(bool)),
-            cutAct, SLOT(setEnabled(bool)));
-    connect(textEdit, SIGNAL(copyAvailable(bool)),
-            copyAct, SLOT(setEnabled(bool)));
+    // FOR CURRENT DOCUMENT
+
+    saveAct = new QAction(QIcon(":/images/disk.png"), tr("&Save"), this);
+    saveAct->setShortcut(tr("Ctrl+S"));
+    saveAct->setStatusTip(tr("Save the document to disk"));
+    docMan->multiplex->connect(saveAct, SIGNAL(triggered()), SLOT(save()));
+
+    saveAsAct = new QAction(tr("Save &As..."), this);
+    saveAsAct->setStatusTip(tr("Save the document under a new name"));
+    docMan->multiplex->connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAs()));
+
+    clearAct = new QAction(QIcon(":/images/cross.png"),tr("&Clear Messages"), this);
+    clearAct->setShortcut(Qt::Key_Escape);
+    clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
+    docMan->multiplex->connect(clearAct, SIGNAL(triggered()), SLOT(clearEverything()));
+
+    autoCompleteAct = new QAction(tr("Completion &Menu"), this);
+    autoCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Space);
+    autoCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
+    docMan->multiplex->connect(autoCompleteAct, SIGNAL(triggered()), SLOT(autoCompleteFromAll()));
+
+    autoIndentAct = new QAction(tr("Auto-&Indent"), this);
+    autoIndentAct->setShortcut(Qt::Key_F2);
+    autoIndentAct->setStatusTip(tr("Automatically indent the file."));
+    docMan->multiplex->connect(autoIndentAct, SIGNAL(triggered()), SLOT(autoIndentAll()));
+
+    cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
+    cutAct->setShortcut(tr("Ctrl+X"));
+    cutAct->setStatusTip(tr("Cut the current selection's contents to the "
+                            "clipboard"));
+    docMan->multiplex->connect(cutAct, SIGNAL(triggered()), SLOT(cut()));
+
+    copyAct = new QAction(QIcon(":/images/copy.png"), tr("&Copy"), this);
+    copyAct->setShortcut(tr("Ctrl+C"));
+    copyAct->setStatusTip(tr("Copy the current selection's contents to the "
+                             "clipboard"));
+    docMan->multiplex->connect(copyAct, SIGNAL(triggered()), SLOT(copy()));
+
+    pasteAct = new QAction(QIcon(":/images/paste.png"), tr("&Paste"), this);
+    pasteAct->setShortcut(tr("Ctrl+V"));
+    pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
+                              "selection"));
+    docMan->multiplex->connect(pasteAct, SIGNAL(triggered()), SLOT(paste()));
+
+    for (int i = 0; i < MaxRecentFiles; ++i) {
+     recentFileActs[i] = new QAction(this);
+     recentFileActs[i]->setVisible(false);
+     connect(recentFileActs[i], SIGNAL(triggered()),
+             this, SLOT(openRecentFile()));
+    }
 }
 
 void MainWindow::createMenus()
 {
+    QMenu *recentMenu = new QMenu(tr("Open &Recent"),this);
+    for (int i = 0; i < MaxRecentFiles; ++i)
+             recentMenu->addAction(recentFileActs[i]);
+
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(newAct);
     fileMenu->addAction(openAct);
+    fileMenu->addMenu(recentMenu);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
     fileMenu->addAction(runAct);
     fileMenu->addSeparator();
+
     fileMenu->addAction(settingsAct);
     fileMenu->addAction(exitAct);
 
@@ -320,10 +390,15 @@ void MainWindow::createMenus()
     editMenu->addAction(pasteAct);
     editMenu->addAction(findAct);
     editMenu->addAction(structCompleteAct);
-    editMenu->addAction(autoCompleteAct);
+    editMenu->addAction(autoIndentAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(clearAct);
+    viewMenu->addAction(autoCompleteAct);
+
+    markMenu = menuBar()->addMenu(tr("&Mark"));
+    markMenu->setTearOffEnabled(true);
+    connect(markMenu,SIGNAL(aboutToShow()),this,SLOT(populateMarkMenu()));
 
     menuBar()->addSeparator();
 
@@ -364,85 +439,6 @@ void MainWindow::readSettings()
     QSettings settings;
 
     saveOnRun = settings.value("saveOnRun",true).toBool();
-    confirmSave = settings.value("confirmSave",true).toBool();
 
-    textEdit->readSettings();
-}
-
-bool MainWindow::maybeSave()
-{
-    if (textEdit->isModified() && confirmSave) {
-        int ret = QMessageBox::warning(this, tr("Open Turing Editor"),
-                     tr("The document has been modified.\n"
-                        "Do you want to save your changes?"),
-                     QMessageBox::Yes | QMessageBox::Default,
-                     QMessageBox::No,
-                     QMessageBox::Cancel | QMessageBox::Escape);
-        if (ret == QMessageBox::Yes)
-            return save();
-        else if (ret == QMessageBox::Cancel)
-            return false;
-    }
-    return true;
-}
-
-void MainWindow::loadFile(const QString &fileName)
-{
-    QFile file(fileName);
-    if (!file.open(QFile::ReadOnly)) {
-        QMessageBox::warning(this, tr("Open Turing Editor"),
-                             tr("Cannot read file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-        return;
-    }
-
-    QTextStream in(&file);
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    textEdit->setText(in.readAll());
-    QApplication::restoreOverrideCursor();
-
-    setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File loaded"), 2000);
-}
-
-bool MainWindow::saveFile(const QString &fileName)
-{
-    QFile file(fileName);
-    if (!file.open(QFile::WriteOnly)) {
-        QMessageBox::warning(this, tr("Open Turing Editor"),
-                             tr("Cannot write file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-        return false;
-    }
-
-    QTextStream out(&file);
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    out << textEdit->text();
-    QApplication::restoreOverrideCursor();
-
-    setCurrentFile(fileName);
-    statusBar()->showMessage(tr("File saved"), 2000);
-    return true;
-}
-
-void MainWindow::setCurrentFile(const QString &fileName)
-{
-    curFile = fileName;
-    textEdit->setModified(false);
-    setWindowModified(false);
-
-    QString shownName;
-    if (curFile.isEmpty())
-        shownName = "Untitled.t";
-    else
-        shownName = strippedName(curFile);
-
-    setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("Open Turing Editor")));
-}
-
-QString MainWindow::strippedName(const QString &fullFileName)
-{
-    return QFileInfo(fullFileName).fileName();
+    docMan->readSettings();
 }

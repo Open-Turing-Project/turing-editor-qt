@@ -224,7 +224,10 @@ HEADERS = \
     TuringEditor/turingeditorwidget.h \
     TuringEditor/aboutbox.h \
     TuringEditor/turingrunner.h \
-    TuringEditor/settingsdialog.h
+    TuringEditor/settingsdialog.h \
+    TuringEditor/documentmanager.h \
+    TuringEditor/signalmultiplexer.h \
+    TuringEditor/osinterop.h
 
 SOURCES = \
 	./TuringEditor/turinglexer.cpp \
@@ -397,7 +400,10 @@ SOURCES = \
     TuringEditor/turingeditorwidget.cpp \
     TuringEditor/aboutbox.cpp \
     TuringEditor/turingrunner.cpp \
-    TuringEditor/settingsdialog.cpp
+    TuringEditor/settingsdialog.cpp \
+    TuringEditor/documentmanager.cpp \
+    TuringEditor/signalmultiplexer.cpp \
+    TuringEditor/osinterop.cpp
 
 TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_cs.ts \
@@ -419,6 +425,12 @@ CONFIG(test_editor) {
 } else {
     SOURCES += TuringEditor/main.cpp
 }
+
+
+
+
+
+
 
 
 

@@ -69,6 +69,7 @@ void TuringLexer::loadSettings()
     QSettings settings;
     fontSize = settings.value("fontSize",10).toInt();
     stringEOLHighlight = settings.value("stringEOLHighlight",false).toBool();
+    fontFamily = settings.value("editorFont","Courier New").toString();
 }
 
 void TuringLexer::apiPreparationFinished() {
@@ -236,24 +237,22 @@ bool TuringLexer::defaultEolFill(int style) const
 // Returns the font of the text for a style.
 QFont TuringLexer::defaultFont(int style) const
 {
-    QFont darkFont("Consolas",fontSize);
-    QFont lightFont("Courier New",fontSize);
+    QFont f(fontFamily,fontSize);
     if(theme == "Dark"){
         switch (style)
         {
         case Comment:
         case LineComment:
-            darkFont.setItalic(true);
+            f.setItalic(true);
         }
-        return darkFont;
     } else {
         switch (style)
         {
         case Keyword:
-            lightFont.setBold(true);
+            f.setBold(true);
         }
-        return lightFont;
     }
+    return f;
 }
 
 

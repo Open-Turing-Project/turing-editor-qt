@@ -12,11 +12,11 @@
         <file>images/new.png</file>
         <file>images/open.png</file>
         <file>images/page_add.png</file>
-        <file>images/paste.png</file>
         <file>images/save.png</file>
         <file>images/pixel_icon.png</file>
         <file>images/turingsplash.png</file>
         <file>images/turing-thanh.bmp</file>
         <file>images/help.png</file>
+        <file>resources/stylesheet.qss</file>
     </qresource>
 </RCC>

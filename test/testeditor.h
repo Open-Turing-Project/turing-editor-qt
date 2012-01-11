@@ -16,8 +16,11 @@ private slots:
     void structureComplete_data();
     void structureComplete();
     void makeStack();
+    void findPOIs();
+    void autoIndentAll_data();
+    void autoIndentAll();
 private:
-    MainWindow edWin;
+    TuringEditorWidget editor;
 };
 
 #endif // TESTEDITOR_H

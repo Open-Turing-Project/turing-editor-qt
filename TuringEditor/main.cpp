@@ -21,6 +21,7 @@
 
 #include <QApplication>
 #include <QFontDatabase>
+#include <QFile>
 
 #include "mainwindow.h"
 
@@ -29,11 +30,24 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(turing);
     QApplication app(argc, argv);
 
+    QFile file("stylesheet.qss");
+    file.open(QFile::ReadOnly);
+    QString styleSheet = QLatin1String(file.readAll());
+
+    app.setStyleSheet(styleSheet);
+
     QCoreApplication::setOrganizationName("The Open Turing Project");
     QCoreApplication::setOrganizationDomain("compsci.ca");
     QCoreApplication::setApplicationName("Open Turing Editor");
 
     MainWindow mainWin;
     mainWin.show();
+
+    // open a file?
+    if (argc >= 2) {
+        QString openFileName(argv[1]);
+        mainWin.docMan->openFile(openFileName);
+    }
+
     return app.exec();
 }

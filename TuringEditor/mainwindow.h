@@ -24,8 +24,11 @@
 
 #include <QMainWindow>
 
+#include "documentmanager.h"
+
 class QAction;
 class QMenu;
+class QLabel;
 class TuringEditorWidget;
 class QsciStyle;
 
@@ -47,6 +50,8 @@ public:
 
     friend class TestEditor;
 
+    DocumentManager *docMan;
+
 public slots:
     void readSettings();
 
@@ -54,41 +59,46 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void newFile();
     void open();
-    bool save();
-    bool saveAs();
+    void openRecentFile();
     void about();
-    void documentWasModified();
     void completeStruct();
     void showHelp();
     void showSettings();
 
+    void populateMarkMenu();
+    void goToMark();
+
+    void cursorMoved(int line, int index);
+
     void runProgram();
     void compileComplete(bool success);
 
-    void handleErrorFile(int line,QString errMsg, QString file, int from, int to);
     void handleError(QString errMsg);
 
 private:
+
     void createActions();
     void createMenus();
     void createToolBars();
     void createStatusBar();
     bool maybeSave();
 
+    void addRecentFile(const QString &fileName);
     bool saveFile(const QString &fileName);
     void setCurrentFile(const QString &fileName);
     QString strippedName(const QString &fullFileName);
 
+    void updateRecentFileActions();
+
     // prefs
     bool saveOnRun;
-    bool confirmSave;
 
-    TuringEditorWidget *textEdit;
-    QString curFile;
+    enum { MaxRecentFiles = 5 };
+    QAction *recentFileActs[MaxRecentFiles];
 
     TuringRunner *currentRunner;
+    TuringEditorWidget *runDoc;
 
     FindReplaceDialog *findDialog;
 
@@ -96,11 +106,15 @@ private:
     QMenu *editMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
+    QMenu *markMenu;
     QToolBar *mainToolBar;
 
-    //! completion
+    QLabel *lineLabel;
+
+    //! auto-stuff
     QAction *structCompleteAct;
     QAction *autoCompleteAct;
+    QAction *autoIndentAct;
     //! find and replace
     QAction *findAct;
     //! file actions

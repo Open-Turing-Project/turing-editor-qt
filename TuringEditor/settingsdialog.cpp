@@ -3,6 +3,8 @@
 
 #include <QSettings>
 
+#include "osinterop.h"
+
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SettingsDialog)
@@ -18,6 +20,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     QString theme = settings.value("theme", "Default").toString();
     ui->theme->setCurrentIndex(theme == "Default" ? 0 : 1);
+
+    QFont curFont = QFont(settings.value("editorFont","Courier New").toString());
+    ui->fontSelect->setCurrentFont(curFont);
+
     // ints
     ui->fontSize->setValue(settings.value("fontSize", 10).toInt());
     ui->indentSize->setValue(settings.value("indentSize", 4).toInt());
@@ -26,6 +32,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->autoComp->setChecked(settings.value("autoCompleteEnabled", true).toBool());
     ui->saveOnRun->setChecked(settings.value("saveOnRun", true).toBool());
     ui->confirmSave->setChecked(settings.value("confirmSave", true).toBool());
+    //ui->lineNumbers->setChecked(settings.value("showLineNumbers", true).toBool());
     ui->stringEOLHighlight->setChecked(settings.value("stringEOLHighlight", false).toBool());
 }
 
@@ -33,6 +40,9 @@ void SettingsDialog::accept() {
     QSettings settings;
 
     settings.setValue("theme",ui->theme->currentText());
+
+    settings.setValue("editorFont",ui->fontSelect->currentFont().family());
+
     // ints
     settings.setValue("fontSize",ui->fontSize->value());
     settings.setValue("indentSize",ui->indentSize->value());
@@ -41,9 +51,14 @@ void SettingsDialog::accept() {
     settings.setValue("autoCompleteEnabled",(ui->autoComp->checkState() == Qt::Checked));
     settings.setValue("saveOnRun",(ui->saveOnRun->checkState() == Qt::Checked));
     settings.setValue("confirmSave",(ui->confirmSave->checkState() == Qt::Checked));
+    //settings.setValue("showLineNumbers",(ui->lineNumbers->checkState() == Qt::Checked));
     settings.setValue("stringEOLHighlight",(ui->stringEOLHighlight->checkState() == Qt::Checked));
 
     done(QDialog::Accepted);
+}
+
+void SettingsDialog::associateFiles() {
+    OSInterop::associateTuringFiles();
 }
 
 SettingsDialog::~SettingsDialog()

@@ -1,6 +1,6 @@
 /*
 Test of multi-line comments,
-yo!
+yo! 
 */
 class Homer3Dengine
     export loadarf, loadraw, moveobject, drawobject, camera, obj, movecamera
@@ -245,7 +245,7 @@ end if
 if false then
 	put "yo"
 end if
-if false = false then
+if false = true then
     put "more test"
 end if
 loop

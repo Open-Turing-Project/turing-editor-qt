@@ -17,6 +17,9 @@ public:
 
     virtual void accept();
 
+public slots:
+    void associateFiles();
+
 private:
     Ui::SettingsDialog *ui;
 };

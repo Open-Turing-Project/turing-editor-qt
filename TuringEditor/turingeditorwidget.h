@@ -16,7 +16,30 @@ public:
     explicit TuringEditorWidget(QWidget *parent = 0);
     TuringLexer *lex;
 
-    QStack<QPair<int,QString> > makeStack(int stopLine = 0);
+    QStack<QPair<int,QString> > makeStack(int stopLine = -1, bool *stopIsStruct = 0);
+
+    QString fileName;
+
+    bool hasMessage;
+
+    //! POI is GPS parlance for Point Of Interest
+    struct POILine {
+        POILine() : type(""),id(""),other(NULL),indent(0) {}
+
+        //! structure type. I.E if, proc, end
+        QString type;
+        //! identifier. empty if same as type. I.E DoStuff, ScreenLoad
+        QString id;
+        //! if it is a beginning. Other is a pointer to the ending.
+        //! or vice-versa. Null if none.
+        POILine *other;
+        //! indent level
+        int indent;
+        int line;
+    };
+
+    QList<POILine*> findPOIs();
+
 signals:
 
 public slots:
@@ -25,6 +48,11 @@ public slots:
     void findNextOccurence();
     void replace(QString repText);
     void replaceAll(QString findText,QString repText,bool regex,bool greedyRegex);
+
+    bool maybeSave();
+    bool save();
+    bool saveAs();
+    bool saveFile(const QString &fileName, bool temporary = false);
 
     void lightTheme();
     void darkTheme();
@@ -36,8 +64,11 @@ public slots:
     void readSettings();
 
     QString completeStruct();
+    void autoIndentAll();
 
 private:
+
+    bool confirmSave;
 
     QsciStyle *darkErrMsgStyle;
     QsciStyle *lightErrMsgStyle;

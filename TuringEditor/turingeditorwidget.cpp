@@ -4,6 +4,10 @@
 #include <QPalette>
 #include <QRegExp>
 #include <QSettings>
+#include <QFile>
+#include <QApplication>
+#include <QFileDialog>
+#include <QMessageBox>
 
 // for min
 #include <algorithm>
@@ -46,7 +50,11 @@ void TuringEditorWidget::readSettings() {
     lex->loadSettings();
 
     // load editor settings
-    QSettings settings;
+    QSettings settings;    
+
+    confirmSave = settings.value("confirmSave",true).toBool();
+
+    //setMarginLineNumbers(0,settings.value("showLineNumbers",true).toBool());
 
     QString theme = settings.value("theme", "Default").toString();
     if(theme == "Dark") {
@@ -138,12 +146,19 @@ void TuringEditorWidget::showError(int line,QString errMsg,int from, int to)
     if(from >= 0 && to >= 0) {
         fillIndicatorRange(line,from,line,to,2);
     }
+
+    ensureLineVisible(line); // scroll to it
+    hasMessage = true;
 }
 //! removes all error annotations from display.
 void TuringEditorWidget::clearErrors() {
     clearAnnotations();
     clearIndicatorRange(0,0,lines(),text(lines()).length(),2);
     markerDeleteAll(1);
+
+    hasMessage = false;
+    // hack to get tab updated
+    emit modificationChanged(isModified());
 }
 
 //! clears all annotations, markers and indicators
@@ -151,9 +166,73 @@ void TuringEditorWidget::clearEverything() {
     clearAnnotations();
     clearIndicatorRange(0,0,lines(),text(lines()).length(),-1);
     markerDeleteAll(-1);
+
+    hasMessage = false;
+    // hack to get tab updated
+    emit modificationChanged(isModified());
+}
+
+bool TuringEditorWidget::saveFile(const QString &newFileName, bool temporary)
+{
+    QFile file(newFileName);
+    if (!file.open(QFile::WriteOnly)) {
+        QMessageBox::warning(this, tr("Open Turing Editor"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(newFileName)
+                             .arg(file.errorString()));
+        return false;
+    }
+
+    if (!temporary) fileName = newFileName;
+
+    QTextStream out(&file);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    out << text();
+    QApplication::restoreOverrideCursor();
+    if (!temporary) setModified(false);
+
+    return true;
+}
+
+bool TuringEditorWidget::saveAs()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,"Save Program","",
+                                                    tr("Turing Files (*.t *.ti *.tu)"));
+    if (fileName.isEmpty())
+        return false;
+
+    return saveFile(fileName);
+}
+
+bool TuringEditorWidget::save()
+{
+    if (fileName.isEmpty()) {
+        return saveAs();
+    } else {
+        return saveFile(fileName);
+    }
+}
+
+bool TuringEditorWidget::maybeSave()
+{
+    if (confirmSave && isModified()) {
+        int ret = QMessageBox::warning(this, tr("Open Turing Editor"),
+                     tr("The document has been modified.\n"
+                        "Do you want to save your changes?"),
+                     QMessageBox::Yes | QMessageBox::Default,
+                     QMessageBox::No,
+                     QMessageBox::Cancel | QMessageBox::Escape);
+        if (ret == QMessageBox::Yes)
+            return save();
+        else if (ret == QMessageBox::Cancel)
+            return false;
+    }
+    return true;
 }
 
 /*!
+DEPRECATED
+
 Returns a structure stack of pairs.
 The first element in each pair is the indentation level.
 Second is the structure identifier.
@@ -165,23 +244,28 @@ when stopLine is 0 it will parse the entire document.
 
 when stopLine is 0 it should return an empty stack if all
 the structures in the document are closed.
+
+stopIsStruct is set to true when stopLine contains a construct
 */
-QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine) {
+QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine, bool *stopIsStruct) {
     // stack for structs. string is identifier
     QStack<QPair<int,QString> > structStack;
 
     QRegExp endRegex("[\\t ]*end[\\t ]+([_a-zA-Z0-9]+).*");
     QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module)[\\t\\* ]+([_a-zA-Z0-9]+).*");
-    QRegExp structRegex("[\\t ]*(if|for|loop|case|record).*");
+    QRegExp structRegex("[\\t ]*(if|for|loop|case|record|monitor|union|handler).*");
+
+    // used to set stopIsStruct
+    bool lastLineWasStruct = false;
 
     // Stops either at the stop line or the end of the document
     int lastLine;
-    if(stopLine > 0) {
-        lastLine = std::min(lines(),stopLine);
+    if(stopLine >= 0) {
+        lastLine = std::min(lines()-1,stopLine);
     } else {
         lastLine = lines();
     }
-    for(int i = 0; i < lastLine;++i) {
+    for(int i = 0; i <= lastLine;++i) {
         QString line = text(i);
         if(endRegex.exactMatch(line)) {
             // pop assumes non-empty stack
@@ -194,22 +278,88 @@ QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine) {
                     showError(i,tr("Ending identifier %1 does not match %2").arg(captures[1],beginning.second));
                 }
             }
+            lastLineWasStruct = false;
         } else if(funcRegex.exactMatch(line)) {
             QPair<int,QString> decl;
             QStringList captures = funcRegex.capturedTexts();
             decl.first = indentation(i);
             decl.second = captures[3];
             structStack.push(decl);
+            lastLineWasStruct = true;
+
         } else if(structRegex.exactMatch(line)) {
             QPair<int,QString> decl;
             QStringList captures = structRegex.capturedTexts();
             decl.first = indentation(i);
             decl.second = captures[1];
             structStack.push(decl);
+            lastLineWasStruct = true;
+        } else {
+            // just a plain 'ol line
+            lastLineWasStruct = false;
         }
     }
 
+    // if not null set it
+    if(stopIsStruct != NULL) {
+        *stopIsStruct = lastLineWasStruct;
+    }
+
     return structStack;
+}
+
+QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
+    // stack for structs. string is identifier
+    QList<TuringEditorWidget::POILine*> pois;
+
+    QRegExp endRegex("[\\t ]*end[\\t ]+([_a-zA-Z0-9]+).*");
+    QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module)[\\t\\* ]+([_a-zA-Z0-9]+).*");
+    QRegExp structRegex("[\\t ]*(if|for|loop|case|record|monitor|union|handler).*");
+
+    // -1 to account for zero-indexing
+    int lastLine = lines()-1;
+
+    for(int i = 0; i <= lastLine;++i) {
+        QString line = text(i);
+        TuringEditorWidget::POILine *curLine = new TuringEditorWidget::POILine();
+        curLine->indent = indentation(i);
+        curLine->line = i;
+        if(endRegex.exactMatch(line)) {
+            QStringList captures = endRegex.capturedTexts();
+
+            curLine->type = "end";
+            curLine->id = captures[1];
+
+
+            // find the beginning struct
+            for(int j = pois.size() - 1;j >= 0;--j) {
+                TuringEditorWidget::POILine *poi = pois[j];
+                // is it not closed and the end tag matches?
+                // FIXME poi->type == curLine->id allows "end proc"
+                if(poi->other == NULL && poi->type != "end" &&
+                        (poi->id == curLine->id || poi->type == curLine->id)) {
+                    // we have found our beginning. Link it.
+                    poi->other = curLine;
+                    curLine->other = poi;
+                    break;
+                }
+            }
+
+            pois.append(curLine);
+        } else if(funcRegex.exactMatch(line)) {
+            QStringList captures = funcRegex.capturedTexts();
+            curLine->type = captures[2];
+            curLine->id = captures[3];
+            pois.append(curLine);
+
+        } else if(structRegex.exactMatch(line)) {
+            QStringList captures = structRegex.capturedTexts();
+            curLine->type = captures[1];
+            pois.append(curLine);
+        }
+    }
+
+    return pois;
 }
 
 /*! inserts the end of the closest open struct.
@@ -225,31 +375,85 @@ QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine) {
 */
 QString TuringEditorWidget::completeStruct() {
 
-    int nextLine,dummyCursorPos;
-    getCursorPosition(&nextLine,&dummyCursorPos);
-    nextLine++; // this makes it the line after the cursor
+    int curLine,dummyCursorPos;
+    getCursorPosition(&curLine,&dummyCursorPos);
 
-    QStack<QPair<int,QString> > structStack;
-    structStack = makeStack(nextLine);
+    QList<TuringEditorWidget::POILine *> pois;
+    pois = findPOIs(); // TODO FIXME memory leaked
 
-    if (!structStack.isEmpty()) {
-        QPair<int,QString> toComplete = structStack.pop();
+    TuringEditorWidget::POILine *toComplete = NULL;
+    foreach(TuringEditorWidget::POILine *poi, pois) {
+        if(poi->line > curLine) break; // -1 for zero indexing
+        // if it's a beginning and isn't linked to an end
+        if(poi->type != "end" && poi->other == NULL) {
+            toComplete = poi;
+        }
+    }
 
-        QString curText = text(nextLine - 1); // nextLine - 1 == current line
+    if (toComplete != NULL) {
+
+        bool stopIsStruct = (toComplete->line == curLine);
+
+
+        QString curText = text(curLine);
 
         QString endText;
+        // if the current line doesn't already have a newline, add one.
         if (curText.length() != 0 && curText[curText.length() - 1] != '\n') {
             endText += "\n";
         }
+        if (stopIsStruct) {
+            // extra newline if cursor is on a struct
+            endText += "\n";
+        }
         endText += "end "; // \n is so insertAt() creates a new line
-        endText += toComplete.second;
+        // if there is an id, use it. Otherwise complete with the type
+        endText += toComplete->id != "" ? toComplete->id : toComplete->type;
         endText += "\n";
+
+        int nextLine = curLine + 1;
         insertAt(endText,nextLine,0);
-        setIndentation(nextLine,toComplete.first);
+
+        if(stopIsStruct) {
+            // the empty one
+            setIndentation(nextLine,toComplete->indent + tabWidth());
+            // the ending
+            setIndentation(nextLine+1,toComplete->indent);
+        } else {
+            setIndentation(nextLine,toComplete->indent);
+        }
         setCursorPosition(nextLine,(text(nextLine).length()-1));
     } else {
-        return "All structures are complete.";
+        return "Can't find structure to complete.";
     }
 
     return "";
+}
+
+void TuringEditorWidget::autoIndentAll() {
+
+    QList<TuringEditorWidget::POILine *> pois;
+    pois = findPOIs(); // TODO FIXME memory leaked
+
+    // reset everything. Removes hard tabs
+    for(int i = 0; i < lines();++i) {
+        setIndentation(i,0);
+    }
+
+    int lastLine = 0;
+    int curLevel = 0;
+    foreach(TuringEditorWidget::POILine *poi, pois) {
+        // all the lines before the first POI should have 0 indent
+        for(int i = lastLine + 1; i <= poi->line;++i) {
+            setIndentation(i,curLevel * tabWidth());
+        }
+
+        if(poi->type == "end") {
+            setIndentation(poi->line,(curLevel-1) * tabWidth());
+            curLevel--;
+        } else {
+            curLevel++;
+        }
+        lastLine = poi->line;
+    }
 }
