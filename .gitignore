@@ -5,7 +5,7 @@ test/build/*
 *.Debug
 *.Release
 *.tbc
-package
+OpenTuring
 debug
 release
 Makefile

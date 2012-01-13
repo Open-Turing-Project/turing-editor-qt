@@ -76,6 +76,8 @@ MainWindow::MainWindow()
     runDoc = NULL;
 
     readSettings();
+
+    docMan->currentDoc()->setFocus();
 }
 
 QSize MainWindow::sizeHint() const {
@@ -134,11 +136,12 @@ void MainWindow::runProgram() {
 
 void MainWindow::compileComplete(bool success) {
     if (success){
-        if (currentRunner != NULL) {
+        if (currentRunner != NULL && currentRunner->isCompiled()) {
             statusBar()->showMessage(tr("Compile suceeded. Running..."));
             currentRunner->startRun();
         }
     } else {
+        currentRunner = NULL;
         statusBar()->showMessage(tr("Compile failed."));
     }
 }
@@ -183,6 +186,11 @@ void MainWindow::open()
 
         docMan->openFile(fileName);
     }
+}
+
+void MainWindow::closeTab()
+{
+    docMan->closeTab(docMan->currentIndex());
 }
 
 void MainWindow::addRecentFile(const QString &fileName) {
@@ -269,6 +277,11 @@ void MainWindow::createActions()
     settingsAct->setStatusTip(tr("Change settings/preferences."));
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(showSettings()));
 
+    closeTabAct = new QAction(tr("&Close Tab"), this);
+    closeTabAct->setShortcut(tr("Ctrl+W"));
+    closeTabAct->setStatusTip(tr("Closes the current file"));
+    connect(closeTabAct, SIGNAL(triggered()), this, SLOT(closeTab()));
+
     helpAct = new QAction(QIcon(":/images/help.png"),tr("Turing &Help"), this);
     helpAct->setShortcut(Qt::Key_F10);
     helpAct->setStatusTip(tr("Open Turing help."));
@@ -322,6 +335,7 @@ void MainWindow::createActions()
     docMan->multiplex->connect(saveAct, SIGNAL(triggered()), SLOT(save()));
 
     saveAsAct = new QAction(tr("Save &As..."), this);
+    saveAsAct->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
     docMan->multiplex->connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAs()));
 
@@ -378,6 +392,7 @@ void MainWindow::createMenus()
     fileMenu->addMenu(recentMenu);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
+    fileMenu->addAction(closeTabAct);
     fileMenu->addAction(runAct);
     fileMenu->addSeparator();
 

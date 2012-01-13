@@ -313,8 +313,8 @@ QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
     QList<TuringEditorWidget::POILine*> pois;
 
     QRegExp endRegex("[\\t ]*end[\\t ]+([_a-zA-Z0-9]+).*");
-    QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module)[\\t\\* ]+([_a-zA-Z0-9]+).*");
-    QRegExp structRegex("[\\t ]*(if|for|loop|case|record|monitor|union|handler).*");
+    QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module|process|monitor)[\\t\\* ]+([_a-zA-Z0-9]+).*");
+    QRegExp structRegex("[\\t ]*(if|for|loop|case|record|union|handler).*");
 
     // -1 to account for zero-indexing
     int lastLine = lines()-1;
@@ -435,6 +435,11 @@ void TuringEditorWidget::autoIndentAll() {
     QList<TuringEditorWidget::POILine *> pois;
     pois = findPOIs(); // TODO FIXME memory leaked
 
+    // lines that are indented one less than the rest of the body
+    QRegExp oneLess("(else|elsif|label).*");
+    // next line is indented if one of these is at the end
+    QRegExp endContinue(".*(,|or|and)");
+
     // reset everything. Removes hard tabs
     for(int i = 0; i < lines();++i) {
         setIndentation(i,0);
@@ -442,11 +447,29 @@ void TuringEditorWidget::autoIndentAll() {
 
     int lastLine = 0;
     int curLevel = 0;
+    bool nextInd = false; // indent next line
     foreach(TuringEditorWidget::POILine *poi, pois) {
         // all the lines before the first POI should have 0 indent
         for(int i = lastLine + 1; i <= poi->line;++i) {
-            setIndentation(i,curLevel * tabWidth());
+            int indent = curLevel * tabWidth();
+            QString line = text(i).trimmed();
+
+            if(nextInd) {
+                indent += tabWidth();
+                nextInd = false;
+            }
+
+            if(oneLess.exactMatch(line)) {
+                indent -= tabWidth();
+            }
+
+            if(endContinue.exactMatch(line)) {
+                nextInd = true;
+            }
+
+            setIndentation(i,indent);
         }
+
 
         if(poi->type == "end") {
             setIndentation(poi->line,(curLevel-1) * tabWidth());

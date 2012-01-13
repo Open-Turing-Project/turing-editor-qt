@@ -73,10 +73,6 @@ static void ColouriseTuringDoc(
 	}
 
 	StyleContext sc(startPos, length, initStyle, styler);
-	if (startPos == 0 && sc.ch == '#') {
-		// shbang line: # is a comment only if first char of the script
-		sc.SetState(SCE_LUA_COMMENTLINE);
-	}
 	for (; sc.More(); sc.Forward()) {
 		if (sc.atLineEnd) {
 			// Update the line state, so it can be seen by next line

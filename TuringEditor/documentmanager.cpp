@@ -116,6 +116,8 @@ TuringEditorWidget *DocumentManager::newFile() {
 
     documents.append(doc);
 
+    setCurrentWidget(doc);
+
     return doc;
 }
 

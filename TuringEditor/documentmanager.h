@@ -28,12 +28,13 @@ public slots:
     bool promptCloseAll();
     void clearAllErrors();
 
+    void closeTab (int index);
+
     void handleErrorFile(int line,QString errMsg, QString file, int from, int to);
 
 
 
 private slots:
-    void closeTab(int index);
     void currentTabChanged(int index);
     void updateName(TuringEditorWidget *doc);
     void documentChanged(bool state);

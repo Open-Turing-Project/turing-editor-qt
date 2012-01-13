@@ -69,6 +69,8 @@ private slots:
     void populateMarkMenu();
     void goToMark();
 
+    void closeTab();
+
     void cursorMoved(int line, int index);
 
     void runProgram();
@@ -126,6 +128,7 @@ private:
     QAction *exitAct;
     QAction *cutAct;
     QAction *copyAct;
+    QAction *closeTabAct;
     QAction *pasteAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
