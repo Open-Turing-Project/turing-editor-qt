@@ -309,9 +309,9 @@ const char *TuringLexer::keywords(int set) const
     if (set == 4)
         // Library modules.
         return
-            "Concurrency Config Dir Draw Error ErrorNum Exceptions"
-            "File Font GUI Input Joystick Keyboard Limits Math Mouse"
-            "Music Net PC Pic RGB Rand Sprite Str Stream Sys Text Time"
+            "Concurrency Config Dir Draw Error ErrorNum Exceptions "
+            "File Font GUI Input Joystick Keyboard Limits Math Mouse "
+            "Music Net PC Pic RGB Rand Sprite Str Stream Sys Text Time "
             "TypeConv View Window";
 
     return 0;
