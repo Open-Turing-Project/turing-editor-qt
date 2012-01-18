@@ -69,7 +69,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Find All</string>
+    <string>&amp;Find All</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="caseSensitive">
@@ -82,7 +82,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Case Sensitive</string>
+    <string>&amp;Case Sensitive</string>
    </property>
   </widget>
   <widget class="QPushButton" name="replaceButton">
@@ -95,7 +95,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Replace</string>
+    <string>&amp;Replace</string>
    </property>
   </widget>
   <widget class="QPushButton" name="replaceAll">
@@ -108,7 +108,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Replace All</string>
+    <string>Replace &amp;All</string>
    </property>
   </widget>
   <widget class="QPushButton" name="findNext">

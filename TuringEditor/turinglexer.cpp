@@ -275,7 +275,7 @@ const char *TuringLexer::keywords(int set) const
 						"in include inherit init int "
 						"int1 int2 int4 invariant label "
 						"loop mod module monitor nat "
-						"nat1 nat2 nat4 new not "
+						"nat1 nat2 nat4 new nil not "
 						"objectclass of opaque open or "
 						"packed pause pervasive pointer post "
 						"pre priority proc procedure process "
@@ -284,23 +284,35 @@ const char *TuringLexer::keywords(int set) const
 						"return seek self set shl "
 						"shr signal skip string tag "
 						"tell then timeout to true "
-						"type unchecked union unqualified var "
+						"type unchecked union unit unqualified var "
 						"wait when write xor";
 
     if (set == 2)
         // Basic functions.
         return
-            "Draw Mouse View";
+            "";
 
     if (set == 3)
         // String, table and maths functions.
         return
-            "drawdot drawline";
+        	// Math module
+        	"abs arccos arccosd arcsin arcsind arctan "
+		"arctand cos cosd exp ln max min sign sin "
+		"sind tan tand sqrt "
+		// Strings
+		"index length repeat "
+		// Arrays
+		"upper lower "
+		// Other
+		"addr sizeof";
 
     if (set == 4)
-        // Coroutine, I/O and system facilities.
+        // Library modules.
         return
-            "Parallel process";
+            "Concurrency Config Dir Draw Error ErrorNum Exceptions "
+            "File Font GUI Input Joystick Keyboard Limits Math Mouse "
+            "Music Net PC Pic RGB Rand Sprite Str Stream Sys Text Time "
+            "TypeConv View Window";
 
     return 0;
 }
