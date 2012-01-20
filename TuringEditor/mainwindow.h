@@ -54,6 +54,8 @@ public:
 
 public slots:
     void readSettings();
+    void openFile(const QString &fileName);
+
 
 protected:
     void closeEvent(QCloseEvent *event);

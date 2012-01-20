@@ -1,4 +1,5 @@
 #include "osinterop.h"
+#include "resource.h"
 
 #include <windows.h>
 
@@ -217,13 +218,13 @@ static bool	MyCreateAssocEntry (const char *pmAssocName,
 
 bool associateTuringFiles() {
     if (!MyCreateAssocEntry ("OpenTuring.t", ".t",
-                             "Turing Program", 2,
+                             "Turing Program", IDI_TURINGFILE,
                              "&Open with Open Turing"))
     {
         return false;
     }
     if (!MyCreateAssocEntry ("OpenTuring.tu", ".tu",
-                             "Turing Unit", 2,
+                             "Turing Unit", IDI_TURINGFILE,
                              "&Open with Open Turing"))
     {
         return false;

@@ -69,6 +69,8 @@ void DocumentManager::handleErrorFile(int line,QString errMsg, QString file, int
 TuringEditorWidget *DocumentManager::openFile(QString fileName) {
     TuringEditorWidget *doc;
 
+    //QMessageBox::warning(this, tr("Open Turing Editor"),tr("Opening File %1.").arg(fileName));
+
     // is it already open?
     foreach(TuringEditorWidget *d,documents) {
         if(d->fileName == fileName) {

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     // open a file?
     if (argc >= 2) {
         QString openFileName(argv[1]);
-        mainWin.docMan->openFile(openFileName);
+        mainWin.openFile(openFileName);
     }
 
     return app.exec();

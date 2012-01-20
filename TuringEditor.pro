@@ -69,7 +69,8 @@ release {
     CONFIG += debug
 }
 
-INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src ./TuringEditor
+INCLUDEPATH = ./QScintilla/Qt4 ./QScintilla/include ./QScintilla/lexlib ./QScintilla/src \
+             ./TuringEditor ./TuringEditor/resources
 RESOURCES = ./TuringEditor/turing.qrc
 DEFINES += QT SCI_LEXER
 
@@ -227,7 +228,8 @@ HEADERS = \
     TuringEditor/settingsdialog.h \
     TuringEditor/documentmanager.h \
     TuringEditor/signalmultiplexer.h \
-    TuringEditor/osinterop.h
+    TuringEditor/osinterop.h \
+    TuringEditor/resources/resource.h
 
 SOURCES = \
 	./TuringEditor/turinglexer.cpp \
@@ -425,6 +427,9 @@ CONFIG(test_editor) {
 } else {
     SOURCES += TuringEditor/main.cpp
 }
+
+
+
 
 
 

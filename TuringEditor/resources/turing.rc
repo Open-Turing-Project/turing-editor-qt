@@ -1,2 +1,4 @@
+#include "resource.h"
+
 IDI_ICON1               ICON    DISCARDABLE     "turing.ico"
-IDI_ICON2               ICON    DISCARDABLE     "turingfile.ico"
+IDI_TURINGFILE              ICON     "turingfile.ico"

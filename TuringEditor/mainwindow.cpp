@@ -188,6 +188,14 @@ void MainWindow::open()
     }
 }
 
+void MainWindow::openFile(const QString &fileName){
+    if (!fileName.isEmpty()){
+        addRecentFile(fileName);
+
+        docMan->openFile(fileName);
+    }
+}
+
 void MainWindow::closeTab()
 {
     docMan->closeTab(docMan->currentIndex());
