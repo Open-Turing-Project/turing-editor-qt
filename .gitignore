@@ -1,5 +1,6 @@
 *.o
 .DS_Store
+Thumbs.db
 test/build/*
 *.pro.user*
 *.Debug

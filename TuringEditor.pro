@@ -89,7 +89,7 @@ CONFIG(test_editor) {
     RCC_DIR = debug/.rcc
     UI_DIR = debug/.ui
 } else {
-    DESTDIR = release
+    DESTDIR = OpenTuring/NewEditor
     OBJECTS_DIR = release/.obj
     MOC_DIR = release/.moc
     RCC_DIR = release/.rcc

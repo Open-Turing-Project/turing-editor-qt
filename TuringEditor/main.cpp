@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QFontDatabase>
 #include <QFile>
+#include <QFileInfo>
 
 #include "mainwindow.h"
 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
     // open a file?
     if (argc >= 2) {
         QString openFileName(argv[1]);
-        mainWin.openFile(openFileName);
+        mainWin.openFile(QFileInfo(openFileName).absoluteFilePath());
     }
 
     return app.exec();

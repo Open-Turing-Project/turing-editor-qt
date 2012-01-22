@@ -337,21 +337,6 @@ void MainWindow::createActions()
 
     // FOR CURRENT DOCUMENT
 
-    saveAct = new QAction(QIcon(":/images/disk.png"), tr("&Save"), this);
-    saveAct->setShortcut(tr("Ctrl+S"));
-    saveAct->setStatusTip(tr("Save the document to disk"));
-    docMan->multiplex->connect(saveAct, SIGNAL(triggered()), SLOT(save()));
-
-    saveAsAct = new QAction(tr("Save &As..."), this);
-    saveAsAct->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
-    saveAsAct->setStatusTip(tr("Save the document under a new name"));
-    docMan->multiplex->connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAs()));
-
-    clearAct = new QAction(QIcon(":/images/cross.png"),tr("&Clear Messages"), this);
-    clearAct->setShortcut(Qt::Key_Escape);
-    clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
-    docMan->multiplex->connect(clearAct, SIGNAL(triggered()), SLOT(clearEverything()));
-
     autoCompleteAct = new QAction(tr("Completion &Menu"), this);
     autoCompleteAct->setShortcut(Qt::CTRL + Qt::Key_Space);
     autoCompleteAct->setStatusTip(tr("Insert an ending for a structure."));
@@ -361,6 +346,11 @@ void MainWindow::createActions()
     autoIndentAct->setShortcut(Qt::Key_F2);
     autoIndentAct->setStatusTip(tr("Automatically indent the file."));
     docMan->multiplex->connect(autoIndentAct, SIGNAL(triggered()), SLOT(autoIndentAll()));
+
+    clearAct = new QAction(QIcon(":/images/cross.png"),tr("&Clear Messages"), this);
+    clearAct->setShortcut(Qt::Key_Escape);
+    clearAct->setStatusTip(tr("Clear all error messages, boxes, lines, etc. in the document."));
+    docMan->multiplex->connect(clearAct, SIGNAL(triggered()), SLOT(clearEverything()));
 
     cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
     cutAct->setShortcut(tr("Ctrl+X"));
@@ -379,6 +369,30 @@ void MainWindow::createActions()
     pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
                               "selection"));
     docMan->multiplex->connect(pasteAct, SIGNAL(triggered()), SLOT(paste()));
+
+    saveAct = new QAction(QIcon(":/images/disk.png"), tr("&Save"), this);
+    saveAct->setShortcut(tr("Ctrl+S"));
+    saveAct->setStatusTip(tr("Save the document to disk"));
+    docMan->multiplex->connect(saveAct, SIGNAL(triggered()), SLOT(save()));
+
+    saveAsAct = new QAction(tr("Save &As..."), this);
+    saveAsAct->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
+    saveAsAct->setStatusTip(tr("Save the document under a new name"));
+    docMan->multiplex->connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAs()));
+
+    zoomOutAct = new QAction(tr("Zoom &Out"), this);
+    zoomOutAct->setShortcut(Qt::CTRL + Qt::Key_Minus);
+    zoomOutAct->setStatusTip(tr("Make text smaller."));
+    docMan->multiplex->connect(zoomOutAct, SIGNAL(triggered()), SLOT(zoomOut()));
+
+    zoomInAct = new QAction(tr("Zoom &In"), this);
+    zoomInAct->setShortcut(Qt::CTRL + Qt::Key_Plus);
+    zoomInAct->setStatusTip(tr("Make text larger."));
+    docMan->multiplex->connect(zoomInAct, SIGNAL(triggered()), SLOT(zoomIn()));
+
+
+
+
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
      recentFileActs[i] = new QAction(this);
@@ -418,6 +432,9 @@ void MainWindow::createMenus()
     viewMenu = menuBar()->addMenu(tr("&View"));
     viewMenu->addAction(clearAct);
     viewMenu->addAction(autoCompleteAct);
+    viewMenu->addSeparator();
+    viewMenu->addAction(zoomOutAct);
+    viewMenu->addAction(zoomInAct);
 
     markMenu = menuBar()->addMenu(tr("&Mark"));
     markMenu->setTearOffEnabled(true);

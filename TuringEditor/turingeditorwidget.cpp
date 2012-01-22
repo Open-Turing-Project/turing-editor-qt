@@ -30,8 +30,10 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     setFolding(QsciScintilla::PlainFoldStyle);
     setAutoIndent(true);
     setIndentationsUseTabs(false);
+    setBackspaceUnindents(true);
 
     setCallTipsStyle(QsciScintilla::CallTipsNoContext);
+    setCallTipsVisible(0);
     setAutoCompletionCaseSensitivity(false);
     setAutoCompletionUseSingle(QsciScintilla::AcusExplicit);
 
@@ -312,9 +314,9 @@ QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
     // stack for structs. string is identifier
     QList<TuringEditorWidget::POILine*> pois;
 
-    QRegExp endRegex("[\\t ]*end[\\t ]+([_a-zA-Z0-9]+).*");
-    QRegExp funcRegex("[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module|process|monitor)[\\t\\* ]+([_a-zA-Z0-9]+).*");
-    QRegExp structRegex("[\\t ]*(if|for|loop|case|record|union|handler).*");
+    QRegExp endRegex("^[\\t ]*end[\\t ]+([_a-zA-Z0-9]+).*");
+    QRegExp funcRegex("^[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module|process|monitor)[\\t\\* ]+([_a-zA-Z0-9]+).*");
+    QRegExp structRegex("[\\t ]*(if|for|loop|case|record|union|handler)( .*)?\\s*");
 
     // -1 to account for zero-indexing
     int lastLine = lines()-1;
@@ -381,6 +383,8 @@ QString TuringEditorWidget::completeStruct() {
     QList<TuringEditorWidget::POILine *> pois;
     pois = findPOIs(); // TODO FIXME memory leaked
 
+    beginUndoAction();
+
     TuringEditorWidget::POILine *toComplete = NULL;
     foreach(TuringEditorWidget::POILine *poi, pois) {
         if(poi->line > curLine) break; // -1 for zero indexing
@@ -424,14 +428,16 @@ QString TuringEditorWidget::completeStruct() {
         }
         setCursorPosition(nextLine,(text(nextLine).length()-1));
     } else {
+        endUndoAction();
         return "Can't find structure to complete.";
     }
+
+    endUndoAction();
 
     return "";
 }
 
 void TuringEditorWidget::autoIndentAll() {
-
     QList<TuringEditorWidget::POILine *> pois;
     pois = findPOIs(); // TODO FIXME memory leaked
 
@@ -439,6 +445,9 @@ void TuringEditorWidget::autoIndentAll() {
     QRegExp oneLess("(else|elsif|label).*");
     // next line is indented if one of these is at the end
     QRegExp endContinue(".*(,|or|and)");
+
+    // whole indent should be undone with 1 undo
+    beginUndoAction();
 
     // reset everything. Removes hard tabs
     for(int i = 0; i < lines();++i) {
@@ -479,4 +488,6 @@ void TuringEditorWidget::autoIndentAll() {
         }
         lastLine = poi->line;
     }
+
+    endUndoAction();
 }

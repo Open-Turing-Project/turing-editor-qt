@@ -138,6 +138,8 @@ private:
     QAction *clearAct;
     QAction *helpAct;
     QAction *settingsAct;
+    QAction *zoomOutAct;
+    QAction *zoomInAct;
 };
 
 #endif
