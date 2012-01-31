@@ -19,18 +19,30 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#include <QtSingleApplication>
 #include <QFontDatabase>
 #include <QFile>
 #include <QFileInfo>
+#include <QSharedMemory>
+#include <QMessageBox>
+#include <QString>
 
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(turing);
-    QApplication app(argc, argv);
+    QtSingleApplication app(argc, argv);
 
+    QString openFileName("");
+    if (argc >= 2) {
+        openFileName = QFileInfo(argv[1]).absoluteFilePath();
+    }
+
+    if (app.isRunning())
+        return !app.sendMessage(openFileName);
+
+    // placing a stylesheet in the same folder allows the editor to be themed.
     QFile file("stylesheet.qss");
     file.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(file.readAll());
@@ -44,10 +56,11 @@ int main(int argc, char *argv[])
     MainWindow mainWin;
     mainWin.show();
 
+    QObject::connect(&app,SIGNAL(messageReceived(const QString&)),&mainWin,SLOT(openFile(const QString&)));
+
     // open a file?
-    if (argc >= 2) {
-        QString openFileName(argv[1]);
-        mainWin.openFile(QFileInfo(openFileName).absoluteFilePath());
+    if (openFileName != "") {
+        mainWin.openFile(openFileName);
     }
 
     return app.exec();

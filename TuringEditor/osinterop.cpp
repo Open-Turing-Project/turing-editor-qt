@@ -3,6 +3,8 @@
 
 #include <windows.h>
 
+#define UNIQUE_WINDOW_TITLE "OpenTuring-3F2AF4E0-4F89-11D3-9A0C-0305E82C3301::EventReceiver"
+
 // A bunch of code is borrowed from the ready to program editor that was used by turing
 
 namespace OSInterop {
@@ -230,5 +232,6 @@ bool associateTuringFiles() {
         return false;
     }
 }
+
 
 } // end namespace
