@@ -402,10 +402,23 @@ QString TuringEditorWidget::completeStruct() {
         QString curText = text(curLine);
 
         QString endText;
+
+        // POS from Charlie
+        /* Notes: very hackerish, structure completion from within a structure
+          is still broken but it's not my fault
+        */
+        if (curText.length() == 0) {
+            endText += "\n";
+            //setCursorPosition(curLine-1,0);
+        }
+
         // if the current line doesn't already have a newline, add one.
+
         if (curText.length() != 0 && curText[curText.length() - 1] != '\n') {
             endText += "\n";
         }
+
+
         if (stopIsStruct) {
             // extra newline if cursor is on a struct
             endText += "\n";
@@ -425,8 +438,18 @@ QString TuringEditorWidget::completeStruct() {
             setIndentation(nextLine+1,toComplete->indent);
         } else {
             setIndentation(nextLine,toComplete->indent);
+            //setIndentation(nextLine+1,toComplete->indent + tabWidth());
         }
-        setCursorPosition(nextLine,(text(nextLine).length()-1));
+
+        if (curText.length() != 0) {
+            setCursorPosition(nextLine,(text(nextLine).length()-1));
+        }
+        else {
+            // Charlie's stupid fix
+            //setCursorPosition(curLine,0);
+            setIndentation(curLine,toComplete->indent + tabWidth());
+            setCursorPosition(curLine,tabWidth());
+        }
     } else {
         endUndoAction();
         return "Can't find structure to complete.";

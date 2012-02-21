@@ -3,7 +3,7 @@
 
 #include <QSettings>
 
-#include "osinterop.h"
+//#include "osinterop.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -58,7 +58,7 @@ void SettingsDialog::accept() {
 }
 
 void SettingsDialog::associateFiles() {
-    OSInterop::associateTuringFiles();
+    //OSInterop::associateTuringFiles();
 }
 
 SettingsDialog::~SettingsDialog()
