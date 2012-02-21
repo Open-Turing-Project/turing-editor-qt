@@ -37,6 +37,8 @@
 #include "aboutbox.h"
 #include "settingsdialog.h"
 
+//#include "osinterop.h"
+
 #include "turingrunner.h"
 
 MainWindow::MainWindow()

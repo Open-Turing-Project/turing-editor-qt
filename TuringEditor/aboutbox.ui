@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>414</height>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,10 +104,24 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>410</y>
+     <width>61</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </widget>
   <zorder>aboutText</zorder>
   <zorder>attributions</zorder>
   <zorder>splash</zorder>
   <zorder>versionLabel</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <resources>
   <include location="turing.qrc"/>

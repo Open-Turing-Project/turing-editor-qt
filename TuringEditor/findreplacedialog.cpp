@@ -26,7 +26,10 @@ void FindReplaceDialog::findAllPushed() {
     emit findAll(ui->findText->text());
 }
 void FindReplaceDialog::replacePushed() {
-    emit replace(ui->replaceText->text());
+    if (ui->replaceText->text() != "" && ui->findText->text() != "" )
+    {
+        emit replace(ui->replaceText->text());
+    }
 }
 void FindReplaceDialog::replaceAllPushed() {
     emit replaceAll(ui->findText->text(),ui->replaceText->text(),(ui->regexBox->checkState() == Qt::Checked),(ui->greedyRegex->checkState() == Qt::Checked));

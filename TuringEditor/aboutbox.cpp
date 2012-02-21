@@ -15,3 +15,10 @@ AboutBox::~AboutBox()
 {
     delete ui;
 }
+
+
+
+void AboutBox::on_pushButton_clicked()
+{
+    QWidget::close();
+}
