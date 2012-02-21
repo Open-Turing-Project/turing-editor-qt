@@ -121,7 +121,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Find Next</string>
+    <string>Find &amp;Next</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="regexBox">

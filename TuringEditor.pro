@@ -228,7 +228,6 @@ HEADERS = \
     TuringEditor/settingsdialog.h \
     TuringEditor/documentmanager.h \
     TuringEditor/signalmultiplexer.h \
-    TuringEditor/osinterop.h \
     TuringEditor/resources/resource.h
 
 SOURCES = \
@@ -404,8 +403,7 @@ SOURCES = \
     TuringEditor/turingrunner.cpp \
     TuringEditor/settingsdialog.cpp \
     TuringEditor/documentmanager.cpp \
-    TuringEditor/signalmultiplexer.cpp \
-    TuringEditor/osinterop.cpp
+    TuringEditor/signalmultiplexer.cpp
 
 TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_cs.ts \
