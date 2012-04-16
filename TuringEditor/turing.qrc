@@ -18,5 +18,6 @@
         <file>images/turing-thanh.bmp</file>
         <file>images/help.png</file>
         <file>resources/stylesheet.qss</file>
+        <file>resources/predefs.txt</file>
     </qresource>
 </RCC>

@@ -1,0 +1,448 @@
+addr anyclass chr empty eof getpriority intstr  
+lower natstr ord setpriority sizeof strint strintok 
+strnat strnatok upper  
+
+
+Config.Display Config.Lang Config.Machine 
+cdMaxNumColors cdMaxNumColours cdMaxPages cdScreenHeight  
+cdScreenWidth clLanguageVersion clMaxNumDirStreams 
+clMaxRunTimeArgs clMaxNumStreams clRelease 
+cmFPU cmOS cmProcessor 
+
+
+Concurrency.simutime simutime 
+
+
+Cryptography.DESSetKey Cryptography.DESEncrypt  
+Cryptography.DESDecrypt Cryptography.DES3Set2Key  
+Cryptography.DES3Set3Key Cryptography.DES3Encrypt  
+Cryptography.DES3Decrypt  
+
+
+Dir.Change Dir.Close Dir.Create Dir.Current Dir.Delete 
+Dir.Exists Dir.Get Dir.GetLong Dir.Open 
+attrDir attrRead attrWrite attrExecute attrHidden 
+attrSystem attrVolume attrArchive 
+
+
+Draw.Arc Draw.Box Draw.Cls Draw.DashedLine Draw.Dot 
+Draw.Fill Draw.FillArc Draw.FillBox Draw.FillMapleLeaf 
+Draw.FillOval Draw.FillPolygon Draw.FillStar Draw.Line 
+Draw.MapleLeaf Draw.Oval Draw.Polygon Draw.Star 
+Draw.ThickLine Draw.Text 
+drawSolid drawDash drawDot drawDashDot drawDashDotDot 
+
+
+Error.Halt Error.Last Error.LastMsg Error.LastStr Error.Msg 
+Error.Str Error.Trip Error.TripMsg 
+
+
+excpDefaultException 
+excpUninitializedVariable excpArraySubscriptOutOfRange  
+excpDynamicArrayUpperBoundLessThanLower  
+excpUnionFieldNotInCurrentTag excpTagValueOutOfRange  
+excpUnionTagUninitialized excpAssignmentValueOutOfRange  
+excpStringValueTooLarge excpDynamicCharAssignedToChar  
+excpCharAssignedToDynamicChar excpPreConditionFalse  
+excpPostConditionFalse excpLoopInvariantFalse  
+excpForLoopInvariantFalse excpModuleInvariantFalse  
+excpAssertConditionFalse excpValueParameterOutOfRange  
+excpStringParameterTooLarge excpResultValueOutOfRange  
+excpFunctionFailedToGiveResult excpCollectionElementFreed  
+excpCollectionSubscriptNil excpSetElementOutOfRange  
+excpBoundVariablesOverlap excpReferenceParametersOverlap  
+excpCaseSelectorOutOfRange excpOutOfStackSpace  
+excpDivOrModByZero excpIllegalParameterChr  
+excpIllegalParameterOrd excpPredOfFirstElement  
+excpSuccOfLastElement excpIllegalStringConversionBase  
+excpInvalidSubscriptCharString excpIllegalValueInStringConversion  
+excpDynamicCharCoercedToChar excpIntegerOverflow  
+excpRealOverflow excpRealUnderflow excpUnimplementedFeature  
+excpSystemError excpOutOfMemory excpFreeOfNilPointer  
+excpNegativeFieldWidthSpecified excpGetItemIllegal  
+excpIllegalArgumentNumber excpArgumentDoesNotExist  
+excpIllegalStreamNumber excpGetWidthTooLargeForParameter  
+excpIoOnClosedStream excpIoOnIncompatibleStream  
+excpIoOnUnopenedStream excpNegativeSeekPosition  
+excpPutItemTooBig excpReadPastEof excpIllegalOpenMode  
+excpImplicitOpenFailed excpOpenOfIllegalFileName  
+excpOpenOfOpenedStream excpCloseOfClosedStream  
+excpCloseOfUnopenedStream excpCloseOfStandardStream  
+excpAsyncIo excpStringFormatIncorrect  
+excpStringReplaceLengthNegative excpLeftSubstringBoundExceedsRight  
+excpResultStringTooBig excpDomainError  
+excpIntegerTakenToNegativePower excpNegativeValueTakenToRealPower  
+excpZeroTakenToNegativePower excpZeroTakenToZeroPower  
+excpTrigArgumentTooLarge excpIllegalRangeForRandInt  
+excpIllegalRandSequenceNumber excpProcessForkFailed  
+excpDevMonInvalidLevel excpMonitorBusy excpConditionBusy  
+unixSignalToException excpSIGHUP excpSIGINT excpSIGQUIT  
+excpSIGILL excpSIGTRAP excpSIGIOT excpSIGEMT excpSIGFPE  
+excpSIGKILL excpSIGBUS excpSIGSEGV excpSIGSYS  
+excpSIGPIPE excpSIGALRM excpSIGTERM excpSIGURG  
+excpSIGSTOP excpSIGTSTP excpSIGCONT excpSIGCHLD  
+excpSIGTTIN excpSIGTTOU excpSIGIO excpSIGXCPU  
+excpSIGXFSZ excpSIGVTALRM excpSIGPROF excpSIGWINCH  
+
+
+File.Copy File.Delete File.DiskFree File.Exists 
+File.FullPath File.Parent File.Rename File.Status 
+ootAttrDir ootAttrRead ootAttrWrite ootAttrExecute  
+ootAttrHidden ootAttrSystem ootAttrVolume ootAttrArchive  
+ootAttrOwnerRead ootAttrOwnerWrite ootAttrOwnerExecute  
+ootAttrGroupRead ootAttrGroupWrite ootAttrGroupExecute  
+ootAttrOtherRead ootAttrOtherWrite ootAttrOtherExecute  
+
+
+Font.Draw Font.Free Font.Name Font.New 
+Font.Sizes Font.Width Font.GetName Font.GetSize 
+Font.GetStyle Font.StartName Font.StartSize 
+defFontID defFontId 
+
+
+Print Video Comm Dialog Pen Brush ListBox EditBox 
+CheckBox DropBox RadioButton Button Menu 
+
+
+
+"GL.NewWin GL,CloseWin GL.Cls GL.Update GL.SetLight 
+"GL.PushMatrix GL.PopMatrix GL.ClearMatrix 
+"GL.Scale GL.Translate GL.Rotate 
+"GL.DrawLine GL.DrawFillTriangle GL.DrawTriangle 
+
+
+IniFile.Open IniFile.GetString IniFile.GetStringDefault  
+IniFile.GetBoolean IniFile.GetBooleanDefault  
+IniFile.GetInt IniFile.GetIntDefault  
+IniFile.GetReal IniFile.GetRealDefault IniFile.GetStringArray  
+IniFile.GetBooleanArray IniFile.GetIntArray  
+IniFile.GetRealArray IniFile.Delete  
+IniFile.SetString IniFile.SetBoolean IniFile.SetInt  
+IniFile.SetReal IniFile.SetStringArray  
+IniFile.SetBooleanArray IniFile.SetIntArray  
+IniFile.SetRealArray IniFile.SetBufferWrite IniFile.Write  
+IniFile.StartSection IniFile.GetSection IniFile.StartProperty  
+IniFile.GetProperty IniFile.GetType IniFile.BAD_VALUE 
+
+
+Input.Flush Input.KeyDown Input.Pause  
+Input.getch Input.getchar Input.hasch  
+getch getchar hasch  
+
+
+
+IntHashMap.New IntHashMap.Free 
+IntHashMap.Put IntHashMap.Get IntHashMap.Remove 
+
+
+Joystick.GetInfo 
+joystick1 joystick2 joyMax joyMin 
+
+
+KEY_CTRL_A KEY_CTRL_B KEY_CTRL_C KEY_CTRL_D KEY_CTRL_E  
+KEY_CTRL_F KEY_CTRL_G KEY_CTRL_H KEY_BACKSPACE KEY_CTRL_I  
+KEY_TAB KEY_CTRL_J KEY_ENTER KEY_CTRL_K KEY_CTRL_L  
+KEY_CTRL_M KEY_CTRL_N KEY_CTRL_O KEY_CTRL_P KEY_CTRL_Q  
+KEY_CTRL_R KEY_CTRL_S KEY_CTRL_T KEY_CTRL_U KEY_CTRL_V  
+KEY_CTRL_W KEY_CTRL_X KEY_CTRL_Y KEY_CTRL_Z KEY_ESC  
+KEY_CTRL_OPEN_BRACKET KEY_CTRL_BACKSLASH KEY_CTRL_CLOSE_BRACKET  
+KEY_CTRL_CARET KEY_CTRL_UNDERSCORE KEY_CTRL_BACKSPACE KEY_ALT_9  
+KEY_ALT_0 KEY_ALT_MINUS KEY_ALT_EQUALS KEY_CTRL_PGUP  
+KEY_F11 KEY_F12 KEY_SHIFT_F11 KEY_SHIFT_F12 KEY_CTRL_F11  
+KEY_CTRL_F12 KEY_ALT_F11 KEY_ALT_F12 KEY_CTRL_UP_ARROW  
+KEY_BACK_TAB KEY_SHIFT_TAB KEY_ALT_Q KEY_ALT_W  
+KEY_CTRL_DOWN_ARROW KEY_ALT_E KEY_CTRL_INSERT KEY_ALT_R  
+KEY_CTRL_DELETE KEY_ALT_T KEY_ALT_Y KEY_ALT_U KEY_ALT_I  
+KEY_ALT_O KEY_ALT_P KEY_ALT_A KEY_ALT_S KEY_ALT_D  
+KEY_ALT_F KEY_ALT_G KEY_ALT_H KEY_ALT_J KEY_ALT_K  
+KEY_ALT_L KEY_ALT_Z KEY_ALT_X KEY_ALT_C KEY_ALT_V  
+KEY_ALT_B KEY_ALT_N KEY_ALT_M KEY_SHIFT KEY_CTRL KEY_ALT  
+KEY_KEYPAD_5 KEY_F1 KEY_F2 KEY_F3 KEY_F4 KEY_F5 KEY_F6  
+KEY_F7 KEY_F8 KEY_F9 KEY_F10 KEY_HOME KEY_UP_ARROW  
+KEY_PGUP KEY_LEFT_ARROW KEY_RIGHT_ARROW KEY_END  
+KEY_DOWN_ARROW KEY_PGDN KEY_INSERT KEY_DELETE KEY_SHIFT_F1  
+KEY_SHIFT_F2 KEY_SHIFT_F3 KEY_SHIFT_F4 KEY_SHIFT_F5  
+KEY_SHIFT_F6 KEY_SHIFT_F7 KEY_SHIFT_F8 KEY_SHIFT_F9  
+KEY_SHIFT_F10 KEY_CTRL_F1 KEY_CTRL_F2 KEY_CTRL_F3  
+KEY_CTRL_F4 KEY_CTRL_F5 KEY_CTRL_F6 KEY_CTRL_F7 KEY_CTRL_F8  
+KEY_CTRL_F9 KEY_CTRL_F10 KEY_ALT_F1 KEY_ALT_F2 KEY_ALT_F3  
+KEY_ALT_F4 KEY_ALT_F5 KEY_ALT_F6 KEY_ALT_F7 KEY_ALT_F8  
+KEY_ALT_F9 KEY_ALT_F10 KEY_CTRL_LEFT_ARROW KEY_CTRL_RIGHT_ARROW  
+KEY_CTRL_END KEY_CTRL_PGDN KEY_CTRL_HOME KEY_ALT_1 KEY_ALT_2  
+KEY_ALT_3 KEY_ALT_4 KEY_ALT_5 KEY_ALT_6 KEY_ALT_7  
+KEY_ALT_8  
+
+ORD_CTRL_A ORD_CTRL_B ORD_CTRL_C ORD_CTRL_D ORD_CTRL_E  
+ORD_CTRL_F ORD_CTRL_G ORD_CTRL_H ORD_BACKSPACE ORD_CTRL_I  
+ORD_TAB ORD_CTRL_J ORD_ENTER ORD_CTRL_K ORD_CTRL_L  
+ORD_CTRL_M ORD_CTRL_N ORD_CTRL_O ORD_CTRL_P ORD_CTRL_Q  
+ORD_CTRL_R ORD_CTRL_S ORD_CTRL_T ORD_CTRL_U ORD_CTRL_V  
+ORD_CTRL_W ORD_CTRL_X ORD_CTRL_Y ORD_CTRL_Z ORD_ESC  
+ORD_CTRL_OPEN_BRACKET ORD_CTRL_BACKSLASH ORD_CTRL_CLOSE_BRACKET  
+ORD_CTRL_CARET ORD_CTRL_UNDERSCORE ORD_SPACE  
+ORD_EXCALAMATION_MARK ORD_QUOTATION_MARK ORD_HAS_MARK  
+ORD_DOLLAR_SIGN ORD_PERCENT_SIGN ORD_AMPERSAND ORD_SINGLE_QUOTE  
+ORD_OPEN_PARENTHESIS ORD_CLOSE_PARENTHESIS ORD_ASTERISK  
+ORD_PLUS ORD_COMMA ORD_MINUS ORD_PERIOD ORD_DOT ORD_SLASH  
+ORD_0 ORD_1 ORD_2 ORD_3 ORD_4 ORD_5 ORD_6 ORD_7  
+ORD_8 ORD_9 ORD_COLON ORD_SEMICOLON ORD_LESS_THAN  
+ORD_EQUALS ORD_GREATER_THAN ORD_QUESTION_MARK ORD_AT_SIGN  
+ORD_A ORD_B ORD_C ORD_D ORD_E ORD_F ORD_G ORD_H  
+ORD_I ORD_J ORD_K ORD_L ORD_M ORD_N ORD_O ORD_P  
+ORD_Q ORD_R ORD_S ORD_T ORD_U ORD_V ORD_W ORD_X  
+ORD_Y ORD_Z ORD_OPEN_BRACKET ORD_BACKSLASH ORD_CLOSE_BRACKET  
+ORD_CARET ORD_UNDERSCORE ORD_APOSTROPHE ORD_LOWER_A  
+ORD_LOWER_B ORD_LOWER_C ORD_LOWER_D ORD_LOWER_E ORD_LOWER_F  
+ORD_LOWER_G ORD_LOWER_H ORD_LOWER_I ORD_LOWER_J ORD_LOWER_K  
+ORD_LOWER_L ORD_LOWER_M ORD_LOWER_N ORD_LOWER_O ORD_LOWER_P  
+ORD_LOWER_Q ORD_LOWER_R ORD_LOWER_S ORD_LOWER_T ORD_LOWER_U  
+ORD_LOWER_V ORD_LOWER_W ORD_LOWER_X ORD_LOWER_Y ORD_LOWER_Z  
+ORD_OPEN_BRACE ORD_BAR ORD_CLOSE_BRACE ORD_TILDE  
+ORD_CTRL_BACKSPACE ORD_ALT_9 ORD_ALT_0 ORD_ALT_MINUS  
+ORD_ALT_EQUALS ORD_CTRL_PGUP ORD_F11 ORD_F12 ORD_SHIFT_F11  
+ORD_SHIFT_F12 ORD_CTRL_F11 ORD_CTRL_F12 ORD_ALT_F11  
+ORD_ALT_F12 ORD_CTRL_UP_ARROW ORD_BACK_TAB ORD_SHIFT_TAB  
+ORD_ALT_Q ORD_ALT_W ORD_CTRL_DOWN_ARROW ORD_ALT_E  
+ORD_CTRL_INSERT ORD_ALT_R ORD_CTRL_DELETE ORD_ALT_T  
+ORD_ALT_Y ORD_ALT_U ORD_ALT_I ORD_ALT_O ORD_ALT_P  
+ORD_ALT_A ORD_ALT_S ORD_ALT_D ORD_ALT_F ORD_ALT_G  
+ORD_ALT_H ORD_ALT_J ORD_ALT_K ORD_ALT_L ORD_ALT_Z  
+ORD_ALT_X ORD_ALT_C ORD_ALT_V ORD_ALT_B ORD_ALT_N  
+ORD_ALT_M ORD_SHIFT ORD_CTRL ORD_ALT ORD_ORDPAD_5 ORD_F1  
+ORD_F2 ORD_F3 ORD_F4 ORD_F5 ORD_F6 ORD_F7 ORD_F8  
+ORD_F9 ORD_F10 ORD_HOME ORD_UP_ARROW ORD_PGUP  
+ORD_LEFT_ARROW ORD_RIGHT_ARROW ORD_END ORD_DOWN_ARROW  
+ORD_PGDN ORD_INSERT ORD_DELETE ORD_SHIFT_F1 ORD_SHIFT_F2  
+ORD_SHIFT_F3 ORD_SHIFT_F4 ORD_SHIFT_F5 ORD_SHIFT_F6  
+ORD_SHIFT_F7 ORD_SHIFT_F8 ORD_SHIFT_F9 ORD_SHIFT_F10  
+ORD_CTRL_F1 ORD_CTRL_F2 ORD_CTRL_F3 ORD_CTRL_F4 ORD_CTRL_F5  
+ORD_CTRL_F6 ORD_CTRL_F7 ORD_CTRL_F8 ORD_CTRL_F9 ORD_CTRL_F10  
+ORD_ALT_F1 ORD_ALT_F2 ORD_ALT_F3 ORD_ALT_F4 ORD_ALT_F5  
+ORD_ALT_F6 ORD_ALT_F7 ORD_ALT_F8 ORD_ALT_F9 ORD_ALT_F10  
+ORD_CTRL_LEFT_ARROW ORD_CTRL_RIGHT_ARROW ORD_CTRL_END  
+ORD_CTRL_PGDN ORD_CTRL_HOME ORD_ALT_1 ORD_ALT_2 ORD_ALT_3  
+ORD_ALT_4 ORD_ALT_5 ORD_ALT_6 ORD_ALT_7 ORD_ALT_8  
+
+
+Limits.DefaultEW Limits.DefaultFW Limits.GetExp Limits.MaxExp 
+Limits.MinExp Limits.NumDigits Limits.Radix Limits.Rreb 
+Limits.SetExp Limits.minint Limits.maxint Limits.minnat  
+Limits.maxnat minint maxint minnat maxnat 
+
+
+abs arccos arccosd arcsin arcsind arctan arctand  
+cos cosd exp ln max min sign  
+sin sind sqrt tan tand Math.E Math.PI 
+Math.Distance Math.DistancePointLine 
+
+
+Mouse.ButtonChoose Mouse.ButtonMoved Mouse.ButtonWait 
+Mouse.Hide Mouse.Show Mouse.Where 
+
+
+Music.Play Music.PlayFile Music.PlayFileStop Music.PlayFileLoop 
+Music.PlayFileReturn Music.PreLoad Music.Sound Music.SoundOff 
+
+
+Net.BytesAvailable Net.CharAvailable Net.CloseConnection 
+Net.ConnectionStatus 
+Net.HostAddressFromName Net.HostNameFromAddress 
+Net.LineAvailable Net.LocalAddress Net.LocalName 
+Net.OpenConnection Net.OpenURLConnection Net.TokenAvailable 
+Net.WaitForConnection Net.GetCookie Net.GetCookies  
+Net.DeleteCookie Net.SetCookie 
+Net.connection_open Net.connection_remote_closed  
+Net.connection_local_aborted Net.connection_remote_aborted 
+Net.ipport_ftp Net.ipport_telnet  
+Net.ipport_smtp Net.ipport_time Net.ipport_finger  
+Net.ipport_http Net.ipport_pop3 Net.ipport_ident  
+Net.ipport_nntp Net.ipport_ntp Net.ipport_exec  
+Net.ipport_login Net.ipport_printer Net.ipport_ntalk  
+Net.ipport_uucp Net.ipport_user 
+
+
+palette whatpalette whattextchar 
+whattextcolor whattextcolorback whattextcolour 
+whattextcolourback serialget serialput randnext  
+randseed getenv getpid drawtext strfont flushstreams  
+setactive 
+
+
+PC.InPort PC.InPortWord PC.OutPort PC.OutPortWord  
+PC.Interrupt PC.InterruptSegs PC.ParallelGet PC.ParallelPut  
+PC.SerialGet PC.SerialHasch PC.SerialPut  
+
+
+Pic.Blend Pic.Blur 
+Pic.Draw Pic.DrawFrames Pic.DrawFramesBack  
+Pic.DrawSpecial Pic.DrawSpecialBack Pic.Free  
+Pic.FileNew Pic.FileNewFrames Pic.Flip  
+Pic.Frames Pic.Height Pic.Mirror Pic.New Pic.Rotate 
+Pic.Save Pic.Scale Pic.ScreenLoad Pic.ScreenSave  
+Pic.SetTransparentColor Pic.SetTransparentColour Pic.Width  
+picCopy picMerge picUnderMerge picXor 
+picWipeLeftToRight picWipeRightToLeft 
+picWipeTopToBottom picWipeBottomToTop 
+picWipeCentreToEdge picWipeCenterToEdge 
+picWipeEdgeToCentre picWipeEdgeToCenter 
+picWipeUpperLeftToLowerRight picWipeLowerLeftToUpperRight 
+picWipeUpperRightToLowerLeft picWipeLowerRightToUpperLeft 
+picWipeLeftToRightNoBar picWipeRightToLeftNoBar 
+picWipeTopToBottomNoBar picWipeBottomToTopNoBar 
+picWipeCentreToEdgeNoBar picWipeCenterToEdgeNoBar 
+picWipeEdgeToCentreNoBar picWipeEdgeToCenterNoBar 
+picWipeUpperLeftToLowerRightNoBar picWipeLowerLeftToUpperRightNoBar 
+picWipeUpperRightToLowerLeftNoBar picWipeLowerRightToUpperLeftNoBar 
+picGrowLeftToRight picGrowRightToLeft 
+picGrowTopToBottom picGrowBottomToTop 
+picGrowCentreToEdge picGrowCenterToEdge 
+picGrowUpperLeftToLowerRight picGrowLowerLeftToUpperRight 
+picGrowUpperRightToLowerLeft picGrowLowerRightToUpperLeft 
+picGrowLeftToRightNoBar picGrowRightToLeftNoBar 
+picGrowTopToBottomNoBar picGrowBottomToTopNoBar 
+picGrowCentreToEdgeNoBar picGrowCenterToEdgeNoBar 
+picGrowUpperLeftToLowerRightNoBar picGrowLowerLeftToUpperRightNoBar 
+picGrowUpperRightToLowerLeftNoBar picGrowLowerRightToUpperLeftNoBar 
+picSlideLeftToRight picSlideRightToLeft 
+picSlideTopToBottom picSlideBottomToTop 
+picSlideLeftToRightNoBar picSlideRightToLeftNoBar 
+picSlideTopToBottomNoBar picSlideBottomToTopNoBar 
+picFadeIn picBlend 
+
+
+Rand.Int Rand.Next Rand.Real Rand.Reset 
+Rand.Seed Rand.Set 
+
+
+RGB.AddColor RGB.AddColour RGB.GetColor RGB.GetColour 
+RGB.SetColor RGB.SetColour  
+RGB.maxcolor RGB.maxcolour 
+maxcolor maxcolour 
+black blue brightblue brightcyan 
+brightgreen brightmagenta brightpurple brightred 
+brightwhite brown colorbg colourbg colorfg colourfg 
+cyan darkgray darkgrey green grey purple red  
+white yellow 
+
+
+Str.Center Str.Centre Str.CharArrayCopy Str.EndsWith  
+Str.Left Str.Lower Str.Lower Str.Pad  
+Str.ReadLineFromCharArray Str.Right Str.StartsWith Str.Trim  
+Str.Upper Str.WriteLineToCharArray Str.WriteToCharArray  
+Str.index Str.length Str.repeat index length repeat 
+
+
+Sprite.Animate Sprite.ChangePic Sprite.Free Sprite.Hide 
+Sprite.New Sprite.SetFrameRate Sprite.SetHeight  
+Sprite.SetPosition Sprite.Show 
+
+
+Stream.Flush Stream.FlushAll 
+
+
+buttonchoose buttonmoved buttonwait clock cls color  
+colorback colour colourback date 
+delay drawarc drawbox drawdot drawfill 
+drawfillarc drawfillbox drawfillmapleleaf drawfilloval 
+drawfillpolygon drawfillstar drawline drawmapleleaf drawoval 
+drawpic drawpolygon drawstar fetcharg locate locatexy 
+mousehide mouseshow mousewhere nargs parallelget  
+parallelput play playdone rand randint randomize  
+setscreen sizepic sound sysclock system takepic time  
+wallclock whatcol whatcolor whatcolorback whatcolour  
+whatcolourback whatdotcolor whatdotcolour whatrow  
+
+
+Sys.GetEnv Sys.GetPid Sys.Exec Sys.Exit Sys.FetchArg  
+Sys.Nargs Sys.GetComputerName Sys.GetUserName 
+
+
+Text.Cls Text.Color Text.Colour Text.ColorBack 
+Text.ColourBack Text.Locate Text.LocateXY Text.WhatChar 
+Text.WhatCol Text.WhatColor Text.WhatColour 
+Text.WhatColorBack Text.WhatColourBack Text.WhatRow 
+Text.maxrow Text.maxcol  
+maxcol maxrow     
+
+
+Time.Date Time.DateSec Time.Delay Time.DelaySinceLast  
+Time.Elapsed Time.ElapsedCPU Time.PartsSec Time.Sec  
+Time.SecDate Time.SecParts Time.SecStr 
+
+
+ceil erealstr floor frealstr intreal natreal realstr  
+round strreal strrealok 
+
+
+View.ClipAdd View.ClipAddOval View.ClipOff View.ClipSet  
+View.Set View.SetTransparentColor View.SetTransparentColour  
+View.Update View.UpdateArea View.Scroll 
+View.WhatDotColor View.WhatDotColour  
+View.maxx View.maxy 
+maxx maxy  
+
+
+Window.Close Window.GetActive Window.GetPosition 
+Window.GetSelect Window.Hide Window.Open Window.Select 
+Window.Set Window.SetActive Window.SetPosition  
+Window.SetTransparentColor Window.SetTransparentColour  
+Window.Show Window.Update Window.UpdateArea 
+defWinID defWinId errWinID errWinId winPosLeft  
+winPosCentre winPosCenter winPosRight winPosTop  
+winPosMiddle winPosTrueMiddle winPosBottom 
+
+
+GUI.AddLine GUI.AddText GUI.ClearText GUI.CloseWindow  
+GUI.CreateButton GUI.CreateButtonFull GUI.CreateCanvas  
+GUI.CreateCanvasFull GUI.CreateCheckBox GUI.CreateCheckBoxFull  
+GUI.CreateFrame GUI.CreateHorizontalScrollBar  
+GUI.CreateHorizontalScrollBarFull GUI.CreateHorizontalSlider  
+GUI.CreateLabel GUI.CreateLabelFull GUI.CreateLabelledFrame  
+GUI.CreateLine GUI.CreateMenu GUI.CreateMenuItem  
+GUI.CreateMenuItemFull GUI.CreatePicture  
+GUI.CreatePictureButton GUI.CreatePictureButtonFull  
+GUI.CreatePictureRadioButton GUI.CreatePictureRadioButtonFull  
+GUI.CreateRadioButton GUI.CreateRadioButtonFull  
+GUI.CreateTextBox GUI.CreateTextBoxChoice  
+GUI.CreateTextBoxFull GUI.CreateTextField  
+GUI.CreateTextFieldFull GUI.CreateVerticalScrollBar  
+GUI.CreateVerticalScrollBarFull GUI.CreateVerticalSlider  
+GUI.Disable GUI.Dispose GUI.DrawArc GUI.DrawBox GUI.DrawCls  
+GUI.DrawDot GUI.DrawFill GUI.DrawFillArc GUI.DrawFillBox  
+GUI.DrawFillMapleLeaf GUI.DrawFillOval GUI.DrawFillPolygon  
+GUI.DrawFillStar GUI.DrawLine GUI.DrawMapleLeaf GUI.DrawOval  
+GUI.DrawPolygon GUI.DrawStar GUI.DrawText GUI.Enable  
+GUI.FontDraw GUI.GetBackgroundColor GUI.GetBackgroundColour  
+GUI.GetCheckBox GUI.GetEventTime GUI.GetEventWidgetID  
+GUI.GetEventWindow GUI.GetHeight GUI.GetMenuBarHeight  
+GUI.GetScrollBarWidth GUI.GetSliderValue GUI.GetText  
+GUI.GetVersion GUI.GetWidth GUI.GetX GUI.GetY GUI.Hide  
+GUI.HideMenuBar GUI.HideWindow GUI.PicDraw GUI.PicNew  
+GUI.PicScreenLoad GUI.PicScreenSave GUI.ProcessEvent  
+GUI.Quit GUI.Refresh GUI.ResetQuit GUI.SelectRadio  
+GUI.SetActive GUI.SetBackgroundColor GUI.SetBackgroundColour  
+GUI.SetCheckBox GUI.SetColor GUI.SetColour GUI.SetDefault  
+GUI.SetDelayInProcess GUI.SetDisplayWhenCreated GUI.SetEchoChar  
+GUI.SetKeyEventHandler GUI.SetLabel GUI.SetMouseEventHandler  
+GUI.SetNullEventHandler GUI.SetPosition GUI.SetPositionAndSize  
+GUI.SetScrollAmount GUI.SetScrollOnAdd GUI.SetSelection  
+GUI.SetSize GUI.SetSliderMinMax GUI.SetSliderReverse  
+GUI.SetSliderSize GUI.SetSliderValue GUI.SetText GUI.SetTopLine  
+GUI.SetXOR GUI.Show GUI.ShowMenuBar GUI.ShowWindow  
+GUI.LEFT GUI.CENTER GUI.CENTRE GUI.RIGHT GUI.TOP  
+GUI.MIDDLE GUI.BOTTOM GUI.LINE GUI.INDENT GUI.EXDENT  
+GUI.ANY GUI.INTEGER GUI.REAL GUI.NONE  
+
+eNoError 
+configErrorBase 
+brushErrorBase  
+dirErrorBase drawErrorBase  
+fileErrorBase fontErrorBase 
+fsysErrorBase generalErrorBase gray 
+guiErrorBase lexErrorBase magenta mouseErrorBase 
+musicErrorBase penErrorBase 
+picErrorBase  
+placeCenterDisplay placeCentreWindow 
+printerErrorBase rgbErrorBase 
+spriteErrorBase streamErrorBase textErrorBase timeErrorBase 
+unixSignalToException viewErrorBase windowErrorBase"

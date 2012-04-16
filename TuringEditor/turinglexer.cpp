@@ -35,6 +35,7 @@
 #include <qsettings.h>
 #include "Qsci/qsciapis.h"
 #include <QDebug>
+#include <QFile>
 
 
 // The ctor.
@@ -292,19 +293,16 @@ const char *TuringLexer::keywords(int set) const
         return
             "";
 
-    if (set == 3)
-        // String, table and maths functions.
-        return
-        	// Math module
-        	"abs arccos arccosd arcsin arcsind arctan "
-		"arctand cos cosd exp ln max min sign sin "
-		"sind tan tand sqrt "
-		// Strings
-		"index length repeat "
-		// Arrays
-		"upper lower "
-		// Other
-		"addr sizeof";
+    if (set == 3) {
+        QFile file(":/resources/predefs.txt");
+         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+             return "";
+
+        QByteArray content = file.readAll();
+
+        file.close();
+        return content.data();
+    }
 
     if (set == 4)
         // Library modules.
