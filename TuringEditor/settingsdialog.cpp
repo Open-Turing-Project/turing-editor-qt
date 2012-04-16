@@ -58,7 +58,9 @@ void SettingsDialog::accept() {
 }
 
 void SettingsDialog::associateFiles() {
+#ifdef Q_OS_WIN
     OSInterop::associateTuringFiles();
+#endif
 }
 
 SettingsDialog::~SettingsDialog()

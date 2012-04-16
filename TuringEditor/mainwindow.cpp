@@ -41,6 +41,10 @@
 
 #include "turingrunner.h"
 
+#ifdef Q_OS_WIN
+#define CAN_RUN_PROGRAMS
+#endif
+
 MainWindow::MainWindow()
 {
     setWindowIcon(QIcon(":/images/pixel_icon.png"));
@@ -417,7 +421,9 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
     fileMenu->addAction(closeTabAct);
+#ifdef CAN_RUN_PROGRAMS
     fileMenu->addAction(runAct);
+#endif
     fileMenu->addSeparator();
 
     fileMenu->addAction(settingsAct);
@@ -456,8 +462,9 @@ void MainWindow::createToolBars()
     mainToolBar->setMovable(false);
     mainToolBar->setIconSize(QSize(16,16));
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
+#ifdef CAN_RUN_PROGRAMS
     mainToolBar->addAction(runAct);
+#endif
 
     mainToolBar->addAction(newAct);
     mainToolBar->addAction(openAct);
