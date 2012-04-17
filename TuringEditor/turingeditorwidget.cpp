@@ -37,6 +37,11 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     setAutoCompletionCaseSensitivity(false);
     setAutoCompletionUseSingle(QsciScintilla::AcusExplicit);
 
+    // multi-cursor support
+    SendScintilla(QsciScintillaBase::SCI_SETMULTIPLESELECTION,true);
+    SendScintilla(QsciScintillaBase::SCI_SETMULTIPASTE,1);
+    SendScintilla(QsciScintillaBase::SCI_SETADDITIONALSELECTIONTYPING,true);
+
     markerDefine(QsciScintilla::RightArrow,1);
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
     indicatorDefine(QsciScintilla::SquiggleIndicator,2);
