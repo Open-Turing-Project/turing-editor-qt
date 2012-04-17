@@ -41,6 +41,7 @@ extern "C++" {
 #include <Qsci/qscilexer.h>
 
 class QColor;
+class QsciAPIs;
 
 
 //! \brief The QsciLexerLua class encapsulates the Scintilla Lua
@@ -218,6 +219,8 @@ private:
 
     QString theme;
     QString fontFamily;
+
+    QsciAPIs* turingFuncs;
 
     TuringLexer(const TuringLexer &);
     TuringLexer &operator=(const TuringLexer &);

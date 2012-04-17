@@ -43,16 +43,18 @@ TuringLexer::TuringLexer(QObject *parent)
     : QsciLexer(parent),
       fold_compact(true)
 {
-    QsciAPIs* turingFuncs = new QsciAPIs(this);
+    turingFuncs = new QsciAPIs(this);
     connect(turingFuncs,SIGNAL(apiPreparationFinished()),this,SLOT(apiPreparationFinished()));
-    //connect(turingFuncs,SIGNAL(apiPreparationStarted()),this,SLOT(apiPreparationFinished()));
 
-    bool loaded = turingFuncs->load(":/resources/APIs.txt");
-    if(loaded){
-        turingFuncs->prepare();
-    } else{
-        printf("can not load APIs!\n");
-    }
+    //if(!turingFuncs->loadPrepared()) {
+        bool loaded = turingFuncs->load(":/resources/APIs.txt");
+        if(loaded){
+            qDebug() << "Loading APIs...";
+            turingFuncs->prepare();
+        } else{
+            printf("can not load APIs!\n");
+        }
+    //}
     setAPIs(turingFuncs);
 
     loadSettings();
@@ -74,7 +76,8 @@ void TuringLexer::loadSettings()
 }
 
 void TuringLexer::apiPreparationFinished() {
-    printf("API preparation finished\n");
+    qDebug() << "Finished loading APIs.";
+    turingFuncs->savePrepared();
 }
 
 // Returns the language name.
