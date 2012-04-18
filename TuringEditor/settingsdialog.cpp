@@ -30,10 +30,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->autoCompThresh->setValue(settings.value("autoCompleteThreshold", 5).toInt());
     // bools
     ui->autoComp->setChecked(settings.value("autoCompleteEnabled", true).toBool());
+    ui->wrapLong->setChecked(settings.value("wrapLongLines", true).toBool());
     ui->saveOnRun->setChecked(settings.value("saveOnRun", true).toBool());
     ui->confirmSave->setChecked(settings.value("confirmSave", true).toBool());
     //ui->lineNumbers->setChecked(settings.value("showLineNumbers", true).toBool());
     ui->stringEOLHighlight->setChecked(settings.value("stringEOLHighlight", false).toBool());
+
+#ifndef Q_OS_WIN
+    ui->associateFiles->hide();
+#endif
 }
 
 void SettingsDialog::accept() {
@@ -49,6 +54,7 @@ void SettingsDialog::accept() {
     settings.setValue("autoCompleteThreshold",ui->autoCompThresh->value());
     // bools
     settings.setValue("autoCompleteEnabled",(ui->autoComp->checkState() == Qt::Checked));
+    settings.setValue("wrapLongLines",(ui->wrapLong->checkState() == Qt::Checked));
     settings.setValue("saveOnRun",(ui->saveOnRun->checkState() == Qt::Checked));
     settings.setValue("confirmSave",(ui->confirmSave->checkState() == Qt::Checked));
     //settings.setValue("showLineNumbers",(ui->lineNumbers->checkState() == Qt::Checked));

@@ -37,10 +37,6 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     setAutoCompletionCaseSensitivity(false);
     setAutoCompletionUseSingle(QsciScintilla::AcusExplicit);
 
-    // line wrapping
-    SendScintilla(QsciScintillaBase::SCI_SETWRAPMODE,QsciScintillaBase::SC_WRAP_WORD);
-    SendScintilla(QsciScintillaBase::SCI_SETWRAPVISUALFLAGS,QsciScintillaBase::SC_WRAPVISUALFLAG_START);
-    SendScintilla(QsciScintillaBase::SCI_SETWRAPINDENTMODE,QsciScintillaBase::SC_WRAPINDENT_INDENT);
 
     // multi-cursor support
     SendScintilla(QsciScintillaBase::SCI_SETMULTIPLESELECTION,true);
@@ -73,6 +69,15 @@ void TuringEditorWidget::readSettings() {
         darkTheme();
     } else {
         lightTheme();
+    }
+
+    bool wrapLongLines = settings.value("wrapLongLines",true).toBool();
+    if(wrapLongLines) {
+        setWrapMode(QsciScintilla::WrapWord);
+        SendScintilla(QsciScintillaBase::SCI_SETWRAPVISUALFLAGS,QsciScintillaBase::SC_WRAPVISUALFLAG_START);
+        setWrapIndentMode(QsciScintilla::WrapIndentIndented);
+    } else {
+        setWrapMode(QsciScintilla::WrapNone);
     }
 
     setTabWidth(settings.value("indentSize", 4).toInt());
