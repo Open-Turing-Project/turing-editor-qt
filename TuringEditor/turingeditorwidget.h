@@ -46,7 +46,7 @@ public slots:
     void findAll(QString findText);
     void find(QString findText, bool CaseSensitive,bool regex,bool wholeWord);
     void findNextOccurence();
-    void replace(QString repText);
+    void replaceSlot(QString repText);
     void replaceAll(QString findText,QString repText,bool regex,bool greedyRegex);
 
     bool maybeSave();

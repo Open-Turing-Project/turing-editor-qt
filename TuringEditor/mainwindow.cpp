@@ -42,7 +42,7 @@
 #include "turingrunner.h"
 
 #ifdef Q_OS_WIN
-#define CAN_RUN_PROGRAMS
+#define HAS_TURING_IMPL
 #endif
 
 MainWindow::MainWindow()
@@ -57,7 +57,7 @@ MainWindow::MainWindow()
     docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
     docMan->multiplex->connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),SLOT(find(QString,bool,bool,bool)));
     docMan->multiplex->connect(findDialog,SIGNAL(findNext()),SLOT(findNextOccurence()));
-    docMan->multiplex->connect(findDialog,SIGNAL(replace(QString)),SLOT(replace(QString)));
+    docMan->multiplex->connect(findDialog,SIGNAL(replace(QString)),SLOT(replaceSlot(QString)));
     docMan->multiplex->connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),
                                SLOT(replaceAll(QString,QString,bool,bool)));
 
@@ -421,7 +421,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
     fileMenu->addAction(closeTabAct);
-#ifdef CAN_RUN_PROGRAMS
+#ifdef HAS_TURING_IMPL
     fileMenu->addAction(runAct);
 #endif
     fileMenu->addSeparator();
@@ -451,7 +451,9 @@ void MainWindow::createMenus()
     menuBar()->addSeparator();
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
+#ifdef HAS_TURING_IMPL
     helpMenu->addAction(helpAct);
+#endif
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 }
@@ -462,7 +464,7 @@ void MainWindow::createToolBars()
     mainToolBar->setMovable(false);
     mainToolBar->setIconSize(QSize(16,16));
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-#ifdef CAN_RUN_PROGRAMS
+#ifdef HAS_TURING_IMPL
     mainToolBar->addAction(runAct);
 #endif
 
@@ -475,7 +477,9 @@ void MainWindow::createToolBars()
     mainToolBar->addAction(structCompleteAct);
     mainToolBar->addAction(findAct);
     mainToolBar->addAction(clearAct);
+#ifdef HAS_TURING_IMPL
     mainToolBar->addAction(helpAct);
+#endif
 }
 
 void MainWindow::createStatusBar()
