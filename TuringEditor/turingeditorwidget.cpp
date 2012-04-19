@@ -43,14 +43,18 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     SendScintilla(QsciScintillaBase::SCI_SETMULTIPASTE,1);
     SendScintilla(QsciScintillaBase::SCI_SETADDITIONALSELECTIONTYPING,true);
 
-    markerDefine(QsciScintilla::RightArrow,1);
+    markerDefine(QPixmap(":/images/exclamation.png"),1);
+    setMarginWidth(1,18); // 2px larger than the 16px markers to give some room
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
     indicatorDefine(QsciScintilla::SquiggleIndicator,2);
     indicatorDefine(QsciScintilla::BoxIndicator,3);
     setIndicatorForegroundColor(QColor(50,250,50),3);
 
     darkErrMsgStyle = new QsciStyle(-1,"dark error style",QColor(255,220,220),QColor(184,50,50),QFont());
-    lightErrMsgStyle = new QsciStyle(-1,"light error style",Qt::black,QColor(230,150,150),QFont());
+    lightErrMsgStyle = new QsciStyle(-1,"light error style",QColor(189,0,15),QColor(255,240,240),QFont("Times New Roman",12,QFont::Normal,true));
+
+    connect(this,SIGNAL(textChanged()),this,SLOT(textEdited()));
+    connect(this,SIGNAL(modificationChanged(bool)),this,SLOT(modificationStatusChanged(bool)));
 }
 
 void TuringEditorWidget::readSettings() {
@@ -90,6 +94,17 @@ void TuringEditorWidget::readSettings() {
 void TuringEditorWidget::replaceSlot(QString repText) {
     replace(repText);
 }
+void TuringEditorWidget::textEdited() {
+    int line,col;
+    getCursorPosition(&line,&col);
+    if(errorLines.contains(line)) {
+        clearErrorsLine(line);
+    }
+}
+void TuringEditorWidget::modificationStatusChanged(bool state) {
+    emit statusChanged();
+}
+
 //! Selects the first appearance of a string and sets it up for the find next command.
 void TuringEditorWidget::find(QString findText,bool caseSensitive,bool regex,bool wholeWord) {
     findFirst(findText,regex,caseSensitive,wholeWord,true);
@@ -164,18 +179,32 @@ void TuringEditorWidget::showError(int line,QString errMsg,int from, int to)
         fillIndicatorRange(line,from,line,to,2);
     }
 
+    errorLines.insert(line);
+
     ensureLineVisible(line); // scroll to it
     hasMessage = true;
 }
 //! removes all error annotations from display.
 void TuringEditorWidget::clearErrors() {
     clearAnnotations();
-    clearIndicatorRange(0,0,lines(),text(lines()).length(),2);
+    clearIndicatorRange(0,0,lines(),lineLength(lines()),2);
     markerDeleteAll(1);
 
+    errorLines.clear();
+
     hasMessage = false;
-    // hack to get tab updated
-    emit modificationChanged(isModified());
+    emit statusChanged();
+}
+//! removes errors from a specific line
+void TuringEditorWidget::clearErrorsLine(int line) {
+    clearAnnotations(line);
+    clearIndicatorRange(line,0,line,lineLength(line),2);
+    markerDelete(line,1);
+    errorLines.remove(line);
+    if(errorLines.empty()) {
+        hasMessage = false;
+        emit statusChanged();
+    }
 }
 
 //! clears all annotations, markers and indicators
@@ -184,9 +213,10 @@ void TuringEditorWidget::clearEverything() {
     clearIndicatorRange(0,0,lines(),text(lines()).length(),-1);
     markerDeleteAll(-1);
 
+    errorLines.clear();
+
     hasMessage = false;
-    // hack to get tab updated
-    emit modificationChanged(isModified());
+    emit statusChanged();
 }
 
 bool TuringEditorWidget::saveFile(const QString &newFileName, bool temporary)
@@ -207,6 +237,8 @@ bool TuringEditorWidget::saveFile(const QString &newFileName, bool temporary)
     out << text();
     QApplication::restoreOverrideCursor();
     if (!temporary) setModified(false);
+
+    emit statusChanged();
 
     return true;
 }

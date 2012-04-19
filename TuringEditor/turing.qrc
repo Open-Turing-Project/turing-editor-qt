@@ -19,5 +19,7 @@
         <file>images/help.png</file>
         <file>resources/stylesheet.qss</file>
         <file>resources/predefs.txt</file>
+        <file>images/exclamation.png</file>
+        <file>images/exclamation2.png</file>
     </qresource>
 </RCC>

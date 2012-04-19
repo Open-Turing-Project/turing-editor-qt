@@ -5,6 +5,7 @@
 
 #include <QStack>
 #include <QPair>
+#include <QSet>
 
 class TuringLexer;
 class QsciStyle;
@@ -20,6 +21,7 @@ public:
 
     QString fileName;
 
+    //! Is there a message currently visible?
     bool hasMessage;
 
     //! POI is GPS parlance for Point Of Interest
@@ -41,7 +43,9 @@ public:
     QList<POILine*> findPOIs();
 
 signals:
-
+    //! emitted whenever important status like modification state or error messages changes.
+    //! Used to update the tab name.
+    void statusChanged();
 public slots:
     void findAll(QString findText);
     void find(QString findText, bool CaseSensitive,bool regex,bool wholeWord);
@@ -59,12 +63,16 @@ public slots:
 
     void showError(int line,QString errMsg,int from = -1, int to = -1);
     void clearErrors();
+    void clearErrorsLine(int line);
     void clearEverything();
 
     void readSettings();
 
     QString completeStruct();
     void autoIndentAll();
+private slots:
+    void textEdited();
+    void modificationStatusChanged(bool state);
 
 private:
 
@@ -72,6 +80,8 @@ private:
 
     QsciStyle *darkErrMsgStyle;
     QsciStyle *lightErrMsgStyle;
+
+    QSet<int> errorLines;
 
 };
 

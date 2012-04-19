@@ -28,7 +28,7 @@ DocumentManager::DocumentManager(QWidget *parent) :
     TuringEditorWidget *doc = newFile();
     multiplex->setCurrentObject(doc);
 
-    multiplex->connect(SIGNAL(modificationChanged(bool)),this,SLOT(documentChanged(bool)));
+    multiplex->connect(SIGNAL(statusChanged()),this,SLOT(documentChanged()));
 }
 
 void DocumentManager::readSettings()
@@ -106,6 +106,8 @@ TuringEditorWidget *DocumentManager::openFile(QString fileName) {
 
     setCurrentWidget(doc);
 
+    doc->showError(8,"error: This is the error text.");
+
     return doc;
 }
 
@@ -162,7 +164,7 @@ bool DocumentManager::promptCloseAll() {
     return true;
 }
 
-void DocumentManager::documentChanged(bool state) {
+void DocumentManager::documentChanged() {
     updateName(currentDoc());
 }
 

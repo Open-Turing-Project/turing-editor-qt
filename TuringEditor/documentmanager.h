@@ -37,7 +37,7 @@ public slots:
 private slots:
     void currentTabChanged(int index);
     void updateName(TuringEditorWidget *doc);
-    void documentChanged(bool state);
+    void documentChanged();
 
 private:
     bool saveFile(TuringEditorWidget *doc, const QString &fileName);
