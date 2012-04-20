@@ -248,6 +248,10 @@ end if
 if false = true then
     put "more test"
 end if
+/*
+if this then
+that
+*/
 loop
     locate (1, 1)
     put "Object coords :    ", spike -> obj.cx, " / ", spike -> obj.cy, " / ", spike -> obj.cz, " / "

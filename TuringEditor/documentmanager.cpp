@@ -106,7 +106,7 @@ TuringEditorWidget *DocumentManager::openFile(QString fileName) {
 
     setCurrentWidget(doc);
 
-    doc->showError(8,"error: This is the error text.");
+    //doc->showError(8,"error: This is the error text.");
 
     return doc;
 }

@@ -358,6 +358,8 @@ QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine, bool *st
 }
 
 //! Find all the structures and endings in the file. Used for structure completion and auto-indent.
+// TODO rewrite this to use a lexer-based design that can handle multi-line comments and multiple
+// POIs on one line properly
 QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs(int lastLine) {
     // stack for structs. string is identifier
     QList<TuringEditorWidget::POILine*> pois;
@@ -370,8 +372,22 @@ QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs(int lastLine) {
     if(lastLine < 0)
         lastLine = lines()-1; // -1 to account for zero-indexing
 
+    bool commentMode = false; // are we in a multi-line comment
     for(int i = 0; i <= lastLine;++i) {
         QString line = text(i);
+
+        // TODO hacky fix to the problem of multi-line comments
+        // does not deal with situations like "if bob then /*"
+        // luckily these rarely happen in practice
+        if(!commentMode && line.contains("/*")) {
+            commentMode = true;
+            continue;
+        } else if(commentMode) { // skip lines in comment mode
+            if(line.contains("*/"))
+                commentMode = false;
+            continue;
+        }
+
         TuringEditorWidget::POILine *curLine = new TuringEditorWidget::POILine();
         curLine->indent = indentation(i);
         curLine->line = i;
