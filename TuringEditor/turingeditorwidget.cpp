@@ -357,7 +357,8 @@ QStack<QPair<int,QString> > TuringEditorWidget::makeStack(int stopLine, bool *st
     return structStack;
 }
 
-QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
+//! Find all the structures and endings in the file. Used for structure completion and auto-indent.
+QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs(int lastLine) {
     // stack for structs. string is identifier
     QList<TuringEditorWidget::POILine*> pois;
 
@@ -365,8 +366,9 @@ QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
     QRegExp funcRegex("^[\\t ]*(body +|pervasive +)*(proc|procedure|fcn|function|class|module|process|monitor)[\\t\\* ]+([_a-zA-Z0-9]+).*");
     QRegExp structRegex("[\\t ]*(if|for|loop|case|record|union|handler)( .*)?\\s*");
 
-    // -1 to account for zero-indexing
-    int lastLine = lines()-1;
+    // if lastLine is the default value set it to the last line in the file
+    if(lastLine < 0)
+        lastLine = lines()-1; // -1 to account for zero-indexing
 
     for(int i = 0; i <= lastLine;++i) {
         QString line = text(i);
@@ -380,7 +382,7 @@ QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
             curLine->id = captures[1];
 
 
-            // find the beginning struct
+            // find the beginning struct.
             for(int j = pois.size() - 1;j >= 0;--j) {
                 TuringEditorWidget::POILine *poi = pois[j];
                 // is it not closed and the end tag matches?
@@ -405,6 +407,8 @@ QList<TuringEditorWidget::POILine*> TuringEditorWidget::findPOIs() {
             QStringList captures = structRegex.capturedTexts();
             curLine->type = captures[1];
             pois.append(curLine);
+        } else {
+            delete curLine; // not needed
         }
     }
 
@@ -428,7 +432,7 @@ QString TuringEditorWidget::completeStruct() {
     getCursorPosition(&curLine,&dummyCursorPos);
 
     QList<TuringEditorWidget::POILine *> pois;
-    pois = findPOIs(); // TODO FIXME memory leaked
+    pois = findPOIs(curLine); // stop at the current line
 
     beginUndoAction();
 
@@ -481,12 +485,17 @@ QString TuringEditorWidget::completeStruct() {
 
     endUndoAction();
 
+    // clean up.
+    foreach(TuringEditorWidget::POILine *poi, pois) {
+        delete poi;
+    }
+
     return "";
 }
 
 void TuringEditorWidget::autoIndentAll() {
     QList<TuringEditorWidget::POILine *> pois;
-    pois = findPOIs(); // TODO FIXME memory leaked
+    pois = findPOIs();
 
     // lines that are indented one less than the rest of the body
     QRegExp oneLess("(else|elsif|label).*");
@@ -537,4 +546,9 @@ void TuringEditorWidget::autoIndentAll() {
     }
 
     endUndoAction();
+
+    // clean up.
+    foreach(TuringEditorWidget::POILine *poi, pois) {
+        delete poi;
+    }
 }

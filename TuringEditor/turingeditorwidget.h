@@ -40,7 +40,7 @@ public:
         int line;
     };
 
-    QList<POILine*> findPOIs();
+    QList<POILine*> findPOIs(int lastLine = -1);
 
 signals:
     //! emitted whenever important status like modification state or error messages changes.
