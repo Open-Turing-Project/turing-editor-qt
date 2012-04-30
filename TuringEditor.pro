@@ -63,6 +63,7 @@ DEFINES += RUNNER_PATH=\"$${TURING_RUNNER_STR}\"
 #TEMPLATE = lib
 TARGET = OpenTuring
 CONFIG += qt thread
+QT += webkit
 release {
     CONFIG += warn_off
 } else {

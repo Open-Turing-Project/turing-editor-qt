@@ -18,6 +18,7 @@ public:
     TuringEditorWidget *currentDoc();
 
     static const QString TempName;
+    virtual QSize sizeHint() const;
 
 signals:
 

@@ -54,6 +54,7 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     lightErrMsgStyle = new QsciStyle(-1,"light error style",QColor(189,0,15),QColor(255,240,240),QFont("Times New Roman",12,QFont::Normal,true));
 
     connect(this,SIGNAL(textChanged()),this,SLOT(textEdited()));
+    connect(this,SIGNAL(cursorPositionChanged(int,int)),this,SLOT(cursorMoved(int,int)));
     connect(this,SIGNAL(modificationChanged(bool)),this,SLOT(modificationStatusChanged(bool)));
 }
 
@@ -101,8 +102,46 @@ void TuringEditorWidget::textEdited() {
         clearErrorsLine(line);
     }
 }
+void TuringEditorWidget::cursorMoved(int line, int col)  {
+    QString word = findWordAtPoint(line,col);
+    if(!word.isEmpty()) {
+        //qDebug() << "Word Selected: " << word;
+        emit wordSelected(word);
+    }
+}
+
+QString TuringEditorWidget::findWordAtPoint(int line, int col) {
+    QString lineTxt = text(line);
+
+    // Find the keyword that the cursor is currently on.
+    QRegExp rx("([_A-Za-z][_\\.A-Za-z0-9]*)");
+    int pos = 0;
+    while ((pos = rx.indexIn(lineTxt, pos)) != -1) {
+        int endPos = pos + rx.matchedLength();
+        if(pos > col) {
+            return ""; // We have already passed it, so stop trying to find it.
+        }
+        // if we are not past it see if it is within the current range
+        if(col <= endPos) {
+            // Found it. Return the full word.
+            return rx.cap(1);
+        } else
+        pos = endPos;
+    }
+    return "";
+}
+
 void TuringEditorWidget::modificationStatusChanged(bool state) {
     emit statusChanged();
+}
+
+void TuringEditorWidget::emitStatus() {
+    int line,col;
+    getCursorPosition(&line,&col);
+    QString word = findWordAtPoint(line,col);
+    if(!word.isEmpty()) {
+        emit wordSelected(word);
+    }
 }
 
 //! Selects the first appearance of a string and sets it up for the find next command.

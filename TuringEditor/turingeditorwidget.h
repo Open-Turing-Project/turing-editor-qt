@@ -41,11 +41,15 @@ public:
     };
 
     QList<POILine*> findPOIs(int lastLine = -1);
+    QString findWordAtPoint(int line, int col);
 
 signals:
     //! emitted whenever important status like modification state or error messages changes.
     //! Used to update the tab name.
     void statusChanged();
+    //! Emitted when the cursor is over a keyword or identifier like "loop" or "Draw.Box"
+    //! Can be used to display docs for the selected function.
+    void wordSelected(QString word);
 public slots:
     void findAll(QString findText);
     void find(QString findText, bool CaseSensitive,bool regex,bool wholeWord);
@@ -68,10 +72,14 @@ public slots:
 
     void readSettings();
 
+    //! Re-emits all the status signals such as selected word.
+    void emitStatus();
+
     QString completeStruct();
     void autoIndentAll();
 private slots:
     void textEdited();
+    void cursorMoved(int line, int col);
     void modificationStatusChanged(bool state);
 
 private:

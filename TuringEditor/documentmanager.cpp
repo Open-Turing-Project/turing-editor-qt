@@ -21,6 +21,8 @@ DocumentManager::DocumentManager(QWidget *parent) :
     setUsesScrollButtons(true);
     setMovable(true);
 
+    setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    setMinimumSize(300,400);
 
     multiplex = new SignalMultiplexer(this);
 
@@ -29,6 +31,10 @@ DocumentManager::DocumentManager(QWidget *parent) :
     multiplex->setCurrentObject(doc);
 
     multiplex->connect(SIGNAL(statusChanged()),this,SLOT(documentChanged()));
+}
+
+QSize DocumentManager::sizeHint() const {
+    return QSize(700,550);
 }
 
 void DocumentManager::readSettings()
@@ -130,6 +136,7 @@ void DocumentManager::currentTabChanged(int index) {
     TuringEditorWidget *doc = static_cast<TuringEditorWidget*>(wid);
 
     multiplex->setCurrentObject(doc);
+    doc->emitStatus();
 }
 
 void DocumentManager::closeTab(int index) {

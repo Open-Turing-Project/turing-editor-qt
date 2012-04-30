@@ -25,6 +25,9 @@
 #include <QCoreApplication>
 #include <QStringList>
 #include <QLabel>
+#include <QWebView>
+#include <QUrl>
+#include <QDockWidget>
 
 #include <Qsci/qscistyle.h>
 
@@ -68,6 +71,9 @@ MainWindow::MainWindow()
 
     setCentralWidget(docMan);
 
+    createPanels();
+    docMan->multiplex->connect(SIGNAL(wordSelected(QString)),this,SLOT(showDocs(QString)));
+
     createActions();
     createMenus();
 
@@ -77,6 +83,7 @@ MainWindow::MainWindow()
     updateRecentFileActions();
 
     setWindowTitle(tr("Open Turing Editor"));
+    //docMan->resize(700,700);
 
     currentRunner = NULL;
     runDoc = NULL;
@@ -86,9 +93,9 @@ MainWindow::MainWindow()
     docMan->currentDoc()->setFocus();
 }
 
-QSize MainWindow::sizeHint() const {
-    return QSize(660,540);
-}
+/*QSize MainWindow::sizeHint() const {
+    return QSize(700,660);
+}*/
 
 void MainWindow::cursorMoved(int line, int index) {
     QString lineText("Line ");
@@ -276,6 +283,12 @@ void MainWindow::showHelp()
     QDesktopServices::openUrl(QString("file:///") + QCoreApplication::applicationDirPath () + "/" + HELP_FILE_PATH);
 }
 
+void MainWindow::showDocs(QString page) {
+    QString loc = "http://compsci.ca/holtsoft/doc/" + page.replace('.',"_").toLower() + ".html";
+    qDebug() << "Fetching docs at " << loc;
+    docsView->load(QUrl(loc));
+}
+
 void MainWindow::showSettings()
 {
     SettingsDialog settings;
@@ -443,6 +456,8 @@ void MainWindow::createMenus()
     viewMenu->addSeparator();
     viewMenu->addAction(zoomOutAct);
     viewMenu->addAction(zoomInAct);
+    viewMenu->addSeparator();
+    viewMenu->addAction(docsPanel->toggleViewAction());
 
     markMenu = menuBar()->addMenu(tr("&Mark"));
     markMenu->setTearOffEnabled(true);
@@ -485,6 +500,22 @@ void MainWindow::createToolBars()
 void MainWindow::createStatusBar()
 {
     statusBar()->showMessage(tr("Ready"));
+}
+
+void MainWindow::createPanels() {
+    // Doc Panel ---------------
+    // Create the web view
+    docsView = new QWebView(this);
+    docsView->setMinimumHeight(170);
+    docsView->load(QUrl("http://compsci.ca/holtsoft/doc/intro.html"));
+    docsView->show();
+    // Create the enclosing dock widget
+    docsPanel = new QDockWidget(tr("Documentation"), this);
+    docsPanel->setAllowedAreas(Qt::LeftDockWidgetArea |
+                                Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    docsPanel->setWidget(docsView);
+    docsPanel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    addDockWidget(Qt::BottomDockWidgetArea, docsPanel);
 }
 
 void MainWindow::readSettings()

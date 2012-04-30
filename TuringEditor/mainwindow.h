@@ -29,6 +29,8 @@
 class QAction;
 class QMenu;
 class QLabel;
+class QWebView;
+class QDockWidget;
 class TuringEditorWidget;
 class QsciStyle;
 
@@ -46,7 +48,7 @@ public:
     MainWindow();
 
     void loadFile(const QString &fileName);
-    virtual QSize sizeHint() const;
+    //virtual QSize sizeHint() const;
 
     friend class TestEditor;
 
@@ -68,6 +70,8 @@ private slots:
     void showHelp();
     void showSettings();
 
+    void showDocs(QString page);
+
     void populateMarkMenu();
     void goToMark();
 
@@ -86,6 +90,7 @@ private:
     void createMenus();
     void createToolBars();
     void createStatusBar();
+    void createPanels();
     bool maybeSave();
 
     void addRecentFile(const QString &fileName);
@@ -112,6 +117,9 @@ private:
     QMenu *viewMenu;
     QMenu *markMenu;
     QToolBar *mainToolBar;
+
+    QDockWidget *docsPanel;
+    QWebView *docsView;
 
     QLabel *lineLabel;
 
