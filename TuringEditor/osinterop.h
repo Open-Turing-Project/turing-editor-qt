@@ -3,9 +3,11 @@
 
 #include <QWidget>
 #include <QString>
+#include <QDir>
 
 namespace OSInterop {
-bool associateTuringFiles();
+    QDir getExecutableDirectory();
+    bool associateTuringFiles();
 }
 
 #endif // OSINTEROP_H

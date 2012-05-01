@@ -1,16 +1,33 @@
 #include "osinterop.h"
 #include "resource.h"
+
+#include <QCoreApplication>
+
 #ifdef Q_OS_WIN
 #include <windows.h>
-
 #define UNIQUE_WINDOW_TITLE "OpenTuring-3F2AF4E0-4F89-11D3-9A0C-0305E82C3301::EventReceiver"
+#endif
 
 // A bunch of code is borrowed from the ready to program editor that was used by turing
 
 namespace OSInterop {
+
+    QDir getExecutableDirectory() {
+        QDir packageDir(QCoreApplication::applicationDirPath());
+#ifdef Q_OS_MAC
+        // On macs packageDir points to a location inside the app bundle.
+        // Going up 3 levels gets the dir we want.
+        for(int i = 0; i < 3; ++i)
+            packageDir.cdUp();
+#endif
+        return packageDir;
+    }
+
+#ifdef Q_OS_WIN
 //! creates a registry key
 static bool MyCreateRegEntry (const char *pmKeyName, const char *pmKeyValue)
 {
+
     HKEY	myKeyHandle;
     DWORD	myDisposition;
     int		myResult;
@@ -217,8 +234,9 @@ static bool	MyCreateAssocEntry (const char *pmAssocName,
 
     return true;
 } // MyCreateAssocEntry
-
+#endif
 bool associateTuringFiles() {
+#ifdef Q_OS_WIN
     if (!MyCreateAssocEntry ("OpenTuring.t", ".t",
                              "Turing Program", IDI_TURINGFILE,
                              "&Open with Open Turing"))
@@ -231,8 +249,8 @@ bool associateTuringFiles() {
     {
         return false;
     }
+#endif
 }
 
 
 } // end namespace
-#endif // Q_OS_WIN

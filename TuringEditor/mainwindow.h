@@ -60,7 +60,7 @@ public slots:
 
 
 protected:
-    void closeEvent(QCloseEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
 
 private slots:
     void open();

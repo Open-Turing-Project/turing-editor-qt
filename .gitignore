@@ -8,5 +8,6 @@ test/build/*
 *.tbc
 OpenTuring
 debug
+.svn
 release
 Makefile

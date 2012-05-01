@@ -25,6 +25,7 @@
 #include <QCoreApplication>
 #include <QStringList>
 #include <QLabel>
+#include <QDir>
 #include <QWebView>
 #include <QUrl>
 #include <QDockWidget>
@@ -174,6 +175,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (docMan->promptCloseAll()) {
         event->accept();
+
+        QSettings settings;
+        settings.setValue("windowgeometry", saveGeometry());
+        settings.setValue("windowState", saveState());
     } else {
         event->ignore();
     }
@@ -284,9 +289,13 @@ void MainWindow::showHelp()
 }
 
 void MainWindow::showDocs(QString page) {
-    QString loc = "http://compsci.ca/holtsoft/doc/" + page.replace('.',"_").toLower() + ".html";
-    qDebug() << "Fetching docs at " << loc;
-    docsView->load(QUrl(loc));
+    QDir docsDir = OSInterop::getExecutableDirectory();
+    docsDir.cd("docs/markdownhtml");
+    QString loc = docsDir.absolutePath() + "/" + page.replace('.',"_").toLower() + ".html";
+    if(QFileInfo(loc).exists()) {
+        qDebug() << "Fetching docs at " << loc;
+        docsView->load(QUrl::fromLocalFile(loc));
+    }
 }
 
 void MainWindow::showSettings()
@@ -476,6 +485,7 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
     mainToolBar = addToolBar(tr("Actions"));
+    mainToolBar->setObjectName("MainToolbar");
     mainToolBar->setMovable(false);
     mainToolBar->setIconSize(QSize(16,16));
     mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -507,15 +517,17 @@ void MainWindow::createPanels() {
     // Create the web view
     docsView = new QWebView(this);
     docsView->setMinimumHeight(170);
-    docsView->load(QUrl("http://compsci.ca/holtsoft/doc/intro.html"));
+    docsView->setMinimumWidth(300);
+    showDocs("intro");
     docsView->show();
     // Create the enclosing dock widget
     docsPanel = new QDockWidget(tr("Documentation"), this);
     docsPanel->setAllowedAreas(Qt::LeftDockWidgetArea |
                                 Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     docsPanel->setWidget(docsView);
+    docsPanel->setObjectName("Documentation");
     docsPanel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-    addDockWidget(Qt::BottomDockWidgetArea, docsPanel);
+    addDockWidget(Qt::RightDockWidgetArea, docsPanel);
 }
 
 void MainWindow::readSettings()
@@ -523,6 +535,9 @@ void MainWindow::readSettings()
     QSettings settings;
 
     saveOnRun = settings.value("saveOnRun",true).toBool();
+
+    restoreGeometry(settings.value("windowgeometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
 
     docMan->readSettings();
 }

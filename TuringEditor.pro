@@ -84,11 +84,11 @@ CONFIG(test_editor) {
     RCC_DIR = test/build/rcc
     UI_DIR = test/build/ui
 } else:debug {
-    DESTDIR = debug
-    OBJECTS_DIR = debug/.obj
-    MOC_DIR = debug/.moc
-    RCC_DIR = debug/.rcc
-    UI_DIR = debug/.ui
+    DESTDIR = ./debug
+    OBJECTS_DIR = ./debug/.obj
+    MOC_DIR = ./debug/.moc
+    RCC_DIR = ./debug/.rcc
+    UI_DIR = ./debug/.ui
 } else {
     DESTDIR = OpenTuring/NewEditor
     OBJECTS_DIR = release/.obj
@@ -431,6 +431,8 @@ CONFIG(test_editor) {
 
 # include the library that allows single instance checking
 include(qtsingleapplication/src/qtsingleapplication.pri)
+# include the json parser library
+include(QJson/json.pri)
 
 
 
