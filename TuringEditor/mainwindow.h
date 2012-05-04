@@ -31,6 +31,7 @@ class QMenu;
 class QLabel;
 class QWebView;
 class QDockWidget;
+class QListWidget;
 class TuringEditorWidget;
 class QsciStyle;
 
@@ -120,6 +121,9 @@ private:
 
     QDockWidget *docsPanel;
     QWebView *docsView;
+
+    QDockWidget *messagePanel;
+    QListWidget *messageView;
 
     QLabel *lineLabel;
 

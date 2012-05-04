@@ -25,6 +25,8 @@ public:
     bool hasMessage;
 
     //! POI is GPS parlance for Point Of Interest
+    //! Here it is used to store the location and other data of significant
+    //! points in the code.
     struct POILine {
         POILine() : type(""),id(""),other(NULL),indent(0) {}
 

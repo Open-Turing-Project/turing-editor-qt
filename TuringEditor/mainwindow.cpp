@@ -29,6 +29,7 @@
 #include <QWebView>
 #include <QUrl>
 #include <QDockWidget>
+#include <QListWidget>
 
 #include <Qsci/qscistyle.h>
 
@@ -513,6 +514,8 @@ void MainWindow::createStatusBar()
 }
 
 void MainWindow::createPanels() {
+
+
     // Doc Panel ---------------
     // Create the web view
     docsView = new QWebView(this);
@@ -528,6 +531,22 @@ void MainWindow::createPanels() {
     docsPanel->setObjectName("Documentation");
     docsPanel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     addDockWidget(Qt::RightDockWidgetArea, docsPanel);
+
+    // Message Panel ---------------
+    // Create the list view
+    messageView = new QListWidget(this);
+    messageView->setMinimumHeight(170);
+    messageView->setMinimumWidth(200);
+    QIcon errorIcon(":/images/exclamation2.png");
+    new QListWidgetItem(errorIcon,tr("Error!"), messageView);
+    // Create the enclosing dock widget
+    messagePanel = new QDockWidget(tr("Messages"), this);
+    messagePanel->setAllowedAreas(Qt::LeftDockWidgetArea |
+                                Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    messagePanel->setWidget(messageView);
+    messagePanel->setObjectName("Messages");
+    messagePanel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    addDockWidget(Qt::RightDockWidgetArea, messagePanel);
 }
 
 void MainWindow::readSettings()
