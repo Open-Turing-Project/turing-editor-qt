@@ -221,7 +221,6 @@ void TuringEditorWidget::showError(int line,QString errMsg,int from, int to)
     errorLines.insert(line);
 
     ensureLineVisible(line); // scroll to it
-    hasMessage = true;
 }
 //! removes all error annotations from display.
 void TuringEditorWidget::clearErrors() {
@@ -230,8 +229,6 @@ void TuringEditorWidget::clearErrors() {
     markerDeleteAll(1);
 
     errorLines.clear();
-
-    hasMessage = false;
     emit statusChanged();
 }
 //! removes errors from a specific line
@@ -241,7 +238,6 @@ void TuringEditorWidget::clearErrorsLine(int line) {
     markerDelete(line,1);
     errorLines.remove(line);
     if(errorLines.empty()) {
-        hasMessage = false;
         emit statusChanged();
     }
 }
@@ -253,8 +249,6 @@ void TuringEditorWidget::clearEverything() {
     markerDeleteAll(-1);
 
     errorLines.clear();
-
-    hasMessage = false;
     emit statusChanged();
 }
 

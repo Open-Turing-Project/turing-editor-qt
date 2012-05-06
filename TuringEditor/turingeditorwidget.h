@@ -19,10 +19,20 @@ public:
 
     QStack<QPair<int,QString> > makeStack(int stopLine = -1, bool *stopIsStruct = 0);
 
-    QString fileName;
-
     //! Is there a message currently visible?
-    bool hasMessage;
+    bool hasMessage() const {
+        return !(errorLines.empty());
+    }
+
+    QString getFileName() const {
+        return fileName;
+    }
+    void setFileName(const QString &newFileName) {
+        fileName = newFileName;
+    }
+    bool isUnnamed() const {
+        return fileName.isEmpty();
+    }
 
     //! POI is GPS parlance for Point Of Interest
     //! Here it is used to store the location and other data of significant
@@ -92,6 +102,8 @@ private:
     QsciStyle *lightErrMsgStyle;
 
     QSet<int> errorLines;
+
+    QString fileName;
 
 };
 

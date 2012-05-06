@@ -120,9 +120,9 @@ void MainWindow::cursorMoved(int line, int index) {
 void MainWindow::runProgram() {
 
     runDoc = docMan->currentDoc();
-    QString runFile = runDoc->fileName;
+    QString runFile = runDoc->getFileName();
 
-    if (saveOnRun && !(runDoc->fileName.isEmpty())) // if saveonrun and not untitled
+    if (saveOnRun && !(runDoc->isUnnamed()))
         runDoc->save();
 
     if(currentRunner != NULL) {
@@ -133,7 +133,7 @@ void MainWindow::runProgram() {
             return;
         }
     }
-    if(runDoc->fileName.isEmpty()) { // if untitled, use a temp file
+    if(runDoc->isUnnamed()) { // if untitled, use a temp file
         QString tmpFile = QDir::temp().absoluteFilePath(DocumentManager::TempName);
         runDoc->saveFile(tmpFile,true); // true = temp file
         runFile = tmpFile;
@@ -204,7 +204,7 @@ void MainWindow::openRecentFile()
 void MainWindow::open()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Program File"),
-                                                    docMan->currentDoc()->fileName,
+                                                    docMan->currentDoc()->getFileName(),
                                                     tr("Turing Files (*.t *.ti *.tu *.tur)"));
     if (!fileName.isEmpty()){
         addRecentFile(fileName);

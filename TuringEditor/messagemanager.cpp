@@ -26,16 +26,19 @@ QStandardItem *MessageManager::getFileItem(QString filePath) {
 }
 QStandardItem *MessageManager::createFileItem(QString filePath) {
     QStandardItem *item = new QStandardItem(fileIcon,QFileInfo(filePath).fileName());
-    item->setData(filePath,Qt::StatusTipRole);
+    item->setData(filePath,Qt::ToolTipRole);
     item->setData(filePath,MessageManager::FilePathRole);
+    item->setEditable(false);
     appendRow(item);
     return item;
 }
 QStandardItem *MessageManager::createMessageItem(QStandardItem *parent, int line, QString msg, int from, int to) {
     QStandardItem *item = new QStandardItem(errorIcon,msg);
+    item->setData(tr("line %0").arg(line),Qt::ToolTipRole);
     item->setData(from,MessageManager::FromColRole);
     item->setData(to,MessageManager::ToColRole);
     item->setData(line,MessageManager::LineNumberRole);
+    item->setEditable(false);
     parent->appendRow(item);
     return item;
 }

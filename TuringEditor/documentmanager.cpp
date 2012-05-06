@@ -79,19 +79,19 @@ TuringEditorWidget *DocumentManager::openFile(QString fileName) {
 
     // is it already open?
     foreach(TuringEditorWidget *d,documents) {
-        if(d->fileName == fileName) {
+        if(d->getFileName() == fileName) {
             return d;
         }
     }
 
     // use the current document if it is untitled and empty
-    if(currentDoc()->fileName.isEmpty() && currentDoc()->text().isEmpty()) {
+    if(currentDoc()->isUnnamed() && currentDoc()->text().isEmpty()) {
         doc = currentDoc();
     } else {
         doc = newFile();
     }
 
-    doc->fileName = fileName;
+    doc->setFileName(fileName);;
 
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly)) {
@@ -120,7 +120,7 @@ TuringEditorWidget *DocumentManager::openFile(QString fileName) {
 //! creates a new untitled document
 TuringEditorWidget *DocumentManager::newFile() {
     TuringEditorWidget *doc = new TuringEditorWidget(this);
-    doc->fileName = ""; // empty == untitled
+    doc->setFileName(""); // empty == untitled
 
     addTab(doc,getTabText(doc));
 
@@ -183,15 +183,15 @@ void DocumentManager::updateName(TuringEditorWidget *doc) {
 QString DocumentManager::getTabText(TuringEditorWidget *doc) {
     QString tabText;
 
-    if(doc->fileName.isEmpty()) {
+    if(doc->isUnnamed()) {
         tabText += tr("Untitled.t");
     } else {
-        tabText += strippedName(doc->fileName);
+        tabText += strippedName(doc->getFileName());
     }
     if(doc->isModified())
         tabText += "*";
 
-    if(doc->hasMessage)
+    if(doc->hasMessage())
         tabText += " !";
 
     return tabText;
