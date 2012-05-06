@@ -21,5 +21,6 @@
         <file>resources/predefs.txt</file>
         <file>images/exclamation.png</file>
         <file>images/exclamation2.png</file>
+        <file>images/page_error.png</file>
     </qresource>
 </RCC>

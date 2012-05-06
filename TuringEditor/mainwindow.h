@@ -31,13 +31,14 @@ class QMenu;
 class QLabel;
 class QWebView;
 class QDockWidget;
-class QListWidget;
+class QTreeView;
 class TuringEditorWidget;
 class QsciStyle;
 
 class FindReplaceDialog;
 class TuringLexer;
 class TestEditor;
+class MessageManager;
 
 class TuringRunner;
 
@@ -122,8 +123,9 @@ private:
     QDockWidget *docsPanel;
     QWebView *docsView;
 
+    MessageManager *messageManager;
     QDockWidget *messagePanel;
-    QListWidget *messageView;
+    QTreeView *messageView;
 
     QLabel *lineLabel;
 

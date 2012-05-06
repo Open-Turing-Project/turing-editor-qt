@@ -29,7 +29,7 @@
 #include <QWebView>
 #include <QUrl>
 #include <QDockWidget>
-#include <QListWidget>
+#include <QTreeView>
 
 #include <Qsci/qscistyle.h>
 
@@ -41,6 +41,7 @@
 #include "findreplacedialog.h"
 #include "aboutbox.h"
 #include "settingsdialog.h"
+#include "messagemanager.h"
 
 #include "osinterop.h"
 
@@ -55,8 +56,13 @@ MainWindow::MainWindow()
     setWindowIcon(QIcon(":/images/pixel_icon.png"));
 
     docMan = new DocumentManager(this);
+    messageManager = new MessageManager(this);
 
-    // BUG find next after switching tabs
+    messageManager->handleMessageFile(50,"Something Died","/bob/hi.t",5,6);
+    messageManager->handleMessageFile(100,"Massive Problem!","/bob/hi.t",9,12);
+    messageManager->handleMessageFile(10,"Error in another File!","/troll/BigFileNameThat ContainsASpace.t",9,12);
+
+    // TODO BUG find next after switching tabs
     findDialog = new FindReplaceDialog();
     docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
     docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
@@ -534,11 +540,10 @@ void MainWindow::createPanels() {
 
     // Message Panel ---------------
     // Create the list view
-    messageView = new QListWidget(this);
+    messageView = new QTreeView(this);
     messageView->setMinimumHeight(170);
     messageView->setMinimumWidth(200);
-    QIcon errorIcon(":/images/exclamation2.png");
-    new QListWidgetItem(errorIcon,tr("Error!"), messageView);
+    messageView->setModel(messageManager);
     // Create the enclosing dock widget
     messagePanel = new QDockWidget(tr("Messages"), this);
     messagePanel->setAllowedAreas(Qt::LeftDockWidgetArea |

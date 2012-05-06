@@ -230,7 +230,8 @@ HEADERS = \
     TuringEditor/documentmanager.h \
     TuringEditor/signalmultiplexer.h \
     TuringEditor/osinterop.h \
-    TuringEditor/resources/resource.h
+    TuringEditor/resources/resource.h \
+    TuringEditor/messagemanager.h
 
 SOURCES = \
     ./TuringEditor/turinglexer.cpp \
@@ -406,7 +407,8 @@ SOURCES = \
     TuringEditor/settingsdialog.cpp \
     TuringEditor/documentmanager.cpp \
     TuringEditor/signalmultiplexer.cpp \
-    TuringEditor/osinterop.cpp
+    TuringEditor/osinterop.cpp \
+    TuringEditor/messagemanager.cpp
 
 TRANSLATIONS = \
 	./QScintilla/Qt4/qscintilla_cs.ts \
@@ -433,20 +435,3 @@ CONFIG(test_editor) {
 include(qtsingleapplication/src/qtsingleapplication.pri)
 # include the json parser library
 include(QJson/json.pri)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
