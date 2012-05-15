@@ -15,10 +15,15 @@ public:
     static const Qt::ItemDataRole LineNumberRole = (Qt::ItemDataRole)(Qt::UserRole + 4); // int
 
     QStandardItem *getFileItem(QString filePath);
-signals:
 
+    void removeMessage(const QString &filePath, int line);
+    void removeMessage(QStandardItem *message);
+signals:
+    void fileMessagesChanged(QString filePath);
 public slots:
     void handleMessageFile(int line,QString errMsg, QString file, int from, int to);
+    void clearMessages();
+    void clearMessagesFile(QString filePath);
 private:
     QStandardItem *createFileItem(QString filePath);
     QStandardItem *createMessageItem(QStandardItem *parent, int line, QString msg, int from, int to);

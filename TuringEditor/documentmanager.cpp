@@ -7,10 +7,12 @@
 #include <QMessageBox>
 #include <QFileInfo>
 
+#include "messagemanager.h"
+
 const QString DocumentManager::TempName = "UnsavedProgram.t";
 
-DocumentManager::DocumentManager(QWidget *parent) :
-    QTabWidget(parent)
+DocumentManager::DocumentManager(QWidget *parent, MessageManager *manager) :
+    QTabWidget(parent), messMan(manager)
 {
     setTabsClosable(true);
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
@@ -42,34 +44,6 @@ void DocumentManager::readSettings()
     // pass it on
     foreach(TuringEditorWidget *doc, documents)
         doc->readSettings();
-}
-void DocumentManager::clearAllErrors() {
-    foreach(TuringEditorWidget *doc, documents){
-        doc->clearErrors();
-        updateName(doc);
-    }
-}
-
-//! add an error annotation to a file at a certain line
-//! `file` must be a full path
-void DocumentManager::handleErrorFile(int line,QString errMsg, QString file, int from, int to) {
-
-    TuringEditorWidget *doc;
-    if(QFileInfo(file).fileName() == DocumentManager::TempName) {
-        doc = currentDoc();
-    } else {
-        // should return an existing file if it is already open
-        doc = openFile(file);
-    }
-
-    if(to != -1) {
-        doc->showError(line-1,errMsg,from-1,to);
-    } else {
-        doc->showError(line-1,errMsg);
-    }
-
-    setCurrentWidget(doc);
-    updateName(doc);
 }
 
 TuringEditorWidget *DocumentManager::openFile(QString fileName) {
@@ -112,14 +86,14 @@ TuringEditorWidget *DocumentManager::openFile(QString fileName) {
 
     setCurrentWidget(doc);
 
-    //doc->showError(8,"error: This is the error text.");
+    //messMan->handleMessageFile(5,"This is a test error",fileName,4,7);
 
     return doc;
 }
 
 //! creates a new untitled document
 TuringEditorWidget *DocumentManager::newFile() {
-    TuringEditorWidget *doc = new TuringEditorWidget(this);
+    TuringEditorWidget *doc = new TuringEditorWidget(this,messMan);
     doc->setFileName(""); // empty == untitled
 
     addTab(doc,getTabText(doc));
@@ -133,10 +107,12 @@ TuringEditorWidget *DocumentManager::newFile() {
 
 void DocumentManager::currentTabChanged(int index) {
     QWidget *wid = widget(index);
-    TuringEditorWidget *doc = static_cast<TuringEditorWidget*>(wid);
+    if(wid != NULL) {
+        TuringEditorWidget *doc = static_cast<TuringEditorWidget*>(wid);
 
-    multiplex->setCurrentObject(doc);
-    doc->emitStatus();
+        multiplex->setCurrentObject(doc);
+        doc->emitStatus();
+    }
 }
 
 void DocumentManager::closeTab(int index) {
@@ -195,6 +171,20 @@ QString DocumentManager::getTabText(TuringEditorWidget *doc) {
         tabText += " !";
 
     return tabText;
+}
+
+void DocumentManager::showMessage(const QModelIndex &index) {
+    QStandardItem *item = messMan->itemFromIndex(index);
+    QStandardItem *parent = item->parent();
+
+    // if the parent is null it is a file item, if not, it is a message
+    bool isMessage = (parent != NULL);
+    QVariant filePath = (isMessage ? parent : item)->data(MessageManager::FilePathRole);
+    TuringEditorWidget *doc = openFile(filePath.toString());
+    setCurrentWidget(doc);
+
+    if(isMessage)
+        doc->ensureLineVisible(item->data(MessageManager::LineNumberRole).toInt());
 }
 
 QString DocumentManager::strippedName(const QString &fullFileName)

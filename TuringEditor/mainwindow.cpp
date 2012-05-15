@@ -55,12 +55,12 @@ MainWindow::MainWindow()
 {
     setWindowIcon(QIcon(":/images/pixel_icon.png"));
 
-    docMan = new DocumentManager(this);
     messageManager = new MessageManager(this);
+    docMan = new DocumentManager(this,messageManager);
 
-    messageManager->handleMessageFile(50,"Something Died","/bob/hi.t",5,6);
+    /*messageManager->handleMessageFile(50,"Something Died","/bob/hi.t",5,6);
     messageManager->handleMessageFile(100,"Massive Problem!","/bob/hi.t",9,12);
-    messageManager->handleMessageFile(10,"Error in another File!","/troll/BigFileNameThat ContainsASpace.t",9,12);
+    messageManager->handleMessageFile(10,"Error in another File!","/troll/BigFileNameThat ContainsASpace.t",9,12);*/
 
     // TODO BUG find next after switching tabs
     findDialog = new FindReplaceDialog();
@@ -143,12 +143,12 @@ void MainWindow::runProgram() {
 
     QCoreApplication::processEvents();
 
-    docMan->clearAllErrors();
+    messageManager->clearMessages();
 
     // LEAK TODO old runner is left hanging in QObject tree
     currentRunner = new TuringRunner(this,runFile);
-    connect(currentRunner,SIGNAL(errorFile(int,QString,QString,int,int)),docMan,
-            SLOT(handleErrorFile(int,QString,QString,int,int)));
+    connect(currentRunner,SIGNAL(errorFile(int,QString,QString,int,int)),messageManager,
+            SLOT(handleMessageFile(int,QString,QString,int,int)));
     connect(currentRunner,SIGNAL(errorGeneral(QString)),this,SLOT(handleError(QString)));
     connect(currentRunner,SIGNAL(compileFinished(bool)),this,SLOT(compileComplete(bool)));
 
@@ -474,6 +474,7 @@ void MainWindow::createMenus()
     viewMenu->addAction(zoomInAct);
     viewMenu->addSeparator();
     viewMenu->addAction(docsPanel->toggleViewAction());
+    viewMenu->addAction(messagePanel->toggleViewAction());
 
     markMenu = menuBar()->addMenu(tr("&Mark"));
     markMenu->setTearOffEnabled(true);
@@ -552,6 +553,7 @@ void MainWindow::createPanels() {
     messagePanel->setObjectName("Messages");
     messagePanel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     addDockWidget(Qt::RightDockWidgetArea, messagePanel);
+    connect(messageView,SIGNAL(clicked(QModelIndex)),docMan,SLOT(showMessage(QModelIndex)));
 }
 
 void MainWindow::readSettings()

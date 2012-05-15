@@ -3,15 +3,18 @@
 
 #include <QTabWidget>
 #include <QList>
+#include <QModelIndex>
 
 #include "signalmultiplexer.h"
 #include "turingeditorwidget.h"
+
+class MessageManager;
 
 class DocumentManager : public QTabWidget
 {
     Q_OBJECT
 public:
-    explicit DocumentManager(QWidget *parent = 0);
+    explicit DocumentManager(QWidget *parent, MessageManager *manager);
 
     SignalMultiplexer *multiplex;
 
@@ -27,13 +30,12 @@ public slots:
     TuringEditorWidget *newFile();
     void readSettings();
     bool promptCloseAll();
-    void clearAllErrors();
 
     void closeTab (int index);
 
-    void handleErrorFile(int line,QString errMsg, QString file, int from, int to);
-
-
+    //! Takes a model index into the message model and selects or opens the file
+    //! and scrolls to the message. If the index points to a file item the file is selected.
+    void showMessage(const QModelIndex & index);
 
 private slots:
     void currentTabChanged(int index);
@@ -46,6 +48,8 @@ private:
     QString getTabText(TuringEditorWidget *doc);
 
     QList<TuringEditorWidget *> documents;
+
+    MessageManager *messMan;
 
     // prefs
     bool confirmSave;

@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStandardItem>
 
 // for min
 #include <algorithm>
@@ -17,10 +18,12 @@
 #include "mainwindow.h"
 #include "Qsci/qscilexer.h"
 #include "turinglexer.h"
+#include "messagemanager.h"
+
 
 //! override various editor defaults
-TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
-    QsciScintilla(parent)
+TuringEditorWidget::TuringEditorWidget(QWidget *parent, MessageManager *messMan) :
+    QsciScintilla(parent), messageManager(messMan)
 {
     lex = new TuringLexer(this);
     setLexer(lex);
@@ -50,12 +53,20 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent) :
     indicatorDefine(QsciScintilla::BoxIndicator,3);
     setIndicatorForegroundColor(QColor(50,250,50),3);
 
-    darkErrMsgStyle = new QsciStyle(-1,"dark error style",QColor(255,220,220),QColor(184,50,50),QFont());
-    lightErrMsgStyle = new QsciStyle(-1,"light error style",QColor(189,0,15),QColor(255,240,240),QFont("Times New Roman",12,QFont::Normal,true));
+    // Dark error message style
+    SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,100,QColor(255,220,220));
+    SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,100,QColor(184,50,50));
+    // Light error message style
+    SendScintilla(QsciScintillaBase::SCI_STYLESETFONT,101,"Times New Roman");
+    SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,101,QColor(189,0,15));
+    SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,101,QColor(255,240,240));
+
 
     connect(this,SIGNAL(textChanged()),this,SLOT(textEdited()));
     connect(this,SIGNAL(cursorPositionChanged(int,int)),this,SLOT(cursorMoved(int,int)));
     connect(this,SIGNAL(modificationChanged(bool)),this,SLOT(modificationStatusChanged(bool)));
+
+    connect(messageManager,SIGNAL(fileMessagesChanged(QString)),this,SLOT(messagesChanged(QString)));
 }
 
 void TuringEditorWidget::readSettings() {
@@ -99,7 +110,8 @@ void TuringEditorWidget::textEdited() {
     int line,col;
     getCursorPosition(&line,&col);
     if(errorLines.contains(line)) {
-        clearErrorsLine(line);
+        //clearErrorsLine(line);
+        messageManager->removeMessage(fileName,line);
     }
 }
 void TuringEditorWidget::cursorMoved(int line, int col)  {
@@ -133,6 +145,11 @@ QString TuringEditorWidget::findWordAtPoint(int line, int col) {
 
 void TuringEditorWidget::modificationStatusChanged(bool state) {
     emit statusChanged();
+}
+
+void TuringEditorWidget::messagesChanged(QString file) {
+    if(file == fileName)
+        updateMessages();
 }
 
 void TuringEditorWidget::emitStatus() {
@@ -204,6 +221,22 @@ void TuringEditorWidget::lightTheme() {
     setSelectionBackgroundColor(palette().color(QPalette::Highlight));
     clearErrors();
 }
+void TuringEditorWidget::updateMessages() {
+    clearErrors();
+
+    QStandardItem *file = messageManager->getFileItem(fileName);
+    if(file == NULL) return;
+
+    QStandardItem *message;
+    for(int i = 0, e = file->rowCount(); i < e;++i) {
+        message = file->child(i);
+        int line = message->data(MessageManager::LineNumberRole).toInt();
+        int from = message->data(MessageManager::FromColRole).toInt();
+        int to = message->data(MessageManager::ToColRole).toInt();
+        showError(line,message->text(),from,to);
+    }
+}
+
 //! Uses a scintilla annotation to display an error box below a certain line.
 //! if from and to are provided a squiggly underline is used.
 //! From and to are character indexes into the line.
@@ -211,8 +244,8 @@ void TuringEditorWidget::lightTheme() {
 void TuringEditorWidget::showError(int line,QString errMsg,int from, int to)
 {
     markerAdd(line,1);
-    QsciStyle *errStyle = lex->getTheme() == "Dark" ? darkErrMsgStyle : lightErrMsgStyle;
-    annotate(line,"^ " + errMsg,*errStyle);
+    int errStyle = lex->getTheme() == "Dark" ? 100 : 101;
+    annotate(line,"^ " + errMsg,errStyle);
 
     if(from >= 0 && to >= 0) {
         fillIndicatorRange(line,from,line,to,2);
@@ -248,6 +281,7 @@ void TuringEditorWidget::clearEverything() {
     clearIndicatorRange(0,0,lines(),text(lines()).length(),-1);
     markerDeleteAll(-1);
 
+    messageManager->clearMessagesFile(fileName);
     errorLines.clear();
     emit statusChanged();
 }

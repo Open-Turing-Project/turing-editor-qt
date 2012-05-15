@@ -9,12 +9,13 @@
 
 class TuringLexer;
 class QsciStyle;
+class MessageManager;
 
 class TuringEditorWidget : public QsciScintilla
 {
     Q_OBJECT
 public:
-    explicit TuringEditorWidget(QWidget *parent = 0);
+    explicit TuringEditorWidget(QWidget *parent, MessageManager *messMan);
     TuringLexer *lex;
 
     QStack<QPair<int,QString> > makeStack(int stopLine = -1, bool *stopIsStruct = 0);
@@ -29,6 +30,7 @@ public:
     }
     void setFileName(const QString &newFileName) {
         fileName = newFileName;
+        updateMessages();
     }
     bool isUnnamed() const {
         return fileName.isEmpty();
@@ -78,8 +80,6 @@ public slots:
     void darkTheme();
 
     void showError(int line,QString errMsg,int from = -1, int to = -1);
-    void clearErrors();
-    void clearErrorsLine(int line);
     void clearEverything();
 
     void readSettings();
@@ -90,16 +90,21 @@ public slots:
     QString completeStruct();
     void autoIndentAll();
 private slots:
+    void clearErrors();
+    void clearErrorsLine(int line);
+
     void textEdited();
     void cursorMoved(int line, int col);
     void modificationStatusChanged(bool state);
 
+    void messagesChanged(QString file);
+
 private:
+    void updateMessages();
+
+    MessageManager *messageManager;
 
     bool confirmSave;
-
-    QsciStyle *darkErrMsgStyle;
-    QsciStyle *lightErrMsgStyle;
 
     QSet<int> errorLines;
 
