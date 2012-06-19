@@ -12,30 +12,28 @@ class TuringRunner : public QObject
 public:
     explicit TuringRunner(QObject *parent, const QString &program);
 
-    bool isCompiled();
-
 signals:
     void errorFile(int line,QString errMsg, QString file, int from, int to);
     void errorGeneral(QString errMsg);
 
-    void compileFinished(bool success);
+    void runFinished(bool success);
+    void runningProgram();
 
 public slots:
-    void startCompile();
-    void startRun();
-    void runFinished();
+    void compileAndRun();
     void stopRun();
 
 private slots:
-    void compilerClosed(int status);
+    void runnerClosed(int status);
     void handleProcessError (QProcess::ProcessError error);
+    void handleNewOutput();
 private:
-    void handleErrors(QTextStream &stream);
+    void handleErrors(const QStringList &outputLines);
+    void handleError(QString line);
 
     QProcess *turingRunner;
 
     QString mainProgram;
-    QString compiledFile;
 };
 
 #endif // TURINGRUNNER_H

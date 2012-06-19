@@ -111,7 +111,7 @@ void TuringEditorWidget::textEdited() {
     getCursorPosition(&line,&col);
     if(errorLines.contains(line)) {
         //clearErrorsLine(line);
-        messageManager->removeMessage(fileName,line);
+        messageManager->removeMessage(fileName,line+1);
     }
 }
 void TuringEditorWidget::cursorMoved(int line, int col)  {
@@ -241,8 +241,9 @@ void TuringEditorWidget::updateMessages() {
 //! if from and to are provided a squiggly underline is used.
 //! From and to are character indexes into the line.
 //! If to is greater than the line length it will wrap.
-void TuringEditorWidget::showError(int line,QString errMsg,int from, int to)
+void TuringEditorWidget::showError(int messageLine,QString errMsg,int from, int to)
 {
+    int line = messageLine - 1; // scintilla uses 0-based lines
     markerAdd(line,1);
     int errStyle = lex->getTheme() == "Dark" ? 100 : 101;
     annotate(line,"^ " + errMsg,errStyle);

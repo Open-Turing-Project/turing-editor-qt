@@ -34,24 +34,13 @@ VERSTR = '\\"$${CURRENT_VERSION}\\"'  # place quotes around the version string
 DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the version string
 
 # files used in the running process
-# usually the turing editor and turing prolog
-# TURING_COMPILER is passed -compile <file.t>
-# TURING_RUNNER is passed -file <file.tbc>
-release {
-    TURING_COMPILER = ../turing.exe
-    TURING_RUNNER = ../support/bin/TuringEXEProlog.exe
-} else {
-    TURING_COMPILER = OldEditor.exe
-    TURING_RUNNER = support/bin/TuringEXEProlog.exe
-}
-
+# file is found in support/bin/TuringEXEProlog.exe
+# of the main OpenTuring distribution
+TURING_RUNNER = TuringEXEProlog.exe
 HELP_FILE = ../support/help/TuringDoc.chm
 
 HELP_FILE_STR = '\\"$${HELP_FILE}\\"'
 DEFINES += HELP_FILE_PATH=\"$${HELP_FILE_STR}\"
-
-TURING_COMPILER_STR = '\\"$${TURING_COMPILER}\\"'
-DEFINES += COMPILER_PATH=\"$${TURING_COMPILER_STR}\"
 
 TURING_RUNNER_STR = '\\"$${TURING_RUNNER}\\"'
 DEFINES += RUNNER_PATH=\"$${TURING_RUNNER_STR}\"

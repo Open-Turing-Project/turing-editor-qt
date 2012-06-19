@@ -127,12 +127,8 @@ void MainWindow::runProgram() {
         runDoc->save();
 
     if(currentRunner != NULL) {
-        if(currentRunner->isCompiled()) {
-            currentRunner->stopRun();
-        } else {
-            statusBar()->showMessage(tr("Already compiling a program."));
-            return;
-        }
+        currentRunner->stopRun();
+        currentRunner->deleteLater(); // TODO is this safe?
     }
     if(runDoc->isUnnamed()) { // if untitled, use a temp file
         QString tmpFile = QDir::temp().absoluteFilePath(DocumentManager::TempName);
@@ -140,31 +136,25 @@ void MainWindow::runProgram() {
         runFile = tmpFile;
     }
 
-    statusBar()->showMessage(tr("Compiling..."));
+    statusBar()->showMessage(tr("Running..."));
 
     QCoreApplication::processEvents();
 
     messageManager->clearMessages();
 
-    // LEAK TODO old runner is left hanging in QObject tree
     currentRunner = new TuringRunner(this,runFile);
     connect(currentRunner,SIGNAL(errorFile(int,QString,QString,int,int)),messageManager,
             SLOT(handleMessageFile(int,QString,QString,int,int)));
     connect(currentRunner,SIGNAL(errorGeneral(QString)),this,SLOT(handleError(QString)));
-    connect(currentRunner,SIGNAL(compileFinished(bool)),this,SLOT(compileComplete(bool)));
+    connect(currentRunner,SIGNAL(runFinished(bool)),this,SLOT(runComplete(bool)));
 
-    currentRunner->startCompile();
+    currentRunner->compileAndRun();
 }
 
-void MainWindow::compileComplete(bool success) {
-    if (success){
-        if (currentRunner != NULL && currentRunner->isCompiled()) {
-            statusBar()->showMessage(tr("Compile suceeded. Running..."));
-            currentRunner->startRun();
-        }
-    } else {
+void MainWindow::runComplete(bool success) {
+    if (!success){
         currentRunner = NULL;
-        statusBar()->showMessage(tr("Compile failed."));
+        statusBar()->showMessage(tr("Run failed."));
     }
 }
 

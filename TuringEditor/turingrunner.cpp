@@ -5,70 +5,58 @@
 #include <QIODevice>
 #include <QDir>
 #include <QCoreApplication>
+#include <QDebug>
 
 TuringRunner::TuringRunner(QObject *parent, const QString &program) :
-    QObject(parent), compiledFile("")
+    QObject(parent)
 {
     mainProgram = program;
     turingRunner = NULL;
 }
 
-void TuringRunner::startCompile() {
-    QString compilerPath = QCoreApplication::applicationDirPath () + "/" + COMPILER_PATH;
-    QProcess *turingCompiler = new QProcess(this);
+void TuringRunner::compileAndRun() {
+    QString runnerPath = QCoreApplication::applicationDirPath () + "/" + RUNNER_PATH;
+    turingRunner = new QProcess(this);
     QStringList args;
-    args += "-compile";
+    args += "-run";
     args += QDir::toNativeSeparators(mainProgram);
-    connect(turingCompiler,SIGNAL(finished(int)),this,SLOT(compilerClosed(int)));
-    turingCompiler->start(compilerPath,args);
+    connect(turingRunner,SIGNAL(finished(int)),this,SLOT(runnerClosed(int)));
+    connect(turingRunner,SIGNAL(readyReadStandardOutput()),this,SLOT(handleNewOutput()));
+    turingRunner->start(runnerPath,args);
 }
 
-void TuringRunner::compilerClosed(int status) {
+void TuringRunner::handleNewOutput() {
+    qDebug() << "Handling Output";
+    while(turingRunner->bytesAvailable() > 0) {
+        QString line(turingRunner->readLine());
+        line = line.trimmed();
+        if(line != "") {
+            qDebug() << "Read line " << line;
+            if(line.startsWith("Running")) {
+                emit runningProgram();
+            } else if(line.startsWith("Error on line") || line.startsWith("Run time error")) {
+                handleError(line);
+            }
+        }
+    }
+}
+
+void TuringRunner::runnerClosed(int status) {
     if (status != 0) {
-        emit errorGeneral("Compiler closed unexpectedly.");
-        emit compileFinished(false);
+        emit errorGeneral("Turing runner closed unexpectedly.");
+        emit runFinished(false);
         return;
     }
 
-    QFileInfo fInfo(mainProgram);
-    QString byteCodeFile(fInfo.absolutePath() + "/" + fInfo.baseName() + ".tbc");
+    QString runnerOutput(turingRunner->readAllStandardOutput().constData());
+    QStringList outputLines = runnerOutput.split(QRegExp("\\r?\\n"));
 
-    QFile myFile(byteCodeFile); // Create a file handle for the file named
-    QString line;
-
-    if (!myFile.open(QIODevice::ReadOnly)) // Open the file
-    {
-        emit errorGeneral(tr("Can't open the compiled file: ") + byteCodeFile);
-        emit compileFinished(false);
-        return;
-    }
-
-    QTextStream stream( &myFile ); // Set the stream to read from myFile
-
-    line = stream.readLine(); // this reads a line (QString) from the file
-
-    // did something go wrong with the compile
-    if(line.startsWith("ERROR")) {
-        handleErrors(stream);
-        emit compileFinished(false);
+    // did something go wrong with the compile or run?
+    if(outputLines.first().startsWith("Compile Errors:") || runnerOutput.indexOf("Run time error") != -1) {
+        //handleErrors(outputLines);
+        emit runFinished(false);
     } else {
-        // good to go
-        compiledFile = byteCodeFile;
-        emit compileFinished(true);
-    }
-}
-
-void TuringRunner::startRun() {
-    if (!compiledFile.isEmpty()) {
-        QString runnerPath = QCoreApplication::applicationDirPath () + "/" + RUNNER_PATH;
-        turingRunner = new QProcess(this);
-        QStringList args;
-        args += "-file";
-        args += QDir::toNativeSeparators(compiledFile);
-        connect(turingRunner,SIGNAL(finished(int)),this,SLOT(runFinished()));
-        turingRunner->start(runnerPath,args);
-    } else {
-        emit errorGeneral(tr("Could not find the compiled file."));
+        emit runFinished(true);
     }
 }
 
@@ -80,26 +68,26 @@ void TuringRunner::handleProcessError (QProcess::ProcessError error) {
   Emits error signals for compile errors.
   Takes a text stream that is synced to the first error message.
   The errors it reads look like:
-  Line 2 [1 - 3] of BasicTest.t: 'Hi' has not been declared
+  Error on line 2 [1 - 3] of BasicTest.t: 'Hi' has not been declared
   */
-void TuringRunner::handleErrors(QTextStream &stream) {
-    QRegExp tokErrRegex("Line (\\d+) \\[(\\d+) - (\\d+)\\] of \\((.+)\\): (.+)");
-    QRegExp lineErrRegex("Line (\\d+) \\[(\\d+)\\] of \\((.+)\\): (.+)");
-    QString line;
+void TuringRunner::handleErrors(const QStringList &outputLines) {
+    QRegExp tokErrRegex("line (\\d+) \\[(\\d+) ?- ?(\\d+)\\] of (.+): (.+)");
+    QRegExp lineErrRegex("line (\\d+) \\[(\\d+)\\] of (.+): (.+)");
 
     // handle the errors
-    line = stream.readLine();
-    do {
-        if(tokErrRegex.exactMatch(line) != -1) {
+    foreach(QString line, outputLines) {
+        qDebug() << "Error line: " << line;
+        if(tokErrRegex.indexIn(line) != -1) {
 
             int line = tokErrRegex.cap(1).toInt();
             int from = tokErrRegex.cap(2).toInt();
             int to = tokErrRegex.cap(3).toInt();
+            if(to==0) to = -1; // turing uses 0 to convey no end. We use -1.
             QString file = QDir::fromNativeSeparators(tokErrRegex.cap(4));
             QString msg = tokErrRegex.cap(5);
 
             emit errorFile(line,msg,file,from,to);
-        } else if(lineErrRegex.exactMatch(line)) {
+        } else if(lineErrRegex.indexIn(line) != -1) {
 
             int line = lineErrRegex.cap(1).toInt();
             int from = lineErrRegex.cap(2).toInt();
@@ -108,18 +96,32 @@ void TuringRunner::handleErrors(QTextStream &stream) {
             QString msg = lineErrRegex.cap(4);
 
             emit errorFile(line,msg,file,from,to);
-        } else {
-            // this should not happen. Just being safe
-            emit errorGeneral("Error: " + line);
         }
-
-        // get next line
-        line = stream.readLine();
-    } while(line != "");
+    }
 }
+void TuringRunner::handleError(QString line) {
+    QRegExp tokErrRegex("line (\\d+) \\[(\\d+) ?- ?(\\d+)\\] of (.+): (.+)");
+    QRegExp lineErrRegex("line (\\d+) \\[(\\d+)\\] of (.+): (.+)");
+    qDebug() << "Error line: " << line;
+    if(tokErrRegex.indexIn(line) != -1) {
 
-bool TuringRunner::isCompiled() {
-    return !compiledFile.isEmpty();
+        int line = tokErrRegex.cap(1).toInt();
+        int from = tokErrRegex.cap(2).toInt()-1;
+        int to = tokErrRegex.cap(3).toInt()-1;
+        QString file = QDir::fromNativeSeparators(tokErrRegex.cap(4));
+        QString msg = tokErrRegex.cap(5);
+
+        emit errorFile(line,msg,file,from,to);
+    } else if(lineErrRegex.indexIn(line) != -1) {
+
+        int line = lineErrRegex.cap(1).toInt();
+        int from = lineErrRegex.cap(2).toInt()-1;
+        int to = -1;
+        QString file = QDir::fromNativeSeparators(lineErrRegex.cap(3));
+        QString msg = lineErrRegex.cap(4);
+
+        emit errorFile(line,msg,file,from,to);
+    }
 }
 
 void TuringRunner::stopRun() {
@@ -127,9 +129,4 @@ void TuringRunner::stopRun() {
         turingRunner->terminate();
         //runFinished(); should get called by close handler
     }
-}
-
-void TuringRunner::runFinished() {
-    // delete the tbc file
-    QFile::remove(compiledFile);
 }

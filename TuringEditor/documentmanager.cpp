@@ -184,7 +184,7 @@ void DocumentManager::showMessage(const QModelIndex &index) {
     setCurrentWidget(doc);
 
     if(isMessage)
-        doc->ensureLineVisible(item->data(MessageManager::LineNumberRole).toInt());
+        doc->ensureLineVisible(item->data(MessageManager::LineNumberRole).toInt() - 1);
 }
 
 QString DocumentManager::strippedName(const QString &fullFileName)
