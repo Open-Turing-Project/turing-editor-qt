@@ -42,6 +42,7 @@
 #include "aboutbox.h"
 #include "settingsdialog.h"
 #include "messagemanager.h"
+#include "docsview.h"
 
 #include "osinterop.h"
 
@@ -80,7 +81,7 @@ MainWindow::MainWindow()
     setCentralWidget(docMan);
 
     createPanels();
-    docMan->multiplex->connect(SIGNAL(wordSelected(QString)),this,SLOT(showDocs(QString)));
+    docMan->multiplex->connect(SIGNAL(wordSelected(QString)),docsView,SLOT(showDocs(QString)));
 
     createActions();
     createMenus();
@@ -293,16 +294,6 @@ void MainWindow::about()
 void MainWindow::showHelp()
 {
     QDesktopServices::openUrl(QString("file:///") + QCoreApplication::applicationDirPath () + "/" + HELP_FILE_PATH);
-}
-
-void MainWindow::showDocs(QString page) {
-    QDir docsDir = OSInterop::getExecutableDirectory();
-    docsDir.cd("docs/markdownhtml");
-    QString loc = docsDir.absolutePath() + "/" + page.replace('.',"_").toLower() + ".html";
-    if(QFileInfo(loc).exists()) {
-        qDebug() << "Fetching docs at " << loc;
-        docsView->load(QUrl::fromLocalFile(loc));
-    }
 }
 
 void MainWindow::showSettings()
@@ -525,10 +516,8 @@ void MainWindow::createPanels() {
 
     // Doc Panel ---------------
     // Create the web view
-    docsView = new QWebView(this);
-    docsView->setMinimumHeight(170);
-    docsView->setMinimumWidth(300);
-    showDocs("intro");
+    docsView = new DocsView(this);
+    docsView->showDocs("intro");
     docsView->show();
     // Create the enclosing dock widget
     docsPanel = new QDockWidget(tr("Documentation"), this);
@@ -545,6 +534,7 @@ void MainWindow::createPanels() {
     messageView->setMinimumHeight(170);
     messageView->setMinimumWidth(200);
     messageView->setModel(messageManager);
+    messageView->setHeaderHidden(true);
     // Create the enclosing dock widget
     messagePanel = new QDockWidget(tr("Messages"), this);
     messagePanel->setAllowedAreas(Qt::LeftDockWidgetArea |
@@ -562,8 +552,8 @@ void MainWindow::readSettings()
 
     saveOnRun = settings.value("saveOnRun",true).toBool();
 
-    restoreGeometry(settings.value("windowgeometry").toByteArray());
-    restoreState(settings.value("windowState").toByteArray());
+    //restoreGeometry(settings.value("windowgeometry").toByteArray());
+    //restoreState(settings.value("windowState").toByteArray());
 
     docMan->readSettings();
 }

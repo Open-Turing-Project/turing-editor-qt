@@ -39,6 +39,7 @@ class FindReplaceDialog;
 class TuringLexer;
 class TestEditor;
 class MessageManager;
+class DocsView;
 
 class TuringRunner;
 
@@ -71,8 +72,6 @@ private slots:
     void completeStruct();
     void showHelp();
     void showSettings();
-
-    void showDocs(QString page);
 
     void populateMarkMenu();
     void goToMark();
@@ -121,7 +120,7 @@ private:
     QToolBar *mainToolBar;
 
     QDockWidget *docsPanel;
-    QWebView *docsView;
+    DocsView *docsView;
 
     MessageManager *messageManager;
     QDockWidget *messagePanel;
