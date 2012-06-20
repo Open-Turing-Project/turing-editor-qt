@@ -542,8 +542,8 @@ void MainWindow::readSettings()
 
     saveOnRun = settings.value("saveOnRun",true).toBool();
 
-    //restoreGeometry(settings.value("windowgeometry").toByteArray());
-    //restoreState(settings.value("windowState").toByteArray());
+    restoreGeometry(settings.value("windowgeometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
 
     docMan->readSettings();
 }

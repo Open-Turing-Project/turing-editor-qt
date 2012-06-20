@@ -29,7 +29,7 @@
 
 # Open Turing Version
 
-CURRENT_VERSION = 1.1.0 alpha
+CURRENT_VERSION = 1.2.0 alpha
 VERSTR = '\\"$${CURRENT_VERSION}\\"'  # place quotes around the version string
 DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the version string
 
@@ -37,7 +37,7 @@ DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the vers
 # file is found in support/bin/TuringEXEProlog.exe
 # of the main OpenTuring distribution
 TURING_RUNNER = TuringEXEProlog.exe
-HELP_FILE = ../support/help/TuringDoc.chm
+HELP_FILE = support/help/TuringDoc.chm
 
 HELP_FILE_STR = '\\"$${HELP_FILE}\\"'
 DEFINES += HELP_FILE_PATH=\"$${HELP_FILE_STR}\"
@@ -79,7 +79,7 @@ CONFIG(test_editor) {
     RCC_DIR = ./debug/.rcc
     UI_DIR = ./debug/.ui
 } else {
-    DESTDIR = OpenTuring/NewEditor
+    DESTDIR = OpenTuring/Support
     OBJECTS_DIR = release/.obj
     MOC_DIR = release/.moc
     RCC_DIR = release/.rcc
