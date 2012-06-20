@@ -29,7 +29,7 @@
 
 # Open Turing Version
 
-CURRENT_VERSION = 1.2.0 alpha
+CURRENT_VERSION = 1.2.0 beta
 VERSTR = '\\"$${CURRENT_VERSION}\\"'  # place quotes around the version string
 DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the version string
 

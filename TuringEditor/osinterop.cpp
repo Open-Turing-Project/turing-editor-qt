@@ -3,9 +3,11 @@
 
 #include <QCoreApplication>
 
+#ifndef NO_FILE_ASSOC
 #ifdef Q_OS_WIN
 #include <windows.h>
 #define UNIQUE_WINDOW_TITLE "OpenTuring-3F2AF4E0-4F89-11D3-9A0C-0305E82C3301::EventReceiver"
+#endif
 #endif
 
 // A bunch of code is borrowed from the ready to program editor that was used by turing
@@ -23,6 +25,7 @@ namespace OSInterop {
         return packageDir;
     }
 
+#ifndef NO_FILE_ASSOC
 #ifdef Q_OS_WIN
 //! creates a registry key
 static bool MyCreateRegEntry (const char *pmKeyName, const char *pmKeyValue)
@@ -235,7 +238,9 @@ static bool	MyCreateAssocEntry (const char *pmAssocName,
     return true;
 } // MyCreateAssocEntry
 #endif
+#endif
 bool associateTuringFiles() {
+#ifndef NO_FILE_ASSOC
 #ifdef Q_OS_WIN
     if (!MyCreateAssocEntry ("OpenTuring.t", ".t",
                              "Turing Program", IDI_TURINGFILE,
@@ -249,6 +254,7 @@ bool associateTuringFiles() {
     {
         return false;
     }
+#endif
 #endif
 }
 
