@@ -136,7 +136,7 @@ void MainWindow::runProgram() {
         runFile = tmpFile;
     }
 
-    statusBar()->showMessage(tr("Running..."));
+    statusBar()->showMessage(tr("Compiling..."));
 
     QCoreApplication::processEvents();
 
@@ -149,6 +149,10 @@ void MainWindow::runProgram() {
     connect(currentRunner,SIGNAL(runFinished(bool)),this,SLOT(runComplete(bool)));
 
     currentRunner->compileAndRun();
+}
+
+void MainWindow::runStarted() {
+    statusBar()->showMessage("Running...");
 }
 
 void MainWindow::runComplete(bool success) {

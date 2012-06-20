@@ -81,6 +81,7 @@ private slots:
     void cursorMoved(int line, int index);
 
     void runProgram();
+    void runStarted();
     void runComplete(bool success);
 
     void handleError(QString errMsg);
