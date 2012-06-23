@@ -30,6 +30,7 @@
 #include <QUrl>
 #include <QDockWidget>
 #include <QTreeView>
+#include <QWhatsThis>
 
 #include <Qsci/qscistyle.h>
 
@@ -473,6 +474,7 @@ void MainWindow::createMenus()
 #ifdef HAS_TURING_IMPL
     helpMenu->addAction(helpAct);
 #endif
+    //helpMenu->addAction(QWhatsThis::createAction(this));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 }
@@ -513,10 +515,10 @@ void MainWindow::createPanels() {
     // Doc Panel ---------------
     // Create the web view
     docsView = new DocsView(this);
-    docsView->showDocs("intro");
     docsView->show();
     // Create the enclosing dock widget
     docsPanel = new QDockWidget(tr("Documentation"), this);
+    docsPanel->setStatusTip("Displays documentation for what is currently selected in the editor.");
     docsPanel->setAllowedAreas(Qt::LeftDockWidgetArea |
                                 Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     docsPanel->setWidget(docsView);
@@ -532,7 +534,8 @@ void MainWindow::createPanels() {
     messageView->setModel(messageManager);
     messageView->setHeaderHidden(true);
     // Create the enclosing dock widget
-    messagePanel = new QDockWidget(tr("Messages"), this);
+    messagePanel = new QDockWidget(tr("Messages and Errors"), this);
+    messagePanel->setStatusTip("Shows compile and runtime errors and allows you to jump to the file where they are.");
     messagePanel->setAllowedAreas(Qt::LeftDockWidgetArea |
                                 Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     messagePanel->setWidget(messageView);

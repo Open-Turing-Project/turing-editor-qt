@@ -7,6 +7,15 @@ DocsView::DocsView(QWidget *parent) :
 {
     setMinimumHeight(170);
     setMinimumWidth(300);
+
+    QDir docsDir = OSInterop::getExecutableDirectory();
+    docsDir.cd("docs");
+    QString loc = docsDir.absolutePath() + "/main.html";
+    qDebug() << "Fetching docs at " << loc;
+    if(QFileInfo(loc).exists()) {
+
+        load(QUrl::fromLocalFile(loc));
+    }
 }
 
 QSize DocsView::sizeHint() const {
