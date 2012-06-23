@@ -6,6 +6,7 @@
 #include <QStack>
 #include <QPair>
 #include <QSet>
+#include <QDir>
 
 class TuringLexer;
 class QsciStyle;
@@ -15,7 +16,7 @@ class TuringEditorWidget : public QsciScintilla
 {
     Q_OBJECT
 public:
-    explicit TuringEditorWidget(QWidget *parent, MessageManager *messMan);
+    explicit TuringEditorWidget(QWidget *parent, MessageManager *messMan, int fNum);
     TuringLexer *lex;
 
     QStack<QPair<int,QString> > makeStack(int stopLine = -1, bool *stopIsStruct = 0);
@@ -25,8 +26,15 @@ public:
         return !(errorLines.empty());
     }
 
+    QString getTempFileName() const {
+        QString baseName = tr("Untitled File ") + QString::number(fileNumber);
+        return QDir::temp().absoluteFilePath(baseName);
+    }
     QString getFileName() const {
         return fileName;
+    }
+    int getFileNumber() const {
+        return fileNumber;
     }
     void setFileName(const QString &newFileName) {
         fileName = newFileName;
@@ -101,6 +109,7 @@ private slots:
 
 private:
     void updateMessages();
+    QString messageFileName();
 
     MessageManager *messageManager;
 
@@ -109,6 +118,8 @@ private:
     QSet<int> errorLines;
 
     QString fileName;
+    //! used to keep track of unnamed files
+    int fileNumber;
 
 };
 

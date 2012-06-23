@@ -22,8 +22,8 @@
 
 
 //! override various editor defaults
-TuringEditorWidget::TuringEditorWidget(QWidget *parent, MessageManager *messMan) :
-    QsciScintilla(parent), messageManager(messMan)
+TuringEditorWidget::TuringEditorWidget(QWidget *parent, MessageManager *messMan, int fNum) :
+    QsciScintilla(parent), messageManager(messMan), fileNumber(fNum)
 {
     lex = new TuringLexer(this);
     setLexer(lex);
@@ -111,7 +111,7 @@ void TuringEditorWidget::textEdited() {
     getCursorPosition(&line,&col);
     if(errorLines.contains(line)) {
         //clearErrorsLine(line);
-        messageManager->removeMessage(fileName,line+1);
+        messageManager->removeMessage(messageFileName(),line+1);
     }
 }
 void TuringEditorWidget::cursorMoved(int line, int col)  {
@@ -148,7 +148,7 @@ void TuringEditorWidget::modificationStatusChanged(bool state) {
 }
 
 void TuringEditorWidget::messagesChanged(QString file) {
-    if(file == fileName)
+    if(file == messageFileName())
         updateMessages();
 }
 
@@ -221,10 +221,19 @@ void TuringEditorWidget::lightTheme() {
     setSelectionBackgroundColor(palette().color(QPalette::Highlight));
     clearErrors();
 }
+
+QString TuringEditorWidget::messageFileName() {
+    if(isUnnamed()) {
+        return getTempFileName();
+    } else {
+        return fileName;
+    }
+}
+
 void TuringEditorWidget::updateMessages() {
     clearErrors();
 
-    QStandardItem *file = messageManager->getFileItem(fileName);
+    QStandardItem *file = messageManager->getFileItem(messageFileName());
     if(file == NULL) return;
 
     QStandardItem *message;
@@ -282,7 +291,7 @@ void TuringEditorWidget::clearEverything() {
     clearIndicatorRange(0,0,lines(),text(lines()).length(),-1);
     markerDeleteAll(-1);
 
-    messageManager->clearMessagesFile(fileName);
+    messageManager->clearMessagesFile(messageFileName());
     errorLines.clear();
     emit statusChanged();
 }

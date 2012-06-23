@@ -6,13 +6,12 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QMessageBox>
 
 #include "messagemanager.h"
 
-const QString DocumentManager::TempName = "UnsavedProgram.t";
-
 DocumentManager::DocumentManager(QWidget *parent, MessageManager *manager) :
-    QTabWidget(parent), messMan(manager)
+    QTabWidget(parent), messMan(manager),nextFileNumber(1)
 {
     setTabsClosable(true);
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
@@ -93,7 +92,8 @@ TuringEditorWidget *DocumentManager::openFile(QString fileName) {
 
 //! creates a new untitled document
 TuringEditorWidget *DocumentManager::newFile() {
-    TuringEditorWidget *doc = new TuringEditorWidget(this,messMan);
+    TuringEditorWidget *doc = new TuringEditorWidget(this,messMan,nextFileNumber);
+    ++nextFileNumber;
     doc->setFileName(""); // empty == untitled
 
     addTab(doc,getTabText(doc));
@@ -160,7 +160,7 @@ QString DocumentManager::getTabText(TuringEditorWidget *doc) {
     QString tabText;
 
     if(doc->isUnnamed()) {
-        tabText += tr("Untitled.t");
+        tabText += tr("Untitled ") + QString::number(doc->getFileNumber());
     } else {
         tabText += strippedName(doc->getFileName());
     }
@@ -173,6 +173,15 @@ QString DocumentManager::getTabText(TuringEditorWidget *doc) {
     return tabText;
 }
 
+TuringEditorWidget *DocumentManager::findByNumber(int num) {
+    foreach(TuringEditorWidget *d,documents) {
+        if(d->getFileNumber() == num) {
+            return d;
+        }
+    }
+    return NULL;
+}
+
 void DocumentManager::showMessage(const QModelIndex &index) {
     QStandardItem *item = messMan->itemFromIndex(index);
     QStandardItem *parent = item->parent();
@@ -180,7 +189,18 @@ void DocumentManager::showMessage(const QModelIndex &index) {
     // if the parent is null it is a file item, if not, it is a message
     bool isMessage = (parent != NULL);
     QVariant filePath = (isMessage ? parent : item)->data(MessageManager::FilePathRole);
-    TuringEditorWidget *doc = openFile(filePath.toString());
+    TuringEditorWidget *doc;
+    QString baseName = QFileInfo(filePath.toString()).baseName();
+    if(baseName.startsWith("Untitled File")) {
+        int num = baseName.split(" ")[2].toInt(); // format example: "Untitled File 3"
+        doc = DocumentManager::findByNumber(num);
+    } else {
+        doc = openFile(filePath.toString());
+    }
+    if(!doc) {
+        QMessageBox::warning(this,tr("Open Turing Project: Error!"),tr("Can't open file from message ") + filePath.toString());
+        exit(1);
+    }
     setCurrentWidget(doc);
 
     if(isMessage)

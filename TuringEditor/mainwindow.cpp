@@ -131,7 +131,7 @@ void MainWindow::runProgram() {
         currentRunner->deleteLater(); // TODO is this safe?
     }
     if(runDoc->isUnnamed()) { // if untitled, use a temp file
-        QString tmpFile = QDir::temp().absoluteFilePath(DocumentManager::TempName);
+        QString tmpFile = runDoc->getTempFileName();
         runDoc->saveFile(tmpFile,true); // true = temp file
         runFile = tmpFile;
     }
@@ -209,10 +209,12 @@ void MainWindow::open()
 }
 
 void MainWindow::openFile(const QString &fileName){
-    if (!fileName.isEmpty()){
-        addRecentFile(fileName);
-
-        docMan->openFile(fileName);
+    QFileInfo fInfo(fileName);
+    if (fInfo.exists()){
+        addRecentFile(fInfo.absoluteFilePath());
+        docMan->openFile(fInfo.absoluteFilePath());
+    } else {
+        qDebug() << "Tried to open file that doesn't exist: " << fileName;
     }
 }
 

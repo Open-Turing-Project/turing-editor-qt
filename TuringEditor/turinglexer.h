@@ -36,6 +36,7 @@ extern "C++" {
 #endif
 
 #include <qobject.h>
+#include <QByteArray>
 
 #include <Qsci/qsciglobal.h>
 #include <Qsci/qscilexer.h>
@@ -221,6 +222,8 @@ private:
     QString fontFamily;
 
     QsciAPIs* turingFuncs;
+
+    QByteArray apiKeywordData;
 
     TuringLexer(const TuringLexer &);
     TuringLexer &operator=(const TuringLexer &);

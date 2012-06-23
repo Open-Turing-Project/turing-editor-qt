@@ -10,13 +10,14 @@
 TuringRunner::TuringRunner(QObject *parent, const QString &program) :
     QObject(parent)
 {
-    mainProgram = program;
+    mainProgram = QFileInfo(program).absoluteFilePath();
     turingRunner = NULL;
 }
 
 void TuringRunner::compileAndRun() {
     QString runnerPath = QCoreApplication::applicationDirPath () + "/" + RUNNER_PATH;
     turingRunner = new QProcess(this);
+    turingRunner->setWorkingDirectory(QCoreApplication::applicationDirPath());
     QStringList args;
     args += "-run";
     args += QDir::toNativeSeparators(mainProgram);

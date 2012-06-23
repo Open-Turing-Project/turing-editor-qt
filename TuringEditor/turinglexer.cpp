@@ -46,6 +46,16 @@ TuringLexer::TuringLexer(QObject *parent)
     turingFuncs = new QsciAPIs(this);
     connect(turingFuncs,SIGNAL(apiPreparationFinished()),this,SLOT(apiPreparationFinished()));
 
+    QFile file(":/resources/predefs.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Can't load predefs!";
+        exit(1);
+    }
+
+    apiKeywordData = file.readAll();
+
+    file.close();
+
     //if(!turingFuncs->loadPrepared()) {
         bool loaded = turingFuncs->load(":/resources/APIs.txt");
         if(loaded){
@@ -263,7 +273,8 @@ QFont TuringLexer::defaultFont(int style) const
 // Returns the set of keywords.
 const char *TuringLexer::keywords(int set) const
 {
-    if (set == 1)
+    switch(set) {
+    case 1:
         // Keywords.
         return
             "addressint all and array asm "
@@ -290,32 +301,19 @@ const char *TuringLexer::keywords(int set) const
             "tell then timeout to true "
             "type unchecked union unit unqualified var "
             "wait when write xor";
-
-    if (set == 2)
-        // Basic functions.
-        return
-            "";
-
-    if (set == 3) {
-        QFile file(":/resources/predefs.txt");
-         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-             return "";
-
-        QByteArray content = file.readAll();
-
-        file.close();
-        return content.data();
-    }
-
-    if (set == 4)
-        // Library modules.
+    case 2:
+        return "#if #end";
+    case 3:
+        return apiKeywordData.constData();
+    case 4:
         return
             "Concurrency Config Dir Draw Error ErrorNum Exceptions "
             "File Font GUI Input Joystick Keyboard Limits Math Mouse "
             "Music Net PC Pic RGB Rand Sprite Str Stream Sys Text Time "
             "TypeConv View Window";
-
-    return 0;
+    default:
+        return 0;
+    }
 }
 
 

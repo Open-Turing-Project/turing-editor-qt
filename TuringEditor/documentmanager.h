@@ -20,7 +20,6 @@ public:
 
     TuringEditorWidget *currentDoc();
 
-    static const QString TempName;
     virtual QSize sizeHint() const;
 
 signals:
@@ -46,6 +45,7 @@ private:
     bool saveFile(TuringEditorWidget *doc, const QString &fileName);
     QString strippedName(const QString &fullFileName);
     QString getTabText(TuringEditorWidget *doc);
+    TuringEditorWidget *findByNumber(int num);
 
     QList<TuringEditorWidget *> documents;
 
@@ -53,6 +53,9 @@ private:
 
     // prefs
     bool confirmSave;
+
+    //! next file number to give out
+    int nextFileNumber;
 
 };
 
