@@ -59,11 +59,11 @@ TuringLexer::TuringLexer(QObject *parent)
     file.close();
     printf("hi: %s\n","lol");
     std::cout << "what the heck?" << std::endl;
-    //qDebug() << "stuff";
+    qDebug() << "stuff";
     //if(!turingFuncs->loadPrepared()) {
         bool loaded = turingFuncs->load(":/resources/APIs.txt");
         if(loaded){
-            //qDebug() << "Loading APIs...";
+            qDebug() << "Loading APIs...";
             turingFuncs->prepare();
         } else{
             printf("can not load APIs!\n");

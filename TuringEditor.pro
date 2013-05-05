@@ -29,7 +29,7 @@ release {
 #    QMAKE_POST_LINK = install_name_tool -change libqscintilla2.9.dylib $$[QT_INSTALL_LIBS]/libqscintilla2.9.dylib $(TARGET)
 #}
 
-LIBS += -L$$[QT_INSTALL_LIBS] -lqscintilla2 -lqjson -headerpad_max_install_names
+LIBS += -L$$[QT_INSTALL_LIBS] -lqscintilla2 -headerpad_max_install_names
 #QMAKE_LFLAGS += -headerpad_max_install_names
 INCLUDEPATH = ./TuringEditor ./TuringEditor/resources
 RESOURCES = ./TuringEditor/turing.qrc

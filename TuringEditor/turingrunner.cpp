@@ -27,12 +27,12 @@ void TuringRunner::compileAndRun() {
 }
 
 void TuringRunner::handleNewOutput() {
-    qDebug() << L"Handling Output";
+    qDebug() << "Handling Output";
     while(turingRunner->bytesAvailable() > 0) {
         QString line(turingRunner->readLine());
         line = line.trimmed();
         if(line != "") {
-            qDebug() << L"Read line " << line;
+            qDebug() << "Read line " << line;
             if(line.startsWith("Running")) {
                 emit runningProgram();
             } else if(line.startsWith("Error on line") || line.startsWith("Run time error")) {
@@ -77,7 +77,7 @@ void TuringRunner::handleErrors(const QStringList &outputLines) {
 
     // handle the errors
     foreach(QString line, outputLines) {
-        qDebug() << L"Error line: " << line;
+        qDebug() << "Error line: " << line;
         if(tokErrRegex.indexIn(line) != -1) {
 
             int line = tokErrRegex.cap(1).toInt();
@@ -103,7 +103,7 @@ void TuringRunner::handleErrors(const QStringList &outputLines) {
 void TuringRunner::handleError(QString line) {
     QRegExp tokErrRegex("line (\\d+) \\[(\\d+) ?- ?(\\d+)\\] of (.+): (.+)");
     QRegExp lineErrRegex("line (\\d+) \\[(\\d+)\\] of (.+): (.+)");
-    qDebug() << L"Error line: " << line;
+    qDebug() << "Error line: " << line;
     if(tokErrRegex.indexIn(line) != -1) {
 
         int line = tokErrRegex.cap(1).toInt();

@@ -11,7 +11,7 @@ DocsView::DocsView(QWidget *parent) :
     QDir docsDir = OSInterop::getExecutableDirectory();
     docsDir.cd("docs");
     QString loc = docsDir.absolutePath() + "/main.html";
-    qDebug() << L"Fetching docs at " << loc;
+    qDebug() << "Fetching docs at " << loc;
     if(QFileInfo(loc).exists()) {
 
         load(QUrl::fromLocalFile(loc));
@@ -27,7 +27,7 @@ void DocsView::showDocs(QString page) {
     docsDir.cd("docs/html");
     QString loc = docsDir.absolutePath() + "/" + page.replace('.',"_").toLower() + ".html";
     if(QFileInfo(loc).exists()) {
-        qDebug() << L"Fetching docs at " << loc;
+        qDebug() << "Fetching docs at " << loc;
         load(QUrl::fromLocalFile(loc));
     }
 }

@@ -205,7 +205,7 @@ void TuringEditorWidget::findNextOccurence() {
 
 //! Switch to the dark coding theme. Based on the common "Twilight" theme
 void TuringEditorWidget::darkTheme() {
-    qDebug() << L"Switching to dark theme";
+    qDebug() << "Switching to dark theme";
     lex->setTheme("Dark");
     setCaretForegroundColor(QColor(167,167,167));
     setSelectionBackgroundColor(QColor(221,240,255,45));
@@ -214,7 +214,7 @@ void TuringEditorWidget::darkTheme() {
 //! Switch to the dark coding theme. Based on the theme used
 //! in the original Turing editor.
 void TuringEditorWidget::lightTheme() {
-    qDebug() << L"Switching to light theme";
+    qDebug() << "Switching to light theme";
     lex->setTheme("Default");
     setCaretForegroundColor(QColor(0,0,0));
     setSelectionForegroundColor(palette().color(QPalette::HighlightedText));
