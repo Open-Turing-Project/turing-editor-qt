@@ -37,60 +37,44 @@
 **
 ****************************************************************************/
 
-#ifndef QTLOCKEDFILE_H
-#define QTLOCKEDFILE_H
+/*! \page qtsingleapplication-example-loader.html
+    \title Loading Documents
 
-#include <QtCore/QFile>
-#ifdef Q_OS_WIN
-#include <QtCore/QVector>
-#endif
+    The application in this example loads or prints the documents 
+    passed as commandline parameters to further instances of this
+    application.
 
-#if defined(Q_WS_WIN) || defined(Q_OS_WIN)
-#  if !defined(QT_QTLOCKEDFILE_EXPORT) && !defined(QT_QTLOCKEDFILE_IMPORT)
-#    define QT_QTLOCKEDFILE_EXPORT
-#  elif defined(QT_QTLOCKEDFILE_IMPORT)
-#    if defined(QT_QTLOCKEDFILE_EXPORT)
-#      undef QT_QTLOCKEDFILE_EXPORT
-#    endif
-#    define QT_QTLOCKEDFILE_EXPORT __declspec(dllimport)
-#  elif defined(QT_QTLOCKEDFILE_EXPORT)
-#    undef QT_QTLOCKEDFILE_EXPORT
-#    define QT_QTLOCKEDFILE_EXPORT __declspec(dllexport)
-#  endif
-#else
-#  define QT_QTLOCKEDFILE_EXPORT
-#endif
+    \quotefromfile loader/main.cpp
+    \printuntil };
+    The user interface in this application is a QMainWindow subclass
+    with a QMdiArea as the central widget. It implements a slot
+    \c handleMessage() that will be connected to the messageReceived()
+    signal of the QtSingleApplication class.
 
-namespace QtLP_Private {
+    \printuntil }
+    The MainWindow constructor creates a minimal user interface.
 
-class QT_QTLOCKEDFILE_EXPORT QtLockedFile : public QFile
-{
-public:
-    enum LockMode { NoLock = 0, ReadLock, WriteLock };
+    \printto case Print:
+    The handleMessage() slot interprets the message passed in as a
+    filename that can be prepended with \e /print to indicate that
+    the file should just be printed rather than loaded.
 
-    QtLockedFile();
-    QtLockedFile(const QString &name);
-    ~QtLockedFile();
+    \printto #include
+    Loading the file will also activate the window.
 
-    bool open(OpenMode mode);
+    \printto mw
+    The \c main entry point function creates a QtSingleApplication
+    object, and creates a message to send to a running instance
+    of the application. If the message was sent successfully the
+    process exits immediately.
 
-    bool lock(LockMode mode, bool block = true);
-    bool unlock();
-    bool isLocked() const;
-    LockMode lockMode() const;
-
-private:
-#ifdef Q_OS_WIN
-    Qt::HANDLE wmutex;
-    Qt::HANDLE rmutex;
-    QVector<Qt::HANDLE> rmutexes;
-    QString mutexname;
-
-    Qt::HANDLE getMutexHandle(int idx, bool doCreate);
-    bool waitMutex(Qt::HANDLE mutex, bool doBlock);
-
-#endif
-    LockMode m_lock_mode;
-};
-}
-#endif
+    \printuntil }
+    If the message could not be sent the application starts up.  Note
+    that \c false is passed to the call to setActivationWindow() to
+    prevent automatic activation for every message received, e.g. when
+    the application should just print a file. Instead, the message
+    handling function determines whether activation is requested, and
+    signals that by emitting the needToShow() signal. This is then
+    simply connected directly to QtSingleApplication's
+    activateWindow() slot.
+*/

@@ -2,9 +2,9 @@
 #include "ui_findreplacedialog.h"
 
 FindReplaceDialog::FindReplaceDialog(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::FindReplaceDialog)
+    QWidget(parent)
 {
+    ui = new Ui::FindReplaceDialog();
     ui->setupUi(this);
     connect(ui->findButton,SIGNAL(clicked()),this,SLOT(findAllPushed()));
     connect(ui->findNext,SIGNAL(clicked()),this,SLOT(findNextPushed()));

@@ -50,7 +50,7 @@ void QObjectHelper::qvariant2qobject(const QVariantMap& variant, QObject* object
   QVariantMap::const_iterator iter;
   for (iter = variant.constBegin(); iter != variant.end(); iter++) {
     if (properies.contains(iter.key())) {
-      object->setProperty(iter.key().toAscii(), iter.value());
+      object->setProperty(iter.key().toLatin1(), iter.value());
     }
   }
 }

@@ -37,60 +37,52 @@
 **
 ****************************************************************************/
 
-#ifndef QTLOCKEDFILE_H
-#define QTLOCKEDFILE_H
 
-#include <QtCore/QFile>
-#ifdef Q_OS_WIN
-#include <QtCore/QVector>
-#endif
+#include "qtsinglecoreapplication.h"
+#include <QtCore/QDebug>
 
-#if defined(Q_WS_WIN) || defined(Q_OS_WIN)
-#  if !defined(QT_QTLOCKEDFILE_EXPORT) && !defined(QT_QTLOCKEDFILE_IMPORT)
-#    define QT_QTLOCKEDFILE_EXPORT
-#  elif defined(QT_QTLOCKEDFILE_IMPORT)
-#    if defined(QT_QTLOCKEDFILE_EXPORT)
-#      undef QT_QTLOCKEDFILE_EXPORT
-#    endif
-#    define QT_QTLOCKEDFILE_EXPORT __declspec(dllimport)
-#  elif defined(QT_QTLOCKEDFILE_EXPORT)
-#    undef QT_QTLOCKEDFILE_EXPORT
-#    define QT_QTLOCKEDFILE_EXPORT __declspec(dllexport)
-#  endif
-#else
-#  define QT_QTLOCKEDFILE_EXPORT
-#endif
 
-namespace QtLP_Private {
-
-class QT_QTLOCKEDFILE_EXPORT QtLockedFile : public QFile
+void report(const QString& msg)
 {
-public:
-    enum LockMode { NoLock = 0, ReadLock, WriteLock };
-
-    QtLockedFile();
-    QtLockedFile(const QString &name);
-    ~QtLockedFile();
-
-    bool open(OpenMode mode);
-
-    bool lock(LockMode mode, bool block = true);
-    bool unlock();
-    bool isLocked() const;
-    LockMode lockMode() const;
-
-private:
-#ifdef Q_OS_WIN
-    Qt::HANDLE wmutex;
-    Qt::HANDLE rmutex;
-    QVector<Qt::HANDLE> rmutexes;
-    QString mutexname;
-
-    Qt::HANDLE getMutexHandle(int idx, bool doCreate);
-    bool waitMutex(Qt::HANDLE mutex, bool doBlock);
-
-#endif
-    LockMode m_lock_mode;
-};
+    qDebug("[%i] %s", (int)QCoreApplication::applicationPid(), qPrintable(msg));
 }
-#endif
+
+class MainClass : public QObject
+{
+    Q_OBJECT
+public:
+    MainClass()
+        : QObject()
+        {}
+
+public slots:
+    void handleMessage(const QString& message)
+        {
+            report( "Message received: \"" + message + "\"");
+        }
+};
+
+int main(int argc, char **argv)
+{
+    report("Starting up");
+
+    QtSingleCoreApplication app(argc, argv);
+
+    if (app.isRunning()) {
+        QString msg(QString("Hi master, I am %1.").arg(QCoreApplication::applicationPid()));
+        bool sentok = app.sendMessage(msg, 2000);
+        QString rep("Another instance is running, so I will exit.");
+        rep += sentok ? " Message sent ok." : " Message sending failed; the other instance may be frozen.";
+        report(rep);
+        return 0;
+    } else {
+        report("No other instance is running; so I will.");
+        MainClass mainObj;
+        QObject::connect(&app, SIGNAL(messageReceived(const QString&)),
+                         &mainObj, SLOT(handleMessage(const QString&)));
+        return app.exec();
+    }
+}
+
+
+#include "main.moc"

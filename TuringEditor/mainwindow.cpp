@@ -19,14 +19,14 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtDebug>
 #include <QPalette>
 #include <QCoreApplication>
 #include <QStringList>
 #include <QLabel>
 #include <QDir>
-#include <QWebView>
+#include <QtWebKitWidgets>
 #include <QUrl>
 #include <QDockWidget>
 #include <QTreeView>
@@ -65,14 +65,14 @@ MainWindow::MainWindow()
     messageManager->handleMessageFile(10,"Error in another File!","/troll/BigFileNameThat ContainsASpace.t",9,12);*/
 
     // TODO BUG find next after switching tabs
-    findDialog = new FindReplaceDialog();
-    docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
-    docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
-    docMan->multiplex->connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),SLOT(find(QString,bool,bool,bool)));
-    docMan->multiplex->connect(findDialog,SIGNAL(findNext()),SLOT(findNextOccurence()));
-    docMan->multiplex->connect(findDialog,SIGNAL(replace(QString)),SLOT(replaceSlot(QString)));
-    docMan->multiplex->connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),
-                               SLOT(replaceAll(QString,QString,bool,bool)));
+//    findDialog = new FindReplaceDialog();
+//    docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
+//    docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
+//    docMan->multiplex->connect(findDialog,SIGNAL(find(QString,bool,bool,bool)),SLOT(find(QString,bool,bool,bool)));
+//    docMan->multiplex->connect(findDialog,SIGNAL(findNext()),SLOT(findNextOccurence()));
+//    docMan->multiplex->connect(findDialog,SIGNAL(replace(QString)),SLOT(replaceSlot(QString)));
+//    docMan->multiplex->connect(findDialog,SIGNAL(replaceAll(QString,QString,bool,bool)),
+//                               SLOT(replaceAll(QString,QString,bool,bool)));
 
     lineLabel = new QLabel(this);
     docMan->multiplex->connect(SIGNAL(cursorPositionChanged(int,int)),this,SLOT(cursorMoved(int,int)));
@@ -215,7 +215,7 @@ void MainWindow::openFile(const QString &fileName){
         addRecentFile(fInfo.absoluteFilePath());
         docMan->openFile(fInfo.absoluteFilePath());
     } else {
-        qDebug() << "Tried to open file that doesn't exist: " << fileName;
+        qDebug() << L"Tried to open file that doesn't exist:"  << fileName;
     }
 }
 

@@ -33,9 +33,11 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qsettings.h>
-#include "Qsci/qsciapis.h"
+#include <Qsci/qsciapis.h>
 #include <QDebug>
 #include <QFile>
+#include <stdio.h>
+#include <iostream>
 
 
 // The ctor.
@@ -55,11 +57,13 @@ TuringLexer::TuringLexer(QObject *parent)
     apiKeywordData = file.readAll();
 
     file.close();
-
+    printf("hi: %s\n","lol");
+    std::cout << "what the heck?" << std::endl;
+    //qDebug() << "stuff";
     //if(!turingFuncs->loadPrepared()) {
         bool loaded = turingFuncs->load(":/resources/APIs.txt");
         if(loaded){
-            qDebug() << "Loading APIs...";
+            //qDebug() << "Loading APIs...";
             turingFuncs->prepare();
         } else{
             printf("can not load APIs!\n");
@@ -230,7 +234,7 @@ QColor TuringLexer::darkDefaultColor(int style) const
 // Returns the foreground colour of the text for a style.
 QColor TuringLexer::defaultColor(int style) const
 {
-    if(theme == "Dark"){
+    if(theme == QStringLiteral("Dark")){
         return darkDefaultColor(style);
     } else {
         return lightDefaultColor(style);
@@ -252,7 +256,7 @@ bool TuringLexer::defaultEolFill(int style) const
 QFont TuringLexer::defaultFont(int style) const
 {
     QFont f(fontFamily,fontSize);
-    if(theme == "Dark"){
+    if(theme == QStringLiteral("Dark")){
         switch (style)
         {
         case Comment:
@@ -387,7 +391,7 @@ QString TuringLexer::description(int style) const
 // Returns the background colour of the text for a style.
 QColor TuringLexer::defaultPaper(int style) const
 {
-    if(theme == "Dark"){
+    if(theme == QStringLiteral("Dark")){
         switch (style)
         {
         case UnclosedString:

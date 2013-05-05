@@ -40,11 +40,11 @@
 #ifndef QTSINGLEAPPLICATION_H
 #define QTSINGLEAPPLICATION_H
 
-#include <QtGui/QApplication>
+#include <QApplication>
 
 class QtLocalPeer;
 
-#if defined(Q_WS_WIN)
+#if defined(Q_WS_WIN) || defined(Q_OS_WIN32)
 #  if !defined(QT_QTSINGLEAPPLICATION_EXPORT) && !defined(QT_QTSINGLEAPPLICATION_IMPORT)
 #    define QT_QTSINGLEAPPLICATION_EXPORT
 #  elif defined(QT_QTSINGLEAPPLICATION_IMPORT)
@@ -67,7 +67,7 @@ class QT_QTSINGLEAPPLICATION_EXPORT QtSingleApplication : public QApplication
 public:
     QtSingleApplication(int &argc, char **argv, bool GUIenabled = true);
     QtSingleApplication(const QString &id, int &argc, char **argv);
-    QtSingleApplication(int &argc, char **argv, Type type);
+    //QtSingleApplication(int &argc, char **argv, Type type);
 #if defined(Q_WS_X11)
     QtSingleApplication(Display* dpy, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0);
     QtSingleApplication(Display *dpy, int &argc, char **argv, Qt::HANDLE visual = 0, Qt::HANDLE cmap= 0);

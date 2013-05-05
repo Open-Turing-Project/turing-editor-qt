@@ -109,15 +109,15 @@ void TuringEditorWidget::replaceSlot(QString repText) {
 void TuringEditorWidget::textEdited() {
     int line,col;
     getCursorPosition(&line,&col);
-    if(errorLines.contains(line)) {
-        //clearErrorsLine(line);
-        messageManager->removeMessage(messageFileName(),line+1);
-    }
+    //if(errorLines.contains(line)) {
+        clearErrorsLine(line);
+        //messageManager->removeMessage(messageFileName(),line+1);
+    //}
 }
 void TuringEditorWidget::cursorMoved(int line, int col)  {
     QString word = findWordAtPoint(line,col);
     if(!word.isEmpty()) {
-        //qDebug() << "Word Selected: " << word;
+        //qDebug() << LWord Selected:  << word;
         emit wordSelected(word);
     }
 }
@@ -205,7 +205,7 @@ void TuringEditorWidget::findNextOccurence() {
 
 //! Switch to the dark coding theme. Based on the common "Twilight" theme
 void TuringEditorWidget::darkTheme() {
-    qDebug() << "Switching to dark theme";
+    qDebug() << L"Switching to dark theme";
     lex->setTheme("Dark");
     setCaretForegroundColor(QColor(167,167,167));
     setSelectionBackgroundColor(QColor(221,240,255,45));
@@ -214,7 +214,7 @@ void TuringEditorWidget::darkTheme() {
 //! Switch to the dark coding theme. Based on the theme used
 //! in the original Turing editor.
 void TuringEditorWidget::lightTheme() {
-    qDebug() << "Switching to light theme";
+    qDebug() << L"Switching to light theme";
     lex->setTheme("Default");
     setCaretForegroundColor(QColor(0,0,0));
     setSelectionForegroundColor(palette().color(QPalette::HighlightedText));
