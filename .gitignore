@@ -6,6 +6,7 @@ test/build/*
 *.Debug
 *.Release
 *.tbc
+*.dylib
 OpenTuring
 OpenTuring.zip
 debug
