@@ -15,11 +15,12 @@ TuringRunner::TuringRunner(QObject *parent, const QString &program) :
 }
 
 void TuringRunner::compileAndRun() {
-    QString runnerPath = QCoreApplication::applicationDirPath () + "/" + RUNNER_PATH;
+    QString runnerPath = RUNNER_FOLDER;
+    runnerPath += RUNNER_EXECUTABLE;
+    qDebug() << "Running " << mainProgram << " with " << runnerPath;
     turingRunner = new QProcess(this);
-    turingRunner->setWorkingDirectory(QCoreApplication::applicationDirPath());
+    turingRunner->setWorkingDirectory(RUNNER_FOLDER);
     QStringList args;
-    args += "-run";
     args += QDir::toNativeSeparators(mainProgram);
     connect(turingRunner,SIGNAL(finished(int)),this,SLOT(runnerClosed(int)));
     connect(turingRunner,SIGNAL(readyReadStandardOutput()),this,SLOT(handleNewOutput()));

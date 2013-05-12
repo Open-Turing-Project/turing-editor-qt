@@ -6,6 +6,9 @@
 #include <QTextStream>
 #include <QProcess>
 
+#define RUNNER_FOLDER "/Users/tristan/Box/Dev/Projects/OpenTuringCompiler/dist/"
+#define RUNNER_EXECUTABLE "compiler"
+
 class TuringRunner : public QObject
 {
     Q_OBJECT

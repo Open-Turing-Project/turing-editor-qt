@@ -49,9 +49,9 @@
 
 #include "turingrunner.h"
 
-#ifdef Q_OS_WIN
+//#ifdef Q_OS_WIN
 #define HAS_TURING_IMPL
-#endif
+//#endif
 
 MainWindow::MainWindow()
 {

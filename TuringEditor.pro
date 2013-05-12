@@ -7,14 +7,10 @@ DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the vers
 # files used in the running process
 # file is found in support/bin/TuringEXEProlog.exe
 # of the main OpenTuring distribution
-TURING_RUNNER = TuringEXEProlog.exe
 HELP_FILE = support/help/TuringDoc.chm
 
 HELP_FILE_STR = '\\"$${HELP_FILE}\\"'
 DEFINES += HELP_FILE_PATH=\"$${HELP_FILE_STR}\"
-
-TURING_RUNNER_STR = '\\"$${TURING_RUNNER}\\"'
-DEFINES += RUNNER_PATH=\"$${TURING_RUNNER_STR}\"
 
 #TEMPLATE = lib
 TARGET = OpenTuring

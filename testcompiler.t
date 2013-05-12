@@ -1,0 +1,1 @@
+put "hi"var a : array 1..3 of int := init(5,6,7)put a(3)
