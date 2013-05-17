@@ -31,6 +31,7 @@ TuringEditorWidget::TuringEditorWidget(QWidget *parent, MessageManager *messMan,
     readSettings();
 
     setFolding(QsciScintilla::PlainFoldStyle);
+    setEolMode(QsciScintilla::EolUnix);
     setAutoIndent(true);
     setIndentationsUseTabs(false);
     setBackspaceUnindents(true);
