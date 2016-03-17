@@ -52,7 +52,7 @@
     </font>
    </property>
    <property name="text">
-    <string>An open source Turing interpreter based on Holt Software's Turing for Windows</string>
+    <string>An open source Turing compiler and editor using LLVM.</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -71,7 +71,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>The editor uses the Qscintilla editor and FamFamFam icons. Editor coding and interpreter maintenance by Tristan Hume. Original interpreter by Tom West.</string>
+    <string>The editor uses the Qscintilla editor and FamFamFam icons. Editor and compiler coding by Tristan Hume.</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -98,7 +98,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Version 1.5.0</string>
+    <string>Version 2.0.0</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

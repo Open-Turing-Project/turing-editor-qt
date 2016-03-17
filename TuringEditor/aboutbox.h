@@ -7,7 +7,7 @@ namespace Ui {
     class AboutBox;
 }
 
-class AboutBox : public QDialog
+class AboutBox : public QWidget
 {
     Q_OBJECT
 

@@ -64,6 +64,7 @@ MainWindow::MainWindow()
     messageManager->handleMessageFile(100,"Massive Problem!","/bob/hi.t",9,12);
     messageManager->handleMessageFile(10,"Error in another File!","/troll/BigFileNameThat ContainsASpace.t",9,12);*/
 
+    aboutBox = new AboutBox();
     // TODO BUG find next after switching tabs
     findDialog = new FindReplaceDialog();
     docMan->multiplex->connect(findDialog,SIGNAL(findAll(QString)),SLOT(findAll(QString)));
@@ -284,8 +285,7 @@ void MainWindow::goToMark()
 
 void MainWindow::about()
 {
-    AboutBox aboutBox;
-    aboutBox.exec();
+    aboutBox->show();
 }
 
 void MainWindow::showHelp()

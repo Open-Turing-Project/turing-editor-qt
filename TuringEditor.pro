@@ -1,6 +1,6 @@
 # Open Turing Version
 
-CURRENT_VERSION = 1.2.0 beta
+CURRENT_VERSION = 2.0.0 alpha
 VERSTR = '\\"$${CURRENT_VERSION}\\"'  # place quotes around the version string
 DEFINES = VERSION_STRING=\"$${VERSTR}\" # create a VER macro containing the version string
 
@@ -30,6 +30,7 @@ LIBS += -L$$[QT_INSTALL_LIBS] -lqscintilla2 -headerpad_max_install_names
 INCLUDEPATH = ./TuringEditor ./TuringEditor/resources
 RESOURCES = ./TuringEditor/turing.qrc
 DEFINES += QT
+ICON = OpenTuringIcon.icns
 
 RC_FILE = TuringEditor/resources/turing.rc
 

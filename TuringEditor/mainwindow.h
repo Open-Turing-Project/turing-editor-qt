@@ -40,6 +40,7 @@ class TuringLexer;
 class TestEditor;
 class MessageManager;
 class DocsView;
+class AboutBox;
 
 class TuringRunner;
 
@@ -112,6 +113,7 @@ private:
     TuringEditorWidget *runDoc;
 
     FindReplaceDialog *findDialog;
+    AboutBox *aboutBox;
 
     QMenu *fileMenu;
     QMenu *editMenu;
